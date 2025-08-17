@@ -1,22 +1,12 @@
-// app/(shop)/page.tsx
-import { Hero } from "../components/home/Hero";
-
-import { Stats } from "../components/home/Stats";
-import { TopSelling } from "../components/home/TopSelling";
-import { Trending } from "../components/home/Trending";
-import { DealOfWeek } from "../components/home/DealOfWeek";
-import { Newsletter } from "../components/shared/Newsletter";
+import { ProductCard } from "@/components/product/ProductCard";
 import { products } from "@/data/products";
 
-export default function HomePage() {
+export default function ShopPage() {
   return (
-    <>
-      <Hero />
-      <Stats />
-      <TopSelling products={products.slice(0, 8)} />
-      <Trending />
-      <DealOfWeek />
-      <Newsletter />
-    </>
+    <section className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      {products.map((p) => (
+        <ProductCard key={p.id} product={p} />
+      ))}
+    </section>
   );
 }
