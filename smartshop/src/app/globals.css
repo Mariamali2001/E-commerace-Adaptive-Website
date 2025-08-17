@@ -1,0 +1,21 @@
+
+
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { --radius: 10px; }
+.container { @apply mx-auto max-w-[1200px] px-4; }
+.btn { @apply inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-medium transition; }
+.display-1 { @apply text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight; } */
+
+@import "tailwindcss";
+
+/* your custom utilities */
+:root { --radius: 10px; }
+
+.container { @apply mx-auto max-w-[1200px] px-4; }
+
+.btn { @apply inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-medium transition; }
+
+.display-1 { @apply text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight; }
