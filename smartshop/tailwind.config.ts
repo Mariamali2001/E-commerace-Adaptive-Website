@@ -1,13 +1,20 @@
-theme: {
-  extend: {
-    colors: {
-      brand: { DEFAULT: "#0B0B0B" },     // buttons, headers
-      muted: "#6B7280",
-      card: "#FFFFFF"
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}", // ok even if you don’t use /pages
+  ],
+  theme: {
+    container: {
+      center: true,
+      padding: "1rem",
+      screens: { sm: "640px", md: "768px", lg: "1024px", xl: "1200px" },
     },
-    borderRadius: { xl: "0.75rem", "2xl": "1rem" },
-    boxShadow: {
-      card: "0 10px 30px rgba(0,0,0,.06)"
-    }
-  }
-}
+    extend: {
+      borderRadius: { xl: "var(--radius, 10px)", "2xl": "20px" },
+      colors: { brand: "#0a0a0a" },
+    },
+  },
+  plugins: [],
+};

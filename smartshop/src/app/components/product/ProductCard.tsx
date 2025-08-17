@@ -1,21 +1,22 @@
 // components/product/ProductCard.tsx
-import { Heart } from "lucide-react";
 import Link from "next/link";
+import { Product } from "@/types/product";
 import { Price } from "@/components/shared/Price";
+import { RatingStars } from "@/components/shared/RatingStars";
 
-export default function ProductCard({ p }: { p: { slug:string; name:string; price:number; oldPrice?:number; image:string; label?:string } }) {
+export function ProductCard({ product }: { product: Product }) {
   return (
-    <Link href={`/product/${p.slug}`} className="block group">
-      <div className="relative rounded-2xl overflow-hidden bg-white shadow-card aspect-square">
-        {p.label && <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2 py-1 text-[11px] font-medium">{p.label}</span>}
-        <button aria-label="Wishlist" className="absolute right-3 top-3 bg-white/90 rounded-full p-2">
-          <Heart className="w-4 h-4" />
-        </button>
-        <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+    <Link href={`/product/${product.slug}`} className="group block">
+      <div className="aspect-[4/5] w-full overflow-hidden rounded-xl bg-neutral-100">
+        <img src={product.images[0]} alt="" className="h-full w-full object-cover transition group-hover:scale-105" />
       </div>
-      <div className="mt-3">
-        <div className="text-sm text-neutral-700 line-clamp-1">{p.name}</div>
-        <Price value={p.price} old={p.oldPrice} />
+      <div className="mt-2 space-y-1">
+        <p className="text-sm text-neutral-500">Label</p>
+        <p className="text-sm font-medium">{product.title}</p>
+        <div className="flex items-center gap-2">
+          <Price price={product.price} compareAt={product.compareAt} />
+          <RatingStars rating={product.rating} small />
+        </div>
       </div>
     </Link>
   );
