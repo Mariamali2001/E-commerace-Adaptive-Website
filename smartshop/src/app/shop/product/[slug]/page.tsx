@@ -2,14 +2,14 @@
 import { notFound } from "next/navigation";
 import { products } from "@/data/products";
 import { Product } from "@/types/product";
-import { Gallery } from "@/components/product/Gallery";
-import { ColorSwatch } from "@/components/product/ColorSwatch";
-import { SizePill } from "@/components/product/SizePill";
-import { QtyStepper } from "@/components/product/QtyStepper";
-import { Price } from "@/components/shared/Price";
-import { RatingStars } from "@/components/shared/RatingStars";
-import { Tabs } from "@/components/shared/Tabs";
-import { ReviewsList } from "@/components/product/Reviews";
+import { Gallery } from "@/app/components/product/Gallery";
+import { ColorSwatch } from "@/app/components/product/ColorSwatch";
+import { SizePill } from "@/app/components/product/SizePill";
+import { QtyStepper } from "@/app/components/product/QtyStepper";
+import { Price } from "@/app/components/shared/Price";
+import { RatingStars } from "@/app/components/shared/RatingStars";
+import { Tabs } from "@/app/components/shared/Tabs";
+import { ReviewsList } from "@/app/components/product/Reviews";
 import { reviews } from "@/data/reviews";
 
 export async function generateStaticParams() {
@@ -47,11 +47,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             <SizePill sizes={product.sizes} />
           </div>
 
-          <QtyStepper />
-
-          <button className="btn bg-neutral-900 text-white hover:opacity-90 w-full md:w-auto">
-            Add to Cart
-          </button>
+<QtyStepper min={1} max={10} onChange={(val) => console.log("Quantity:", val)} />
+<button className="btn bg-neutral-900 text-white hover:opacity-90 w-full md:w-auto">
+  Add to Cart
+</button>
         </div>
       </div>
 

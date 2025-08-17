@@ -1,5 +1,5 @@
 // components/home/DealOfWeek.tsx
-import { Price } from "@/components/shared/Price";
+import { Price } from "../shared/Price";
 
 export function DealOfWeek() {
   return (

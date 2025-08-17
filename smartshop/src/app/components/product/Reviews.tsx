@@ -1,6 +1,6 @@
 // components/product/Reviews.tsx
 import { Review } from "@/types/review";
-import { RatingStars } from "@/components/shared/RatingStars";
+import { RatingStars } from "../shared/RatingStars";
 
 export function ReviewsList({ reviews }: { reviews: Review[] }) {
   return (

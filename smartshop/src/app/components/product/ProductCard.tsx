@@ -1,8 +1,8 @@
 // components/product/ProductCard.tsx
 import Link from "next/link";
 import { Product } from "@/types/product";
-import { Price } from "@/components/shared/Price";
-import { RatingStars } from "@/components/shared/RatingStars";
+import { Price } from "../shared/Price";
+import { RatingStars } from "../shared/RatingStars";
 
 export function ProductCard({ product }: { product: Product }) {
   return (

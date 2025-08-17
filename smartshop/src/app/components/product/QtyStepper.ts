@@ -1,14 +1,49 @@
 // components/product/QtyStepper.tsx
 "use client";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
-export function QtyStepper() {
-  const [q, setQ] = useState(1);
+type Props = {
+  value?: number;
+  min?: number;
+  max?: number;
+  onChange?: (val: number) => void;
+  className?: string;
+};
+
+export function QtyStepper({ value = 1, min = 1, max = 99, onChange, className }: Props) {
+  const [qty, setQty] = useState(value);
+
+  const update = (newVal: number) => {
+    if (newVal < min || newVal > max) return;
+    setQty(newVal);
+    onChange?.(newVal);
+  };
+
   return (
-    <div className="inline-flex items-center gap-4 rounded-xl border border-neutral-200 px-3 py-2">
-      <button onClick={() => setQ((n) => Math.max(1, n - 1))} aria-label="Decrease">−</button>
-      <span className="min-w-[1.5ch] text-center">{q}</span>
-      <button onClick={() => setQ((n) => n + 1)} aria-label="Increase">+</button>
+    <div
+      className={cn(
+        "inline-flex items-center gap-4 rounded-xl border border-neutral-200 px-3 py-2",
+        className
+      )}
+    >
+      <button
+        type="button"
+        onClick={() => update(qty - 1)}
+        aria-label="Decrease quantity"
+        className="text-lg font-bold"
+      >
+        −
+      </button>
+      <span className="min-w-[1.5ch] text-center">{qty}</span>
+      <button
+        type="button"
+        onClick={() => update(qty + 1)}
+        aria-label="Increase quantity"
+        className="text-lg font-bold"
+      >
+        +
+      </button>
     </div>
   );
 }

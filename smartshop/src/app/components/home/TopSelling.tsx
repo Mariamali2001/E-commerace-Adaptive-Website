@@ -1,6 +1,6 @@
 // components/home/TopSelling.tsx
 import { Product } from "@/types/product";
-import { ProductCard } from "@/components/product/ProductCard";
+import { ProductCard } from "../product/ProductCard";
 
 export function TopSelling({ products }: { products: Product[] }) {
   return (
