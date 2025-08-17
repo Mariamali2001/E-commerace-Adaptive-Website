@@ -5,7 +5,7 @@ export default function SignupPage() {
   return (
     <div className="container grid min-h-[70vh] grid-cols-1 md:grid-cols-2 items-center">
       <div className="hidden md:block">
-        <img src="/images/logo.svg" alt="SmartShopping" className="h-10 w-auto" />
+        <img src="/images/logo.png" alt="SmartShopping" className="h-10 w-auto" />
       </div>
 
       <div className="max-w-lg md:ml-auto">

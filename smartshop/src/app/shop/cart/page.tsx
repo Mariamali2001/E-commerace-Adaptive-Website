@@ -1,3 +1,4 @@
+// app/cart/page.tsx
 "use client";
 import { useCart, cartSelectors } from "@/store/cart";
 
@@ -8,41 +9,72 @@ export default function CartPage() {
   const setQty = useCart((s) => s.setQty);
 
   return (
-    <div className="space-y-6">
+    <div className="container space-y-6 py-10">
       <h1 className="text-2xl md:text-3xl font-extrabold">Your Cart</h1>
 
       {list.length === 0 ? (
-        <p>Your cart is empty.</p>
+        <p className="text-neutral-500">Your cart is empty.</p>
       ) : (
-        <div className="grid lg:grid-cols-[1fr_320px] gap-8">
+        <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           <div className="space-y-4">
             {list.map((it) => (
-              <div key={it.key} className="flex gap-4 border rounded-2xl p-4">
-                <img src={it.image} alt="" className="w-24 h-24 rounded-xl object-cover" />
+              <div key={it.key} className="flex gap-4 rounded-2xl border p-4">
+                <img
+                  src={it.image}
+                  alt=""
+                  className="h-24 w-24 rounded-xl object-cover"
+                />
                 <div className="flex-1">
-                  <div className="font-semibold">{it.name}</div>
-                  <div className="text-sm text-muted">
+                  <div className="font-semibold">{it.title}</div>
+                  <div className="mt-0.5 text-sm text-neutral-500">
                     {it.size && <>Size: {it.size} </>}
-                    {it.color && <>• Color: {it.color}</>}
+                    {it.size && it.color && <span>• </span>}
+                    {it.color && <>Color: {it.color}</>}
                   </div>
-                  <div className="flex items-center gap-3 mt-2">
-                    <button onClick={() => setQty(it.key, Math.max(1, it.qty - 1))} className="px-2 py-1 border rounded-full">−</button>
+
+                  <div className="mt-2 flex items-center gap-3">
+                    <button
+                      onClick={() => setQty(it.key, Math.max(1, it.qty - 1))}
+                      className="rounded-full border px-2 py-1"
+                      aria-label="Decrease quantity"
+                    >
+                      −
+                    </button>
                     <span>{it.qty}</span>
-                    <button onClick={() => setQty(it.key, it.qty + 1)} className="px-2 py-1 border rounded-full">+</button>
-                    <button onClick={() => remove(it.key)} className="ml-4 text-sm underline">Remove</button>
+                    <button
+                      onClick={() => setQty(it.key, it.qty + 1)}
+                      className="rounded-full border px-2 py-1"
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
+                    <button
+                      onClick={() => remove(it.key)}
+                      className="ml-4 text-sm underline"
+                    >
+                      Remove
+                    </button>
                   </div>
                 </div>
-                <div className="font-semibold">${(it.qty * it.price).toFixed(2)}</div>
+
+                <div className="font-semibold">
+                  ${Number(it.qty * it.price).toFixed(2)}
+                </div>
               </div>
             ))}
           </div>
 
-          <aside className="border rounded-2xl p-6 h-max">
-            <div className="flex justify-between font-semibold text-lg">
-              <span>Subtotal</span><span>${subtotal.toFixed(2)}</span>
+          <aside className="h-max rounded-2xl border p-6">
+            <div className="flex justify-between text-lg font-semibold">
+              <span>Subtotal</span>
+              <span>${subtotal.toFixed(2)}</span>
             </div>
-            <p className="text-sm text-muted mt-1">Taxes and shipping calculated at checkout.</p>
-            <button className="mt-4 w-full bg-black text-white rounded-xl py-3">Checkout</button>
+            <p className="mt-1 text-sm text-neutral-500">
+              Taxes and shipping calculated at checkout.
+            </p>
+            <button className="mt-4 w-full rounded-xl bg-black py-3 text-white">
+              Checkout
+            </button>
           </aside>
         </div>
       )}

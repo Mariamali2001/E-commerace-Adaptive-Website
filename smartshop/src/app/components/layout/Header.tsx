@@ -6,7 +6,7 @@ export function Header() {
     <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70 border-b border-neutral-100">
       <div className="container flex h-16 items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-2">
-          <img src="/images/logo.svg" className="h-8 w-8" alt="" />
+          <img src="/images/logo.png" className="h-8 w-8" alt="" />
           <span className="font-bold">SMARTSHOPIING</span>
         </Link>
 
