@@ -42,7 +42,7 @@ function Card({ title, price, bullet, image }: { title: string; price: number; b
         <Price price={price} />
         <ul className="space-y-2 text-sm text-neutral-600">
           {bullet.map((b, i) => (
-            <li key={i} className="flex items-center gap-2">✅ {b}</li>
+            <li key={i} className="flex items-center gap-2"> {b}</li>
           ))}
         </ul>
         <button className="btn w-full bg-neutral-900 text-white hover:opacity-90">Buy Now</button>
