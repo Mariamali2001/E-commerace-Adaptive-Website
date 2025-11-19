@@ -25,7 +25,7 @@ export function DealOfWeek() {
           bullet={["Allergy free", "Best Product", "Affordable price"]}
           image="/images/deal-shampoo.jpg"
         />
-        <Card title="Strawberry Shampoo" price={18.88} bullet={["Allergy free", "Best Product", "Affordable price"]} image="/images/deal-strawberry.jpg" />
+        <Card title="Strawberry Shampoo" price={18.88} bullet={["Allergy free", "Best Product", "Affordable price"]} image="src/Image/deal-strawberry.png" />
       </div>
     </section>
   );
