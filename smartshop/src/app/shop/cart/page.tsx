@@ -1,5 +1,6 @@
 // app/cart/page.tsx
 "use client";
+import Link from "next/link";
 import { useCart, cartSelectors } from "@/store/cart";
 
 export default function CartPage() {
@@ -72,9 +73,12 @@ export default function CartPage() {
             <p className="mt-1 text-sm text-neutral-500">
               Taxes and shipping calculated at checkout.
             </p>
-            <button className="mt-4 w-full rounded-xl bg-black py-3 text-white">
+            <Link
+              href="/shop/checkout"
+              className="mt-4 block w-full rounded-xl bg-black py-3 text-center text-white hover:opacity-90"
+            >
               Checkout
-            </button>
+            </Link>
           </aside>
         </div>
       )}

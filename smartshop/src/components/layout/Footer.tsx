@@ -1,7 +1,11 @@
+"use client";
+
 // components/layout/Footer.tsx
+import { NewsletterForm } from "@/components/shared/NewsletterForm";
+
 export function Footer() {
   return (
-    <footer className="border-t border-neutral-100 bg-neutral-50">
+    <footer id="brands" className="border-t border-neutral-100 bg-neutral-50">
       <div className="container py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
           <div className="col-span-2">
@@ -9,15 +13,13 @@ export function Footer() {
               STAY UPTO DATE ABOUT
               <br /> OUR LATEST OFFERS
             </h4>
-            <form className="flex flex-col sm:flex-row gap-2">
-              <input
-                className="flex-1 rounded-xl border border-neutral-200 p-3"
-                placeholder="Enter your email address"
-              />
-              <button className="btn bg-neutral-900 text-white">
-                Subscribe to Newsletter
-              </button>
-            </form>
+            <NewsletterForm
+              formClassName="flex-col sm:flex-row gap-2"
+              inputClassName="rounded-xl border border-neutral-200 p-3"
+              buttonClassName="bg-neutral-900 text-white"
+              buttonLabel="Subscribe to Newsletter"
+              successMessage="Check your inbox for confirmation."
+            />
           </div>
 
           <div>
@@ -45,7 +47,7 @@ export function Footer() {
             © {new Date().getFullYear()} SmartShopping. All rights reserved.
           </p>
           <div className="flex gap-3">
-            <img src="/images/payments.png" alt="Payments" className="h-5" />
+            <img src="/images/payment.png" alt="Payments" className="h-5" />
           </div>
         </div>
       </div>

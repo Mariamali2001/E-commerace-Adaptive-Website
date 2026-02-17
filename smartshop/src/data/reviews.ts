@@ -38,4 +38,13 @@ export const reviews: Review[] = [
       "As a UI/UX enthusiast, I value simplicity and functionality. This t-shirt nails it.",
     date: "August 17, 2023",
   },
+  {
+    id: "r5",
+    productId: "p1",
+    author: "Mark P.",
+    rating: 4,
+    comment:
+      "As a UI/UX enthusiast, I value simplicity and functionality. This t-shirt nails it.",
+    date: "August 17, 2023",
+  },
 ];

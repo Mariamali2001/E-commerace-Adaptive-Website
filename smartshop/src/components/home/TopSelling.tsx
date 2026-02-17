@@ -4,7 +4,7 @@ import { ProductCard } from "../product/ProductCard";
 
 export function TopSelling({ products }: { products: Product[] }) {
   return (
-    <section className="container">
+    <section id="new-arrivals" className="container">
       <h2 className="mb-4 text-xl font-bold">Top Selling</h2>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {products.map((p) => (

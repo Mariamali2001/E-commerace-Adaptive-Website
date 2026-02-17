@@ -10,7 +10,12 @@ export function Hero() {
           Browse through our diverse range of meticulously crafted garments,
           designed to bring out your individuality and cater to your sense of style.
         </p>
-        <Link href="/#shop" className="btn mt-6 bg-neutral-900 text-white hover:opacity-90">Shop Now</Link>
+        <Link
+          href="/shop"
+          className="btn mt-6 bg-neutral-900 text-white hover:opacity-90 inline-block"
+        >
+          Shop Now
+        </Link>
 
         <div className="mt-8 grid grid-cols-3 gap-6 text-sm">
           <div><p className="text-2xl font-extrabold">200+</p><p className="text-neutral-500">International Brands</p></div>

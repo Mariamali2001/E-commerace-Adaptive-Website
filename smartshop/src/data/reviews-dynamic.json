@@ -1,0 +1,26 @@
+[
+  {
+    "id": "cefdadad-464a-4faf-b3d6-156d4ecf03c9",
+    "productId": "p1",
+    "author": "mariam",
+    "rating": 5,
+    "comment": "good",
+    "date": "November 25, 2025"
+  },
+  {
+    "id": "5fddbc39-3d33-4ef4-b5dd-68841029ce1f",
+    "productId": "p1",
+    "author": "nada",
+    "rating": 3,
+    "comment": "waited too long",
+    "date": "November 25, 2025"
+  },
+  {
+    "id": "5797addc-d644-457b-9673-34d92b19e698",
+    "productId": "p4",
+    "author": "Lia",
+    "rating": 5,
+    "comment": "I loved it",
+    "date": "November 25, 2025"
+  }
+]

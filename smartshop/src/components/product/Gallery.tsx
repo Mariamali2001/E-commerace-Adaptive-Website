@@ -1,9 +1,24 @@
 // components/product/Gallery.tsx
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export function Gallery({ images, thumbs }: { images: string[]; thumbs?: string[] }) {
-  const [active, setActive] = useState(0);
+export function Gallery({ 
+  images, 
+  thumbs, 
+  initialActive = 0 
+}: { 
+  images: string[]; 
+  thumbs?: string[];
+  initialActive?: number;
+}) {
+  const [active, setActive] = useState(initialActive);
+
+  // Update active image when initialActive changes (e.g., color selection)
+  useEffect(() => {
+    if (initialActive < images.length) {
+      setActive(initialActive);
+    }
+  }, [initialActive, images.length]);
   return (
     <div className="grid grid-cols-5 gap-3">
       <div className="col-span-1 flex flex-col gap-3">

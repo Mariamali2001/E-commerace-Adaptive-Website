@@ -7,12 +7,14 @@ export type WishlistItem = {
   title: string;
   price: number;
   image: string;
+  rating?: number;
 };
 
 type WishlistState = {
   list: WishlistItem[];
   add: (item: WishlistItem) => void;
-  remove: (slug: string) => void;
+  remove: (id: string) => void;
+  toggle: (item: WishlistItem) => void;
   clear: () => void;
 };
 
@@ -21,17 +23,29 @@ export const useWishlist = create<WishlistState>((set) => ({
   add: (item) =>
     set((state) => {
       // avoid duplicates
-      if (state.list.some((w) => w.slug === item.slug)) return state;
+      if (state.list.some((w) => w.id === item.id)) return state;
       return { list: [...state.list, item] };
     }),
-  remove: (slug) =>
+  remove: (id) =>
     set((state) => ({
-      list: state.list.filter((w) => w.slug !== slug),
+      list: state.list.filter((w) => w.id !== id),
     })),
+  toggle: (item) =>
+    set((state) => {
+      const exists = state.list.some((w) => w.id === item.id);
+      if (exists) {
+        return { list: state.list.filter((w) => w.id !== item.id) };
+      } else {
+        return { list: [...state.list, item] };
+      }
+    }),
   clear: () => set({ list: [] }),
 }));
 
 // Selectors
-export const wishSelectors = {
+export const wishlistSelectors = {
   list: (s: WishlistState) => s.list,
 };
+
+// Keep old export for backward compatibility
+export const wishSelectors = wishlistSelectors;

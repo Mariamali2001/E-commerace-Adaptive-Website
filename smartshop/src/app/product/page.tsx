@@ -1,11 +1,11 @@
-import { Gallery } from "@/components/product/Gallery";
-import { products } from "@/data/products";
+import { notFound } from "next/navigation";
 
-export default function ProductPage() {
-  const product = products[0]; // static for now
-  return (
-    <>
-      <Gallery images={product.images} />
-    </>
-  );
+import { Gallery } from "@/components/product/Gallery";
+import { listProducts } from "@/server/products";
+
+export default async function ProductPage() {
+  const [product] = await listProducts({ limit: 1 });
+  if (!product) return notFound();
+
+  return <Gallery images={product.images} />;
 }

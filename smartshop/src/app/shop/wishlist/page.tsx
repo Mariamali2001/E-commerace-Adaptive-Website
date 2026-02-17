@@ -1,6 +1,6 @@
 "use client";
 import { useWishlist, wishSelectors } from "@/store/wishlist";
-import { ProductCard } from "@/app/components/product/ProductCard";
+import { ProductCard } from "@/components/product/ProductCard";
 
 export default function WishlistPage() {
   const list = useWishlist(wishSelectors.list);

@@ -2,14 +2,14 @@
 import { notFound } from "next/navigation";
 import { products } from "@/data/products";
 import { Product } from "@/types/product";
-import { Gallery } from "@/app/components/product/Gallery";
-import { ColorSwatch } from "@/app/components/product/ColorSwatch";
-import { SizePill } from "@/app/components/product/SizePill";
-import { QtyStepper } from "@/app/components/product/QtyStepper";
-import { Price } from "@/app/components/shared/Price";
-import { RatingStars } from "@/app/components/shared/RatingStars";
-import { Tabs } from "@/app/components/shared/Tabs";
-import { ReviewsList } from "@/app/components/product/Reviews";
+import { Gallery } from "@/components/product/Gallery";
+import { ColorSwatch } from "@/components/product/ColorSwatch";
+import { SizePill } from "@/components/product/SizePill";
+import { QtyStepper } from "@/components/product/QtyStepper";
+import { Price } from "@/components/shared/Price";
+import { RatingStars } from "@/components/shared/RatingStars";
+import { Tabs } from "@/components/shared/Tabs";
+import { ReviewsList } from "@/components/product/Reviews";
 import { reviews } from "@/data/reviews";
 import { useState } from "react";
 import { useCart } from "@/store/cart";
@@ -45,15 +45,19 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <Price price={product.price} compareAt={product.compareAt} className="text-2xl" />
           <p className="text-sm text-neutral-600 max-w-prose">{product.description}</p>
 
-          <div className="space-y-2">
-            <p className="text-sm font-semibold">Select Colors</p>
-            <ColorSwatch colors={product.colors} value={color} onChange={setColor} />
-          </div>
+          {product.colors.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm font-semibold">Select Colors</p>
+              <ColorSwatch colors={product.colors} value={color} onChange={setColor} />
+            </div>
+          )}
 
-          <div className="space-y-2">
-            <p className="text-sm font-semibold">Choose Size</p>
-            <SizePill sizes={product.sizes} value={size} onChange={setSize} />
-          </div>
+          {product.sizes.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm font-semibold">Choose Size</p>
+              <SizePill sizes={product.sizes} value={size} onChange={setSize} />
+            </div>
+          )}
 
           <QtyStepper min={1} max={10} value={qty} onChange={setQty} />
 
@@ -114,7 +118,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         <h2 className="mb-6 text-2xl font-bold">You might also like</h2>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {products.slice(0, 4).map((p) => (
-            <a key={p.id} href={`/product/${p.slug}`} className="group">
+            <a key={p.id} href={`/shop/product/${p.slug}`} className="group">
               <div className="aspect-[4/5] w-full overflow-hidden rounded-xl bg-neutral-100" />
               <div className="mt-2">
                 <p className="text-sm font-medium">{p.title}</p>
