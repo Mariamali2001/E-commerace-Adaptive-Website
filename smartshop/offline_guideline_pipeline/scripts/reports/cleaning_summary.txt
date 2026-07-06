@@ -1,0 +1,16 @@
+
+=========================
+Cleaning Summary
+=========================
+
+Original participants : 235
+
+Final participants    : 195
+
+Columns : 74
+
+Clean dataset saved.
+
+Encoded dataset saved.
+
+=========================

@@ -12,19 +12,6 @@ npm run dev
 
 Then open [http://localhost:3000](http://localhost:3000).
 
-### Mood Detection Setup (Optional)
-
-The mood detection feature uses Hugging Face Inference API. To enable it:
-
-1. Get a token from https://huggingface.co/settings/tokens (create with "read" permissions)
-2. Create `.env.local` file:
-   ```bash
-   HF_TOKEN=your_token_here
-   ```
-3. Restart the dev server
-
-**Note:** If `HF_TOKEN` is not set, the system will use keyword-based mood detection as a fallback.
-
 ### Demo credentials
 
 - Email: `demo@smartshop.dev`

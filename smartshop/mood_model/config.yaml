@@ -1,0 +1,44 @@
+project:
+  name: mood_model
+  description: Lightweight facial emotion recognition pipeline
+  seed: 42
+  deterministic: true
+
+data:
+  dataset_root: dataset
+  fer2013_root: data/fer2013
+  fer2013_val_split: 0.15
+  image_size: 224
+  emotions:
+    - angry
+    - disgust
+    - fear
+    - happy
+    - sad
+    - surprise
+    - neutral
+  split:
+    train: 0.70
+    val: 0.15
+    test: 0.15
+
+model:
+  backbone: mobilenet_v3_small
+  num_classes: 7
+  pretrained_source: imagenet
+
+training:
+  device: auto
+  batch_size: 16
+  num_workers: 0
+  epochs: 20
+  optimizer: adam
+  head_lr: 0.001
+  finetune_lr: 0.00001
+  weight_decay: 0.0
+
+artifacts:
+  models_dir: artifacts/models
+  plots_dir: artifacts/plots
+  metrics_dir: artifacts/metrics
+  logs_dir: artifacts/logs

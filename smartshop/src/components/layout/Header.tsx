@@ -172,6 +172,12 @@ export function Header() {
           <MegaMenuTrigger label="On Sale" columns={saleMenuColumns} />
           <MegaMenuTrigger label="New Arrivals" columns={newArrivalsMenuColumns} />
           <MegaMenuTrigger label="Brands" columns={brandsMenuColumns} />
+          <Link
+            href="/shop/mood"
+            className="font-medium text-neutral-800 hover:text-neutral-600"
+          >
+            Mood camera
+          </Link>
         </nav>
 
         <div className="flex items-center gap-3">
