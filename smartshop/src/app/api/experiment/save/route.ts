@@ -1,0 +1,57 @@
+import { NextResponse } from "next/server";
+import { requireUser } from "@/server/session";
+import { saveExperimentResult } from "@/server/experiment";
+
+export async function POST(request: Request) {
+  try {
+    const user = await requireUser();
+    const body = await request.json();
+
+    if (!body?.answers || typeof body.answers !== "object") {
+      return NextResponse.json(
+        { error: "answers object is required" },
+        { status: 400 }
+      );
+    }
+
+    const ageNum = body.age != null ? Number(body.age) : Number(body.answers?.age);
+    const gender =
+      typeof body.gender === "string"
+        ? body.gender
+        : typeof body.answers?.gender === "string"
+          ? body.answers.gender
+          : null;
+
+    const doc = await saveExperimentResult({
+      userId: user.id,
+      device: body.device ?? null,
+      answers: body.answers,
+      surveyPersona: body.surveyPersona ?? null,
+      guidelinePersona: body.guidelinePersona ?? null,
+      traitScores: body.traitScores ?? {},
+      traitLevels: body.traitLevels ?? {},
+      selfReportedMood: body.selfReportedMood ?? null,
+      detectedMood: body.detectedMood ?? null,
+      detectedConfidence: body.detectedConfidence ?? null,
+      guidelineMood: body.guidelineMood ?? null,
+      uiElements: body.uiElements ?? {},
+      guidelinesPipeline: body.guidelinesPipeline ?? [],
+      age: Number.isFinite(ageNum) ? ageNum : null,
+      gender,
+    });
+
+    return NextResponse.json({
+      data: {
+        id: doc._id.toString(),
+        userId: doc.userId,
+        age: doc.age,
+        gender: doc.gender,
+        completedAt: doc.completedAt,
+      },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Save failed";
+    const status = message === "Unauthorized" ? 401 : 500;
+    return NextResponse.json({ error: message }, { status });
+  }
+}

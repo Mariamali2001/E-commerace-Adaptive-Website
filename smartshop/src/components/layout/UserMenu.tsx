@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
+import { isAdminEmailClient } from "@/lib/adminEmail";
+
 type User = {
   id: string;
   email: string;
@@ -140,6 +142,15 @@ export function UserMenu() {
             >
               Profile Settings
             </Link>
+            {isAdminEmailClient(user.email) && (
+              <Link
+                href="/admin"
+                onClick={() => setIsOpen(false)}
+                className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors"
+              >
+                Admin experiment data
+              </Link>
+            )}
           </div>
 
           <div className="border-t border-neutral-100 pt-1">

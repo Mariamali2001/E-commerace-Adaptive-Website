@@ -2,6 +2,7 @@ import React from "react";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { ExperimentBrowseBannerHost } from "@/components/experiment/ExperimentBrowseBannerHost";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,6 +11,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <ExperimentBrowseBannerHost />
       </body>
     </html>
   );

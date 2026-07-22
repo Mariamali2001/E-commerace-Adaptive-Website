@@ -11,6 +11,8 @@ export type User = {
   name: string;
   passwordHash: string;
   salt: string;
+  age?: number | null;
+  gender?: string | null;
   createdAt: string;
 };
 
@@ -20,6 +22,8 @@ type CreateUserInput = {
   email: string;
   name: string;
   password: string;
+  age: number;
+  gender: string;
 };
 
 function hashPassword(password: string, salt = randomBytes(16).toString("hex")) {
@@ -32,6 +36,8 @@ function toPublicUser(user: any): PublicUser {
     id: user._id.toString(),
     email: user.email,
     name: user.name,
+    age: user.age ?? null,
+    gender: user.gender ?? null,
     createdAt: user.createdAt?.toISOString() || new Date().toISOString(),
   };
 }
@@ -54,6 +60,8 @@ export async function createUser(input: CreateUserInput) {
     name: input.name.trim(),
     passwordHash: hash,
     salt,
+    age: input.age,
+    gender: input.gender,
   });
 
   return toPublicUser(user);

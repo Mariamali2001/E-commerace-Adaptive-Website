@@ -39,7 +39,7 @@ export function LoginForm() {
       setAvatarState("success");
       // Force full page reload to fetch user session
       setTimeout(() => {
-        window.location.href = "/";
+        window.location.href = "/shop?experiment=browse";
       }, 1500);
     } catch (error) {
       setStatus({

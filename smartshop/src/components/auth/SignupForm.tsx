@@ -6,15 +6,18 @@ import { AnimatedAvatar } from "./AnimatedAvatar";
 type Status = { type: "idle" } | { type: "error"; message: string } | { type: "success" };
 type AvatarState = "idle" | "typing" | "password" | "error" | "success";
 
+const GENDERS = ["Female", "Male", "Non-binary", "Prefer not to say", "Other"] as const;
+
 export function SignupForm() {
   const [name, setName] = useState("Demo User");
   const [email, setEmail] = useState("demo+1@smartshop.dev");
   const [password, setPassword] = useState("demo1234");
+  const [age, setAge] = useState("22");
+  const [gender, setGender] = useState<string>("Female");
   const [accepted, setAccepted] = useState(true);
   const [status, setStatus] = useState<Status>({ type: "idle" });
   const [submitting, setSubmitting] = useState(false);
   const [avatarState, setAvatarState] = useState<AvatarState>("idle");
-  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,7 +35,13 @@ export function SignupForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          age: Number(age),
+          gender,
+        }),
       });
       const payload = await response.json();
       if (!response.ok) {
@@ -40,10 +49,9 @@ export function SignupForm() {
       }
       setStatus({ type: "success" });
       setAvatarState("success");
-      // Force full page reload to fetch user session
       setTimeout(() => {
-        window.location.href = "/";
-      }, 1500); // Show success message for 1.5 seconds before redirect
+        window.location.href = "/shop?experiment=browse";
+      }, 1500);
     } catch (error) {
       setStatus({
         type: "error",
@@ -58,7 +66,6 @@ export function SignupForm() {
 
   return (
     <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
-      {/* Animated Avatar */}
       <AnimatedAvatar state={avatarState} className="mb-6" />
 
       <label className="block">
@@ -67,14 +74,8 @@ export function SignupForm() {
           className="mt-2 w-full rounded-xl border border-neutral-200 p-3 focus:ring-2 focus:ring-neutral-900"
           value={name}
           onChange={(event) => setName(event.target.value)}
-          onFocus={() => {
-            setFocusedField("name");
-            setAvatarState("typing");
-          }}
-          onBlur={() => {
-            setFocusedField(null);
-            setAvatarState("idle");
-          }}
+          onFocus={() => setAvatarState("typing")}
+          onBlur={() => setAvatarState("idle")}
           required
         />
       </label>
@@ -86,17 +87,41 @@ export function SignupForm() {
           className="mt-2 w-full rounded-xl border border-neutral-200 p-3 focus:ring-2 focus:ring-neutral-900"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          onFocus={() => {
-            setFocusedField("email");
-            setAvatarState("typing");
-          }}
-          onBlur={() => {
-            setFocusedField(null);
-            setAvatarState("idle");
-          }}
+          onFocus={() => setAvatarState("typing")}
+          onBlur={() => setAvatarState("idle")}
           required
         />
       </label>
+
+      <div className="grid grid-cols-2 gap-3">
+        <label className="block">
+          <span className="text-sm font-medium">Age</span>
+          <input
+            type="number"
+            min={13}
+            max={120}
+            className="mt-2 w-full rounded-xl border border-neutral-200 p-3 focus:ring-2 focus:ring-neutral-900"
+            value={age}
+            onChange={(event) => setAge(event.target.value)}
+            required
+          />
+        </label>
+        <label className="block">
+          <span className="text-sm font-medium">Gender</span>
+          <select
+            className="mt-2 w-full rounded-xl border border-neutral-200 bg-white p-3 focus:ring-2 focus:ring-neutral-900"
+            value={gender}
+            onChange={(event) => setGender(event.target.value)}
+            required
+          >
+            {GENDERS.map((g) => (
+              <option key={g} value={g}>
+                {g}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
 
       <label className="block">
         <span className="text-sm font-medium">Password</span>
@@ -105,14 +130,8 @@ export function SignupForm() {
           className="mt-2 w-full rounded-xl border border-neutral-200 p-3 focus:ring-2 focus:ring-neutral-900"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          onFocus={() => {
-            setFocusedField("password");
-            setAvatarState("password");
-          }}
-          onBlur={() => {
-            setFocusedField(null);
-            setAvatarState("idle");
-          }}
+          onFocus={() => setAvatarState("password")}
+          onBlur={() => setAvatarState("idle")}
           required
         />
       </label>
@@ -139,4 +158,3 @@ export function SignupForm() {
     </form>
   );
 }
-

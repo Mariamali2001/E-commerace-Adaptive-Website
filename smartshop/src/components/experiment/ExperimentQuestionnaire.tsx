@@ -1,0 +1,206 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/shared/Button";
+import {
+  EXPERIMENT_QUESTIONS,
+  deriveProfileFromAnswers,
+} from "@/lib/experiment/questions";
+import { detectDeviceClient } from "@/lib/guidelines/device";
+import { useExperimentStore } from "@/store/experiment";
+
+function CircleProgress({
+  current,
+  total,
+}: {
+  current: number;
+  total: number;
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+      {Array.from({ length: total }, (_, i) => {
+        const n = i + 1;
+        const active = n === current;
+        const done = n < current;
+        return (
+          <div
+            key={n}
+            className={[
+              "flex h-8 w-8 items-center justify-center rounded-full border text-xs font-semibold transition sm:h-9 sm:w-9 sm:text-sm",
+              active
+                ? "border-neutral-900 bg-neutral-900 text-white ring-4 ring-neutral-900/15"
+                : done
+                  ? "border-emerald-600 bg-emerald-50 text-emerald-800"
+                  : "border-neutral-200 bg-white text-neutral-400",
+            ].join(" ")}
+            aria-current={active ? "step" : undefined}
+          >
+            {n}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export function ExperimentQuestionnaire() {
+  const router = useRouter();
+  const setDevice = useExperimentStore((s) => s.setDevice);
+  const setProfileFromQuestionnaire = useExperimentStore(
+    (s) => s.setProfileFromQuestionnaire
+  );
+  const savedAnswers = useExperimentStore((s) => s.answers);
+
+  const [index, setIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, string>>(savedAnswers);
+
+  const total = EXPERIMENT_QUESTIONS.length;
+  const question = EXPERIMENT_QUESTIONS[index];
+  const selected = answers[question.id] ?? "";
+
+  const canNext =
+    question.id === "age"
+      ? (() => {
+          const n = Number(selected);
+          return Number.isFinite(n) && n >= 13 && n <= 120;
+        })()
+      : Boolean(selected);
+  const isLast = index === total - 1;
+
+  const title = useMemo(
+    () => `Question ${index + 1} of ${total}`,
+    [index, total]
+  );
+
+  const onSelect = (value: string) => {
+    setAnswers((prev) => ({ ...prev, [question.id]: value }));
+  };
+
+  const finish = () => {
+    const device = detectDeviceClient();
+    setDevice(device);
+    const profile = deriveProfileFromAnswers(answers);
+    setProfileFromQuestionnaire({
+      surveyPersona: profile.surveyPersona,
+      persona: profile.persona,
+      traits: profile.traits,
+      traitScores: profile.traitScores,
+      selfReportedMood: profile.selfReportedMood,
+      answers,
+    });
+    router.push("/shop/mood?experiment=1");
+  };
+
+  return (
+    <div className="mx-auto max-w-xl">
+      <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8">
+        <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+          Experiment questionnaire
+        </p>
+        <h1 className="mt-2 text-2xl font-bold text-neutral-900">{title}</h1>
+        <p className="mt-2 text-sm text-neutral-600">
+          {question.kind === "likert5"
+            ? "Rate how much you agree (1 = Disagree strongly, 5 = Agree strongly)."
+            : "Choose the option that fits you best."}
+        </p>
+
+        <div className="mt-6 rounded-2xl border border-neutral-100 bg-neutral-50 p-5">
+          <p className="text-base font-medium text-neutral-900">{question.text}</p>
+
+          {question.id === "age" ? (
+            <div className="mt-4">
+              <input
+                type="number"
+                min={13}
+                max={120}
+                className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-neutral-900"
+                placeholder="Enter age"
+                value={selected}
+                onChange={(e) => onSelect(e.target.value)}
+              />
+            </div>
+          ) : question.kind === "likert5" ? (
+            <div className="mt-5">
+              <div className="flex justify-between gap-2">
+                {question.options.map((opt) => {
+                  const active = selected === opt.value;
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => onSelect(opt.value)}
+                      title={opt.label}
+                      className={[
+                        "flex h-12 w-12 flex-1 items-center justify-center rounded-full border text-sm font-semibold transition",
+                        active
+                          ? "border-neutral-900 bg-neutral-900 text-white"
+                          : "border-neutral-200 bg-white text-neutral-800 hover:border-neutral-400",
+                      ].join(" ")}
+                    >
+                      {opt.value}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="mt-2 flex justify-between text-[11px] text-neutral-500">
+                <span>Disagree</span>
+                <span>Agree</span>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-4 space-y-2">
+              {question.options.map((opt) => {
+                const active = selected === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => onSelect(opt.value)}
+                    className={[
+                      "w-full rounded-xl border px-4 py-3 text-left text-sm transition",
+                      active
+                        ? "border-neutral-900 bg-neutral-900 text-white"
+                        : "border-neutral-200 bg-white text-neutral-800 hover:border-neutral-400",
+                    ].join(" ")}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="mt-6 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            disabled={index === 0}
+            onClick={() => setIndex((i) => Math.max(0, i - 1))}
+            className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-sm font-medium disabled:opacity-40"
+          >
+            Back
+          </button>
+          {!isLast ? (
+            <Button
+              type="button"
+              disabled={!canNext}
+              onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}
+            >
+              Next
+            </Button>
+          ) : (
+            <Button type="button" disabled={!canNext} onClick={finish}>
+              Continue to mood camera
+            </Button>
+          )}
+        </div>
+
+        <div className="mt-8 border-t border-neutral-100 pt-5">
+          <p className="mb-3 text-center text-xs text-neutral-500">Progress</p>
+          <CircleProgress current={index + 1} total={total} />
+        </div>
+      </div>
+    </div>
+  );
+}

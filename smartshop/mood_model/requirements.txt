@@ -1,8 +1,15 @@
+# Local webcam smoke test + mood API (Keras .h5)
+tensorflow
+opencv-python
+numpy
+fastapi
+uvicorn
+python-multipart
+
+# Optional / earlier PyTorch pipeline
 torch
 torchvision
 mediapipe
-opencv-python
 scikit-learn
 matplotlib
 PyYAML
-numpy

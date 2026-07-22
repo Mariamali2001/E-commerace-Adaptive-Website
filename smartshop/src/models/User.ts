@@ -6,6 +6,8 @@ export interface IUser extends Document {
   name: string;
   passwordHash: string;
   salt: string;
+  age?: number;
+  gender?: string;
   phone?: string;
   bio?: string;
   createdAt: Date;
@@ -37,6 +39,15 @@ const UserSchema = new Schema<IUser>(
       type: String,
       required: true,
     },
+    age: {
+      type: Number,
+      min: 13,
+      max: 120,
+    },
+    gender: {
+      type: String,
+      trim: true,
+    },
     phone: {
       type: String,
     },
@@ -60,6 +71,9 @@ const UserSchema = new Schema<IUser>(
   }
 );
 
-// Prevent model recompilation in development
-export default mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
+// Avoid stale schema in Next.js HMR (old model without age/gender)
+if (mongoose.models.User) {
+  delete mongoose.models.User;
+}
 
+export default mongoose.model<IUser>("User", UserSchema);

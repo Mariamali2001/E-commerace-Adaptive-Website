@@ -11,7 +11,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, email, phone, bio } = body;
+    const { name, email, phone, bio, age, gender } = body;
 
     await connectDB();
 
@@ -23,15 +23,19 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    const update: Record<string, unknown> = {
+      name: name || user.name,
+      email: email ? email.toLowerCase() : user.email,
+      phone,
+      bio,
+    };
+    if (age != null && Number.isFinite(Number(age))) update.age = Number(age);
+    if (typeof gender === "string" && gender.trim()) update.gender = gender.trim();
+
     // Update user
     const updatedUser = await UserModel.findByIdAndUpdate(
       user.id,
-      {
-        name: name || user.name,
-        email: email ? email.toLowerCase() : user.email,
-        phone,
-        bio,
-      },
+      update,
       { new: true }
     );
 
@@ -46,6 +50,8 @@ export async function PUT(request: NextRequest) {
         email: updatedUser.email,
         phone: updatedUser.phone,
         bio: updatedUser.bio,
+        age: updatedUser.age ?? null,
+        gender: updatedUser.gender ?? null,
         createdAt: updatedUser.createdAt,
       },
     });
