@@ -81,12 +81,12 @@ export default function OrderConfirmationPage({
 
   return (
     <div className="container py-10">
-      <div className="max-w-3xl mx-auto">
-        {/* Success Message */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+      <div className="mx-auto max-w-3xl">
+        {/* Success celebration */}
+        <div className="mb-8 text-center">
+          <div className="order-success-pop mb-4 inline-flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100">
             <svg
-              className="w-8 h-8 text-green-600"
+              className="order-success-check h-10 w-10 text-emerald-600"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -94,20 +94,34 @@ export default function OrderConfirmationPage({
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
+                strokeWidth={2.5}
                 d="M5 13l4 4L19 7"
               />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold mb-2">Order Placed Successfully!</h1>
-          <p className="text-neutral-600">
-            Thank you for your order. We'll send you a shipping confirmation email as soon as your
-            order ships.
+          <h1 className="order-fade-up text-3xl font-bold mb-2" style={{ animationDelay: "0.15s" }}>
+            Order placed successfully!
+          </h1>
+          <p
+            className="order-fade-up text-neutral-600"
+            style={{ animationDelay: "0.28s" }}
+          >
+            Thank you for your order. We&apos;ll send a shipping confirmation when
+            it ships.
+          </p>
+          <p
+            className="order-fade-up mt-2 text-sm font-medium text-emerald-700"
+            style={{ animationDelay: "0.4s" }}
+          >
+            Confirmation ready · Order {order.orderNumber}
           </p>
         </div>
 
         {/* Order Details Card */}
-        <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden mb-6">
+        <div
+          className="order-fade-up mb-6 overflow-hidden rounded-2xl border border-neutral-200 bg-white"
+          style={{ animationDelay: "0.45s" }}
+        >
           {/* Order Header */}
           <div className="bg-neutral-50 px-6 py-4 border-b border-neutral-200">
             <div className="flex flex-wrap items-center justify-between gap-4">

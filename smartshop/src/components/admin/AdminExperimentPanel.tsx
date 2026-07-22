@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/shared/Button";
-import { ADMIN_EMAIL } from "@/lib/adminEmail";
+import { ADMIN_EMAIL } from "@/lib/admin-email";
 
 type Row = Record<string, string | number>;
 

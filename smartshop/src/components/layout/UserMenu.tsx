@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-import { isAdminEmailClient } from "@/lib/adminEmail";
+import { isAdminEmailClient } from "@/lib/admin-email";
 
 type User = {
   id: string;

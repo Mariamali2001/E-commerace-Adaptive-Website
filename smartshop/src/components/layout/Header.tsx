@@ -1,9 +1,11 @@
 // components/layout/Header.tsx
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import { MegaMenuTrigger } from "./MegaMenu";
 import { SearchBar } from "./SearchBar";
 import { UserMenu } from "./UserMenu";
+import { MobileNav } from "./MobileNav";
 
 const shopMenuColumns = [
   {
@@ -159,15 +161,17 @@ const newArrivalsMenuColumns = [
 ];
 
 export function Header() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70 border-b border-neutral-100">
       <div className="container flex h-16 items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2">
-          <img src="/images/logo.png" className="h-20 w-20" alt="" />
-          <span className="font-bold">SMARTSHOPPING</span>
+        <Link href="/" className="flex min-w-0 items-center gap-2">
+          <img src="/images/logo.png" className="h-14 w-14 shrink-0 sm:h-20 sm:w-20" alt="" />
+          <span className="truncate text-sm font-bold sm:text-base">SMARTSHOPPING</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6 text-sm">
+        <nav className="hidden items-center gap-6 text-sm md:flex">
           <MegaMenuTrigger label="Shop" columns={shopMenuColumns} />
           <MegaMenuTrigger label="On Sale" columns={saleMenuColumns} />
           <MegaMenuTrigger label="New Arrivals" columns={newArrivalsMenuColumns} />
@@ -180,7 +184,7 @@ export function Header() {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <div className="hidden md:block">
             <SearchBar />
           </div>
@@ -189,12 +193,32 @@ export function Header() {
           <Link
             href="/shop/cart"
             aria-label="Cart"
-            className="rounded-full border p-2 hover:bg-neutral-50 transition"
+            className="rounded-full border p-2 transition hover:bg-neutral-50"
           >
             🛒
           </Link>
+
+          <button
+            type="button"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 md:hidden"
+            aria-label="Open menu"
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen(true)}
+          >
+            <span className="sr-only">Menu</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path
+                d="M4 7h16M4 12h16M4 17h16"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
         </div>
       </div>
+
+      <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} />
     </header>
   );
 }

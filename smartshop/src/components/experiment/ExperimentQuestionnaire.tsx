@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/shared/Button";
 import {
@@ -9,6 +9,8 @@ import {
 } from "@/lib/experiment/questions";
 import { detectDeviceClient } from "@/lib/guidelines/device";
 import { useExperimentStore } from "@/store/experiment";
+
+const AUTO_ADVANCE_MS = 320;
 
 function CircleProgress({
   current,
@@ -54,6 +56,8 @@ export function ExperimentQuestionnaire() {
 
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>(savedAnswers);
+  const [entering, setEntering] = useState(true);
+  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const total = EXPERIMENT_QUESTIONS.length;
   const question = EXPERIMENT_QUESTIONS[index];
@@ -73,23 +77,51 @@ export function ExperimentQuestionnaire() {
     [index, total]
   );
 
-  const onSelect = (value: string) => {
-    setAnswers((prev) => ({ ...prev, [question.id]: value }));
-  };
+  useEffect(() => {
+    setEntering(true);
+    const t = window.setTimeout(() => setEntering(false), 180);
+    return () => window.clearTimeout(t);
+  }, [index]);
 
-  const finish = () => {
+  useEffect(() => {
+    return () => {
+      if (advanceTimer.current) clearTimeout(advanceTimer.current);
+    };
+  }, []);
+
+  const finishWith = (nextAnswers: Record<string, string>) => {
     const device = detectDeviceClient();
     setDevice(device);
-    const profile = deriveProfileFromAnswers(answers);
+    const profile = deriveProfileFromAnswers(nextAnswers);
     setProfileFromQuestionnaire({
       surveyPersona: profile.surveyPersona,
       persona: profile.persona,
       traits: profile.traits,
       traitScores: profile.traitScores,
       selfReportedMood: profile.selfReportedMood,
-      answers,
+      answers: nextAnswers,
     });
     router.push("/shop/mood?experiment=1");
+  };
+
+  const goNext = (nextAnswers: Record<string, string>) => {
+    if (index >= total - 1) {
+      finishWith(nextAnswers);
+      return;
+    }
+    setIndex((i) => i + 1);
+  };
+
+  const selectAndAdvance = (value: string) => {
+    const nextAnswers = { ...answers, [question.id]: value };
+    setAnswers(nextAnswers);
+    // Age uses typed input — only auto-advance for tap choices
+    if (question.id === "age") return;
+
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
+    advanceTimer.current = setTimeout(() => {
+      goNext(nextAnswers);
+    }, AUTO_ADVANCE_MS);
   };
 
   return (
@@ -100,12 +132,20 @@ export function ExperimentQuestionnaire() {
         </p>
         <h1 className="mt-2 text-2xl font-bold text-neutral-900">{title}</h1>
         <p className="mt-2 text-sm text-neutral-600">
-          {question.kind === "likert5"
-            ? "Rate how much you agree (1 = Disagree strongly, 5 = Agree strongly)."
-            : "Choose the option that fits you best."}
+          {question.id === "age"
+            ? "Enter your age, then press Next."
+            : question.kind === "likert5"
+              ? "Tap a number (1–5) — we’ll move to the next question automatically."
+              : "Tap an option — we’ll move to the next question automatically."}
         </p>
 
-        <div className="mt-6 rounded-2xl border border-neutral-100 bg-neutral-50 p-5">
+        <div
+          key={question.id}
+          className={[
+            "mt-6 rounded-2xl border border-neutral-100 bg-neutral-50 p-5 transition duration-200",
+            entering ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100",
+          ].join(" ")}
+        >
           <p className="text-base font-medium text-neutral-900">{question.text}</p>
 
           {question.id === "age" ? (
@@ -117,7 +157,7 @@ export function ExperimentQuestionnaire() {
                 className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-neutral-900"
                 placeholder="Enter age"
                 value={selected}
-                onChange={(e) => onSelect(e.target.value)}
+                onChange={(e) => selectAndAdvance(e.target.value)}
               />
             </div>
           ) : question.kind === "likert5" ? (
@@ -129,12 +169,12 @@ export function ExperimentQuestionnaire() {
                     <button
                       key={opt.value}
                       type="button"
-                      onClick={() => onSelect(opt.value)}
+                      onClick={() => selectAndAdvance(opt.value)}
                       title={opt.label}
                       className={[
                         "flex h-12 w-12 flex-1 items-center justify-center rounded-full border text-sm font-semibold transition",
                         active
-                          ? "border-neutral-900 bg-neutral-900 text-white"
+                          ? "scale-105 border-neutral-900 bg-neutral-900 text-white"
                           : "border-neutral-200 bg-white text-neutral-800 hover:border-neutral-400",
                       ].join(" ")}
                     >
@@ -156,7 +196,7 @@ export function ExperimentQuestionnaire() {
                   <button
                     key={opt.value}
                     type="button"
-                    onClick={() => onSelect(opt.value)}
+                    onClick={() => selectAndAdvance(opt.value)}
                     className={[
                       "w-full rounded-xl border px-4 py-3 text-left text-sm transition",
                       active
@@ -176,23 +216,34 @@ export function ExperimentQuestionnaire() {
           <button
             type="button"
             disabled={index === 0}
-            onClick={() => setIndex((i) => Math.max(0, i - 1))}
+            onClick={() => {
+              if (advanceTimer.current) clearTimeout(advanceTimer.current);
+              setIndex((i) => Math.max(0, i - 1));
+            }}
             className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-sm font-medium disabled:opacity-40"
           >
             Back
           </button>
-          {!isLast ? (
-            <Button
-              type="button"
-              disabled={!canNext}
-              onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}
-            >
-              Next
-            </Button>
+          {question.id === "age" || isLast ? (
+            !isLast ? (
+              <Button
+                type="button"
+                disabled={!canNext}
+                onClick={() => goNext(answers)}
+              >
+                Next
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                disabled={!canNext}
+                onClick={() => finishWith(answers)}
+              >
+                Continue to mood camera
+              </Button>
+            )
           ) : (
-            <Button type="button" disabled={!canNext} onClick={finish}>
-              Continue to mood camera
-            </Button>
+            <p className="text-xs text-neutral-500">Auto-advances after you answer</p>
           )}
         </div>
 
