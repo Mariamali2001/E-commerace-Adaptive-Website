@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 import { isAdminEmailClient } from "@/lib/admin-email";
+import { clearAdaptiveExperiment } from "@/lib/experiment/clearAdaptive";
 
 type User = {
   id: string;
@@ -55,13 +56,14 @@ export function UserMenu() {
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/auth/logout", { 
+      clearAdaptiveExperiment();
+      await fetch("/api/auth/logout", {
         method: "POST",
         credentials: "include",
       });
       setUser(null);
       setIsOpen(false);
-      // Force full page reload to clear session
+      // Full reload so adaptive banner/theme cannot linger
       window.location.href = "/";
     } catch (error) {
       console.error("Logout failed:", error);

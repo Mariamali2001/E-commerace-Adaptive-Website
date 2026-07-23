@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 import type {
   GuidelineMood,
   PersonaId,
@@ -34,9 +34,7 @@ type ExperimentState = {
   detectedMood: string | null;
   detectedConfidence: number | null;
   guidelines: ResolvedGuidelines | null;
-  /** Adaptive Engine output (tokens + nudges + structured log) */
   uiConfig: FinalUIConfiguration | null;
-  /** Last built Context Object (no UI decisions) */
   context: ContextObject | null;
   startBrowse: (durationMs?: number) => void;
   setDevice: (device: "desktop" | "mobile") => void;
@@ -132,7 +130,27 @@ export const useExperimentStore = create<ExperimentState>()(
           context: null,
         }),
     }),
-    { name: "smartshop-experiment-v4" }
+    {
+      name: "smartshop-experiment-v5",
+      storage: createJSONStorage(() => sessionStorage),
+      partialize: (state) => ({
+        phase: state.phase,
+        browseStartedAt: state.browseStartedAt,
+        browseDurationMs: state.browseDurationMs,
+        device: state.device,
+        surveyPersona: state.surveyPersona,
+        persona: state.persona,
+        traits: state.traits,
+        traitScores: state.traitScores,
+        selfReportedMood: state.selfReportedMood,
+        answers: state.answers,
+        detectedMood: state.detectedMood,
+        detectedConfidence: state.detectedConfidence,
+        guidelines: state.guidelines,
+        uiConfig: state.uiConfig,
+        context: state.context,
+      }),
+    }
   )
 );
 

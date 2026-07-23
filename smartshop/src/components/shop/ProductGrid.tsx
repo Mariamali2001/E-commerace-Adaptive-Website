@@ -2,8 +2,11 @@
 "use client";
 import { useState } from "react";
 import { Product } from "@/types/product";
-import { ProductCard } from "@/components/product/ProductCard";
+import { AdaptiveProductCard } from "@/components/adaptive/AdaptiveProductCard";
 import { cn } from "@/lib/utils";
+import { useExperimentStore } from "@/store/experiment";
+import { gridClassFromVariant, resolveVariants } from "@/lib/uiAdapter";
+import { useAdaptiveAllowed } from "@/lib/experiment/useAdaptiveAllowed";
 
 type SortOption = "price-asc" | "price-desc" | "newest" | "popular" | "rating";
 
@@ -15,6 +18,12 @@ type ProductGridProps = {
 export function ProductGrid({ products: initialProducts, totalCount }: ProductGridProps) {
   const [sortBy, setSortBy] = useState<SortOption>("popular");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const { ready, allowed } = useAdaptiveAllowed();
+  const uiConfig = useExperimentStore((s) => s.uiConfig);
+  const adaptiveGrid =
+    ready && allowed && uiConfig && viewMode === "grid"
+      ? gridClassFromVariant(resolveVariants(uiConfig).grid)
+      : null;
 
   const sortProducts = (products: Product[], sortOption: SortOption): Product[] => {
     const sorted = [...products];
@@ -125,13 +134,14 @@ export function ProductGrid({ products: initialProducts, totalCount }: ProductGr
       ) : (
         <div
           className={cn(
-            viewMode === "grid"
-              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-              : "space-y-4"
+            viewMode === "list"
+              ? "space-y-4"
+              : adaptiveGrid ??
+                  "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           )}
         >
           {sortedProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <AdaptiveProductCard key={product.id} product={product} />
           ))}
         </div>
       )}

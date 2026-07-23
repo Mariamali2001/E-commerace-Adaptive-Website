@@ -205,9 +205,14 @@ export function ExperimentMoodFlow() {
             <span className="font-medium">{guidelines.mood}</span>
           </p>
           <p className="mt-1 text-sm text-neutral-600">
-            Device: {guidelines.device} · Survey persona:{" "}
-            {surveyPersona ?? "—"} · Guideline persona:{" "}
-            {guidelines.persona ?? "—"}
+            Device: {guidelines.device} · Persona (questionnaire):{" "}
+            {surveyPersona ?? "—"}
+            {guidelines.persona && guidelines.persona !== surveyPersona ? (
+              <span className="text-neutral-400">
+                {" "}
+                (engine key: {guidelines.persona})
+              </span>
+            ) : null}
           </p>
           <p className="mt-2 text-xs text-neutral-500">
             Pipeline: {guidelines.pipeline.join(" → ")}
@@ -282,12 +287,20 @@ export function ExperimentMoodFlow() {
             </details>
           )}
 
-          <Link
-            href="/shop?experiment=adapted"
-            className="mt-4 inline-flex rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white"
-          >
-            Continue to shop
-          </Link>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link
+              href="/?experiment=adapted"
+              className="inline-flex rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white"
+            >
+              See adapted home
+            </Link>
+            <Link
+              href="/shop?experiment=adapted"
+              className="inline-flex rounded-xl border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-900"
+            >
+              See adapted shop
+            </Link>
+          </div>
         </div>
       )}
     </div>

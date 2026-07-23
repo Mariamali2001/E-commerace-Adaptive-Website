@@ -37,7 +37,10 @@ export function LoginForm() {
       }
       setStatus({ type: "success" });
       setAvatarState("success");
-      // Force full page reload to fetch user session
+      const { clearAdaptiveExperiment } = await import(
+        "@/lib/experiment/clearAdaptive"
+      );
+      clearAdaptiveExperiment();
       setTimeout(() => {
         window.location.href = "/shop?experiment=browse";
       }, 1500);

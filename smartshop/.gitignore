@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# offline LLM variant cache / logs (never needed on live path)
+.llm-cache/
+
 # vercel
 .vercel
 

@@ -1,4 +1,4 @@
-import { Hero } from "@/components/home/Hero";
+import { AdaptiveHero } from "@/components/adaptive/AdaptiveHero";
 import { DealOfWeek } from "@/components/home/DealOfWeek";
 import { Stats } from "@/components/home/Stats";
 import { TopSelling } from "@/components/home/TopSelling";
@@ -11,7 +11,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero />
+      <AdaptiveHero />
       <DealOfWeek />
       <Stats />
       <TopSelling products={topSelling} />

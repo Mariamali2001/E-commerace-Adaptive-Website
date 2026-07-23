@@ -86,3 +86,84 @@
 .order-fade-up {
   animation: orderFadeUp 0.45s ease-out both;
 }
+
+/* ========== Adaptive Engine → visible UI (no LLM) ========== */
+
+.adaptation-banner {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+html[data-adaptive="1"] body.adaptive-active {
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+/* Color themes from guideline color_theme_pref */
+html[data-theme*="warm_earthy"] body.adaptive-active {
+  background: #f3ebe1;
+  color: #3b2f2f;
+}
+html[data-theme*="warm_earthy"] .adaptation-banner {
+  background: #7c4a2d;
+}
+
+html[data-theme*="minimalist"] body.adaptive-active {
+  background: #fafafa;
+  color: #111;
+}
+html[data-theme*="minimalist"] .adaptation-banner {
+  background: #111;
+}
+
+html[data-theme*="ocean"] body.adaptive-active,
+html[data-accent*="blue"] body.adaptive-active {
+  background: #eef5fb;
+}
+
+/* Accent buttons / links */
+html[data-accent*="blue"] body.adaptive-active .btn,
+html[data-accent*="blue"] body.adaptive-active a.btn {
+  background: #1d4ed8 !important;
+  color: #fff !important;
+  border-radius: 0.75rem;
+}
+
+html[data-theme*="warm_earthy"] body.adaptive-active .btn,
+html[data-theme*="warm_earthy"] body.adaptive-active a.btn {
+  background: #9a3412 !important;
+  color: #fff !important;
+}
+
+/* Urgency strip under header when adapted */
+html[data-urgency*="stock"] body.adaptive-active main::before,
+html[data-urgency*="countdown"] body.adaptive-active main::before,
+html[data-urgency*="both"] body.adaptive-active main::before {
+  content: "Limited stock · Fast checkout recommended";
+  display: block;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.4rem 1rem;
+  background: #fef3c7;
+  color: #92400e;
+  border-bottom: 1px solid #fcd34d;
+}
+
+html[data-urgency*="countdown"] body.adaptive-active main::before {
+  content: "Sale ends soon · Countdown offers active";
+  background: #fee2e2;
+  color: #991b1b;
+  border-bottom-color: #fca5a5;
+}
+
+/* Density nudge via CSS variable */
+html[data-adaptive="1"] body.adaptive-active .container {
+  gap: var(--adaptive-gap, 1.5rem);
+}
+
+/* Price emphasis */
+html[data-price*="bold"] body.adaptive-active .font-extrabold {
+  font-size: 1.25rem;
+  color: #b91c1c;
+}
