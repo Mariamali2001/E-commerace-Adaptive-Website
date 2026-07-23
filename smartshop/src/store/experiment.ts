@@ -8,6 +8,8 @@ import type {
   TraitName,
 } from "@/lib/guidelines/types";
 import type { SurveyPersona } from "@/lib/experiment/questions";
+import type { ContextObject } from "@/lib/context/types";
+import type { FinalUIConfiguration } from "@/lib/adaptiveEngine/types";
 
 export type ExperimentPhase =
   | "idle"
@@ -32,6 +34,10 @@ type ExperimentState = {
   detectedMood: string | null;
   detectedConfidence: number | null;
   guidelines: ResolvedGuidelines | null;
+  /** Adaptive Engine output (tokens + nudges + structured log) */
+  uiConfig: FinalUIConfiguration | null;
+  /** Last built Context Object (no UI decisions) */
+  context: ContextObject | null;
   startBrowse: (durationMs?: number) => void;
   setDevice: (device: "desktop" | "mobile") => void;
   setAnswers: (answers: QuestionnaireAnswers) => void;
@@ -45,6 +51,8 @@ type ExperimentState = {
   }) => void;
   setMood: (mood: string, confidence: number | null) => void;
   setGuidelines: (guidelines: ResolvedGuidelines) => void;
+  setUiConfig: (uiConfig: FinalUIConfiguration | null) => void;
+  setContext: (context: ContextObject | null) => void;
   setPhase: (phase: ExperimentPhase) => void;
   reset: () => void;
 };
@@ -67,12 +75,16 @@ export const useExperimentStore = create<ExperimentState>()(
       detectedMood: null,
       detectedConfidence: null,
       guidelines: null,
+      uiConfig: null,
+      context: null,
       startBrowse: (durationMs = BROWSE_MS) =>
         set({
           phase: "browse",
           browseStartedAt: Date.now(),
           browseDurationMs: durationMs,
           guidelines: null,
+          uiConfig: null,
+          context: null,
           detectedMood: null,
           detectedConfidence: null,
         }),
@@ -98,6 +110,8 @@ export const useExperimentStore = create<ExperimentState>()(
           guidelines,
           phase: "guidelines_ready",
         }),
+      setUiConfig: (uiConfig) => set({ uiConfig }),
+      setContext: (context) => set({ context }),
       setPhase: (phase) => set({ phase }),
       reset: () =>
         set({
@@ -114,9 +128,11 @@ export const useExperimentStore = create<ExperimentState>()(
           detectedMood: null,
           detectedConfidence: null,
           guidelines: null,
+          uiConfig: null,
+          context: null,
         }),
     }),
-    { name: "smartshop-experiment-v2" }
+    { name: "smartshop-experiment-v4" }
   )
 );
 
