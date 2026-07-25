@@ -95,10 +95,60 @@
 }
 
 html[data-adaptive="1"] body.adaptive-active {
-  transition: background-color 0.35s ease, color 0.35s ease;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Color themes from guideline color_theme_pref */
+/* Mood-first surfaces (stronger than theme alone — themes often overlap in survey) */
+html[data-mood="stressed"] body.adaptive-active,
+html[data-mood="fear"] body.adaptive-active,
+html[data-mood="angry"] body.adaptive-active {
+  background: #e8eef5 !important;
+  color: #1e293b;
+}
+html[data-mood="stressed"] .adaptation-banner,
+html[data-mood="fear"] .adaptation-banner {
+  background: #334155;
+}
+html[data-mood="happy"] body.adaptive-active {
+  background: #fff7ed !important;
+  color: #431407;
+}
+html[data-mood="happy"] .adaptation-banner {
+  background: #c2410c;
+}
+html[data-mood="excited"] body.adaptive-active {
+  background: #fdf2f8 !important;
+  color: #500724;
+}
+html[data-mood="excited"] .adaptation-banner {
+  background: #9d174d;
+}
+html[data-mood="relaxed"] body.adaptive-active,
+html[data-mood="calm"] body.adaptive-active {
+  background: #ecfdf5 !important;
+  color: #064e3b;
+}
+html[data-mood="relaxed"] .adaptation-banner {
+  background: #047857;
+}
+html[data-mood="sad"] body.adaptive-active {
+  background: #f1f5f9 !important;
+  color: #0f172a;
+}
+html[data-mood="sad"] .adaptation-banner {
+  background: #475569;
+}
+html[data-mood="bored"] body.adaptive-active {
+  background: #faf5ff !important;
+}
+html[data-mood="bored"] .adaptation-banner {
+  background: #6b21a8;
+}
+html[data-mood="neutral"] body.adaptive-active {
+  background: #f8fafc !important;
+}
+
+/* Guideline color themes (when mood does not override above) */
 html[data-theme*="warm_earthy"] body.adaptive-active {
   background: #f3ebe1;
   color: #3b2f2f;
@@ -115,36 +165,74 @@ html[data-theme*="minimalist"] .adaptation-banner {
   background: #111;
 }
 
-html[data-theme*="ocean"] body.adaptive-active,
-html[data-accent*="blue"] body.adaptive-active {
-  background: #eef5fb;
+/* Header / chrome react to adaptation */
+html[data-adaptive="1"] body.adaptive-active header {
+  background: color-mix(in srgb, canvas 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid currentColor;
+  border-bottom-color: color-mix(in srgb, currentColor 18%, transparent);
 }
 
-/* Accent buttons / links */
+html[data-mood="stressed"] body.adaptive-active header,
+html[data-mood="fear"] body.adaptive-active header {
+  border-bottom-color: #64748b;
+}
+html[data-mood="happy"] body.adaptive-active header {
+  border-bottom-color: #ea580c;
+}
+html[data-mood="excited"] body.adaptive-active header {
+  border-bottom-color: #db2777;
+}
+
+/* Accent buttons — theme first, mood wins when both apply */
+html[data-adaptive="1"] body.adaptive-active .btn,
+html[data-adaptive="1"] body.adaptive-active a.btn {
+  border-radius: 0.75rem;
+}
 html[data-accent*="blue"] body.adaptive-active .btn,
 html[data-accent*="blue"] body.adaptive-active a.btn {
   background: #1d4ed8 !important;
   color: #fff !important;
-  border-radius: 0.75rem;
 }
-
 html[data-theme*="warm_earthy"] body.adaptive-active .btn,
 html[data-theme*="warm_earthy"] body.adaptive-active a.btn {
   background: #9a3412 !important;
   color: #fff !important;
 }
+html[data-mood="happy"] body.adaptive-active .btn,
+html[data-mood="happy"] body.adaptive-active a.btn {
+  background: #ea580c !important;
+  color: #fff !important;
+}
+html[data-mood="excited"] body.adaptive-active .btn,
+html[data-mood="excited"] body.adaptive-active a.btn {
+  background: #db2777 !important;
+  color: #fff !important;
+}
+html[data-mood="stressed"] body.adaptive-active .btn,
+html[data-mood="fear"] body.adaptive-active .btn,
+html[data-mood="stressed"] body.adaptive-active a.btn,
+html[data-mood="fear"] body.adaptive-active a.btn {
+  background: #334155 !important;
+  color: #fff !important;
+}
+html[data-mood="relaxed"] body.adaptive-active .btn,
+html[data-mood="relaxed"] body.adaptive-active a.btn {
+  background: #047857 !important;
+  color: #fff !important;
+}
 
-/* Urgency strip under header when adapted */
+/* Urgency strip */
 html[data-urgency*="stock"] body.adaptive-active main::before,
 html[data-urgency*="countdown"] body.adaptive-active main::before,
 html[data-urgency*="both"] body.adaptive-active main::before {
   content: "Limited stock · Fast checkout recommended";
   display: block;
   text-align: center;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 700;
   letter-spacing: 0.02em;
-  padding: 0.4rem 1rem;
+  padding: 0.55rem 1rem;
   background: #fef3c7;
   color: #92400e;
   border-bottom: 1px solid #fcd34d;
@@ -157,13 +245,19 @@ html[data-urgency*="countdown"] body.adaptive-active main::before {
   border-bottom-color: #fca5a5;
 }
 
-/* Density nudge via CSS variable */
 html[data-adaptive="1"] body.adaptive-active .container {
   gap: var(--adaptive-gap, 1.5rem);
 }
 
-/* Price emphasis */
 html[data-price*="bold"] body.adaptive-active .font-extrabold {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   color: #b91c1c;
+}
+
+/* Card density / list feel on shop */
+html[data-grid*="list"] body.adaptive-active [class*="grid"] {
+  gap: 1rem;
+}
+html[data-product-card*="minimal"] body.adaptive-active .group {
+  filter: saturate(0.92);
 }

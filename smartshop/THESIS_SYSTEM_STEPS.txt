@@ -1,0 +1,180 @@
+================================================================================
+SMARTSHOP — Full system steps & guideline extraction notes
+(Master's thesis: Towards Intelligent Adaptive User Interfaces)
+================================================================================
+Updated: 2026-07-25
+Project folder: smartshop/
+Evidence pipeline folder: smartshop/EvidenceBasedAdaptiveUI/
+
+--------------------------------------------------------------------------------
+1) WHAT YOU BUILT (END-TO-END PIPELINE)
+--------------------------------------------------------------------------------
+
+Survey Responses
+        │
+        ▼
+Evidence-Based Guideline Extraction   ← EvidenceBasedAdaptiveUI (notebooks)
+        │
+        ▼
+JSON Guideline Repository             ← smartshop/src/guidelines/*.json
+        │
+        ├──────────────┐
+        ▼              ▼
+Questionnaire     Emotion Recognition
+(Big Five TIPI)   (EfficientNet / mood API)
+        │              │
+        └──────┬───────┘
+               ▼
+         Context Builder              ← facts only (no UI decisions)
+               │
+               ▼
+        Adaptive Engine               ← rule-based merge of JSON
+     Device → Defaults → Persona → Mood → Trait nudges
+               │
+               ▼
+      Final UI Configuration          ← tokens + nudges + adaptation log
+               │
+               ▼
+   Variant Resolver (runtime)         ← NO LLM on live pages
+   + optional LLM Component Generator ← OFFLINE only (Gemini/OpenAI)
+               │
+               ▼
+      Adaptive E-commerce Website
+
+
+--------------------------------------------------------------------------------
+2) STEPS WE IMPLEMENTED IN THE WEBSITE (IN ORDER)
+--------------------------------------------------------------------------------
+
+A. Mood model path
+   - Local Mood API (mood_model/mood_api.py) on port 8001
+   - Next.js proxy /api/mood/predict
+   - WebcamCapture on /shop/mood
+
+B. Experiment flow
+   - Login / Signup → /shop?experiment=browse (3-minute browse banner)
+   - Questionnaire: age, gender, TIPI (Big Five), persona choice, self-mood
+   - Mood camera: DETECTED mood drives adaptation (not questionnaire self-mood)
+   - Context Builder → Adaptive Engine → save ExperimentResult (admin CSV)
+
+C. Context Builder
+   - Builds a Context Object: device, persona, traits, moods, user, session
+   - Does NOT choose UI tokens
+
+D. Adaptive Engine (rule-based, no AI)
+   - Loads / caches guideline JSON once
+   - Merge order: global → desktop/mobile → persona → mood (wins on conflicts)
+     → personality nudges (soft only; never replace categorical UI)
+   - Output: FinalUIConfiguration + structured adaptation log
+   - APIs: POST /api/adaptive-engine/generate , also via /api/guidelines/resolve
+
+E. UI Adapter (runtime, no LLM)
+   - toImplementationSpec: strips mood/persona/traits for display mapping
+   - resolveVariants: picks hero / card / grid / theme ids
+   - AdaptiveHero, AdaptiveProductCard, ProductGrid columns, theme CSS
+   - Adaptation banner (logged-in only)
+   - Clears on logout; logged-out users see the basic site
+
+F. LLM Component Generator (offline / admin only)
+   - Gemini by default (LLM_PROVIDER=gemini), OpenAI optional later
+   - Generates component VARIANTS offline; live shop only SELECTs variants
+   - Cache + validator + optional Mongo generated_components
+   - Live path cost = $0
+
+G. Admin
+   - demo@smartshop.dev → /admin experiment CSV export
+
+
+--------------------------------------------------------------------------------
+3) WAS YOUR THINKING WRONG ABOUT EXTRACTING THE RULES?
+--------------------------------------------------------------------------------
+
+Short answer: NO — the evidence-based extraction approach is correct and
+is the strongest scientific part of the thesis.
+
+What you did right (EvidenceBasedAdaptiveUI):
+  ✓ Start from survey data (not inventing UI from an LLM)
+  ✓ Clean → EDA → statistical validation → feature importance / SHAP
+  ✓ Association rules / evidence scoring
+  ✓ Export verified guideline JSON (persona, mood, traits, device defaults)
+  ✓ Keep LLM away from deciding adaptations
+
+What to clarify (common confusion, not a mistake):
+
+  1) Extraction ≠ Runtime engine
+     Notebooks EXTRACT and VALIDATE guidelines into JSON.
+     The website Adaptive Engine APPLIES those JSON rules at runtime.
+     Both are needed. Extraction alone does not change the UI.
+
+  2) LLM is NOT the Adaptive Engine
+     Early README diagrams sometimes show “LLM → website”.
+     The defendable design is:
+       Adaptive Engine (JSON rules) → Final UI Configuration
+       → LLM only implements variants OFFLINE (React developer role)
+       → Runtime only selects variants
+     That matches “intelligent AUI” without hallucinated UI decisions.
+
+  3) Survey persona labels vs guideline persona keys
+     Questionnaire may say “Entertainment”; JSON keys may say
+     “Impulsive Buyer”. Mapping is OK for lookups — show the user’s
+     questionnaire label in the UI banner.
+
+  4) Mood for adaptation = model detection
+     Self-reported mood in the questionnaire is useful for research
+     comparison, but the live Adaptive Engine uses DETECTED mood
+     (bridged to guideline mood labels).
+
+  5) Soft trait nudges
+     Personality should nudge density / recommendation strength, etc.,
+     not replace navigation or product-card categories. Your trait
+     modifiers design matches that.
+
+So: you were right to extract rules from survey evidence.
+The website work is “wiring + applying” those rules, plus a constrained
+LLM implementation layer — not replacing the evidence pipeline.
+
+
+--------------------------------------------------------------------------------
+4) HOW TO DEMO / RETEST AFTER THESE FIXES
+--------------------------------------------------------------------------------
+
+1. Restart: npm run dev  (and mood_api.py if using camera)
+2. Sign up or log in → should open /shop catalog (browse experiment),
+   NOT a search-results URL
+3. Complete questionnaire → mood camera → see Final UI Configuration
+4. Open Home and Shop — banner + background should change by DETECTED mood
+   (stressed/fear ≈ cool slate, happy ≈ warm orange, excited ≈ pink,
+    relaxed ≈ green). Shop should adapt quickly (shared auth gate).
+5. Log out → basic website (no banner / no adaptive theme)
+6. Shop catalog should list many more products after seed sync
+
+
+--------------------------------------------------------------------------------
+5) KEY FOLDERS
+--------------------------------------------------------------------------------
+
+EvidenceBasedAdaptiveUI/   — survey → verified guidelines (science)
+src/guidelines/            — JSON used by the live Adaptive Engine
+src/lib/context/           — Context Builder
+src/lib/adaptiveEngine/    — rule engine
+src/lib/uiAdapter/         — variant selection
+src/llm/                   — offline Gemini/OpenAI variant factory
+src/components/adaptive/   — runtime adaptive React pieces
+src/data/products.ts       — product catalog seed
+
+
+--------------------------------------------------------------------------------
+6) ENV (LLM — optional for offline generation only)
+--------------------------------------------------------------------------------
+
+See env.llm.example
+  LLM_PROVIDER=gemini
+  GEMINI_API_KEY=...
+  GEMINI_MODEL=gemini-2.0-flash
+
+Live browsing does not call Gemini.
+
+
+================================================================================
+End of notes
+================================================================================

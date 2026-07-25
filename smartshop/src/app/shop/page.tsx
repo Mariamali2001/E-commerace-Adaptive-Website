@@ -13,9 +13,9 @@ export default async function ShopPage({
   // Apply filters to products
   let filteredProducts = allProducts;
 
-  // Filter by search query
-  if (params.search && typeof params.search === "string") {
-    const searchTerm = params.search.toLowerCase();
+  // Filter by search query only when user typed a search (not experiment params)
+  if (typeof params.search === "string" && params.search.trim()) {
+    const searchTerm = params.search.trim().toLowerCase();
     filteredProducts = filteredProducts.filter((p) =>
       p.title.toLowerCase().includes(searchTerm) ||
       p.description.toLowerCase().includes(searchTerm) ||
@@ -117,8 +117,13 @@ export default async function ShopPage({
     max: 5000,
   };
 
-  const pageTitle = params.search 
-    ? `Search results for "${params.search}"`
+  // Only show "Search results" when the user actually searched
+  const searchQuery =
+    typeof params.search === "string" && params.search.trim()
+      ? params.search.trim()
+      : "";
+  const pageTitle = searchQuery
+    ? `Search results for "${searchQuery}"`
     : "Shop All Products";
 
   return (

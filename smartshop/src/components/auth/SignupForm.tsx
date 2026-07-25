@@ -53,9 +53,10 @@ export function SignupForm() {
         "@/lib/experiment/clearAdaptive"
       );
       clearAdaptiveExperiment();
+      // Land on full shop catalog (not search results)
       setTimeout(() => {
         window.location.href = "/shop?experiment=browse";
-      }, 1500);
+      }, 800);
     } catch (error) {
       setStatus({
         type: "error",

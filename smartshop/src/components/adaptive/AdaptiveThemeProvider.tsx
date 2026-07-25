@@ -18,6 +18,7 @@ function stripAdaptiveDomOnly() {
     "data-product-card",
     "data-nav",
     "data-price",
+    "data-mood",
   ].forEach((attr) => root.removeAttribute(attr));
   root.style.removeProperty("--adaptive-density");
   root.style.removeProperty("--adaptive-visual-richness");
@@ -27,7 +28,7 @@ function stripAdaptiveDomOnly() {
 
 /**
  * Theme only when logged in + Final UI Configuration exists.
- * Logged-out visitors get the basic website.
+ * Mood attribute drives stronger visual differences when theme tokens collide.
  */
 export function AdaptiveThemeProvider({
   children,
@@ -36,10 +37,11 @@ export function AdaptiveThemeProvider({
 }) {
   const { ready, allowed } = useAdaptiveAllowed();
   const uiConfig = useExperimentStore((s) => s.uiConfig);
+  const detectedMood = useExperimentStore((s) => s.detectedMood);
   const active = ready && allowed && uiConfig;
 
   useEffect(() => {
-    if (!active) {
+    if (!active || !uiConfig) {
       stripAdaptiveDomOnly();
       return;
     }
@@ -47,6 +49,15 @@ export function AdaptiveThemeProvider({
     const root = document.documentElement;
     const body = document.body;
     const v = resolveVariants(uiConfig);
+    const mood = (
+      detectedMood ??
+      uiConfig.detectedMood ??
+      uiConfig.mood ??
+      "neutral"
+    )
+      .toString()
+      .toLowerCase();
+
     root.setAttribute("data-adaptive", "1");
     root.setAttribute("data-theme", v.colorTheme);
     root.setAttribute("data-accent", v.accentColor);
@@ -56,6 +67,7 @@ export function AdaptiveThemeProvider({
     root.setAttribute("data-product-card", v.productCard);
     root.setAttribute("data-nav", v.navigation);
     root.setAttribute("data-price", v.priceDisplay);
+    root.setAttribute("data-mood", mood);
     root.style.setProperty(
       "--adaptive-density",
       String(v.nudges.information_density)
@@ -66,13 +78,13 @@ export function AdaptiveThemeProvider({
     );
     const gap =
       v.nudges.information_density < 0
-        ? "1rem"
+        ? "0.75rem"
         : v.nudges.information_density > 0
-          ? "2rem"
+          ? "2.25rem"
           : "1.5rem";
     root.style.setProperty("--adaptive-gap", gap);
     body.classList.add("adaptive-active");
-  }, [active, uiConfig]);
+  }, [active, uiConfig, detectedMood]);
 
   return <>{children}</>;
 }

@@ -15,24 +15,36 @@ export type ProductFilters = {
   sort?: "price-asc" | "price-desc" | "rating" | "title";
 };
 
-// Seed products on first load
+// Seed / sync catalog from src/data/products.ts (upsert by slug)
 let seeded = false;
 async function seedProducts() {
   if (seeded) return;
-  
+
   await connectDB();
-  
+
   const count = await ProductModel.countDocuments();
   if (count === 0) {
-    // Only seed if database is empty
-    // Don't set _id, let MongoDB generate it automatically
     await ProductModel.insertMany(
       seedProductsData.map((p: Product) => {
-        const { id, ...rest } = p; // Remove the id field
+        const { id, ...rest } = p;
         return rest;
       })
     );
-    console.log("✅ Seeded initial products");
+    console.log(`✅ Seeded ${seedProductsData.length} products`);
+  } else {
+    // DB already has products — add any new slugs from the seed file
+    let added = 0;
+    for (const p of seedProductsData) {
+      const { id, ...rest } = p;
+      const exists = await ProductModel.findOne({ slug: rest.slug }).lean();
+      if (!exists) {
+        await ProductModel.create(rest);
+        added += 1;
+      }
+    }
+    if (added > 0) {
+      console.log(`✅ Added ${added} new catalog products`);
+    }
   }
   seeded = true;
 }
