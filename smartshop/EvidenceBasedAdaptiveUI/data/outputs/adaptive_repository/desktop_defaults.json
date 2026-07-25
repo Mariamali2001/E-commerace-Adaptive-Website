@@ -1,0 +1,72 @@
+{
+  "version": "1.0",
+  "source": "survey_majority",
+  "n_elements": 13,
+  "defaults": {
+    "desktop_grid_pref": {
+      "value": "3 Columns (Balanced view, moderate item size)",
+      "percentage": 33.5,
+      "count": 67
+    },
+    "desktop_info_density": {
+      "value": "Moderate (Balanced - some details visible, click for more)",
+      "percentage": 72.5,
+      "count": 145
+    },
+    "desktop_image_text_ratio": {
+      "value": "Image-focused (80% images, 20% text - highly visual)",
+      "percentage": 53.5,
+      "count": 107
+    },
+    "desktop_whitespace": {
+      "value": "Balanced",
+      "percentage": 57.0,
+      "count": 114
+    },
+    "desktop_navigation": {
+      "value": "Top Bar (Categories always visible across the top)",
+      "percentage": 29.5,
+      "count": 59
+    },
+    "desktop_search_visibility": {
+      "value": "Always Visible Top (Large, prominent search bar always shown)",
+      "percentage": 43.0,
+      "count": 86
+    },
+    "desktop_category_display": {
+      "value": "Visual Grid (Category tiles with images)",
+      "percentage": 42.5,
+      "count": 85
+    },
+    "desktop_product_card": {
+      "value": "Info Rich (Lots of details, ratings, specs visible)",
+      "percentage": 30.0,
+      "count": 60
+    },
+    "desktop_price_display": {
+      "value": "With Savings Highlighted (Shows discount amount prominently)",
+      "percentage": 26.5,
+      "count": 53
+    },
+    "desktop_filter_location": {
+      "value": "Sidebar Left (Permanent filter panel on the left side)",
+      "percentage": 45.5,
+      "count": 91
+    },
+    "desktop_persistent_filters": {
+      "value": "Yes (Always visible sidebar with filters)",
+      "percentage": 75.0,
+      "count": 150
+    },
+    "desktop_quick_view": {
+      "value": "Sidebar Slide (Details slide in from the right)",
+      "percentage": 48.0,
+      "count": 96
+    },
+    "desktop_review_display": {
+      "value": "Recent 3- 5 (Show a few recent reviews)",
+      "percentage": 39.0,
+      "count": 78
+    }
+  }
+}

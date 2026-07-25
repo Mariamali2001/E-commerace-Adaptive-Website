@@ -1,0 +1,201 @@
+{
+  "context": {
+    "persona": "Browser",
+    "mood": "Happy",
+    "device": "Desktop",
+    "device_defaults": "desktop_defaults.json",
+    "personality": {
+      "Extraversion": "High",
+      "Agreeableness": "Medium",
+      "Conscientiousness": "High",
+      "Neuroticism": "Low",
+      "Openness": "High"
+    }
+  },
+  "pipeline": [
+    "Detect Device",
+    "Load Global Defaults",
+    "Load Device Defaults",
+    "Apply Persona Overrides",
+    "Apply Mood Overrides",
+    "Apply Personality Nudges",
+    "Produce Final UI Configuration"
+  ],
+  "entries": [
+    {
+      "step": "Loaded Global Defaults",
+      "layer": "defaults",
+      "detail": "Merged global_defaults.json with base survey majority values."
+    },
+    {
+      "step": "Loaded Desktop Defaults",
+      "layer": "device_defaults",
+      "detail": "Applied desktop_defaults.json.json on top of global defaults.",
+      "device": "Desktop"
+    },
+    {
+      "step": "Applied Persona Override",
+      "layer": "persona",
+      "property": "font_style_pref",
+      "before": "Classic Serif",
+      "after": "Modern Sans-serif",
+      "arrow": "Classic Serif → Modern Sans-serif"
+    },
+    {
+      "step": "Applied Persona Override",
+      "layer": "persona",
+      "property": "color_theme_pref",
+      "before": "Minimalist Black & White",
+      "after": "Vibrant Bold",
+      "arrow": "Minimalist Black & White → Vibrant Bold"
+    },
+    {
+      "step": "Applied Persona Override",
+      "layer": "persona",
+      "property": "urgency_pref",
+      "before": "Both",
+      "after": "None",
+      "arrow": "Both → None"
+    },
+    {
+      "step": "Applied Persona Override",
+      "layer": "persona",
+      "property": "form_field_style",
+      "before": "Rounded Border Fields",
+      "after": "Outlined",
+      "arrow": "Rounded Border Fields → Outlined"
+    },
+    {
+      "step": "Applied Persona Override",
+      "layer": "persona",
+      "property": "desktop_navigation",
+      "before": "Top Bar",
+      "after": "Mega Menu",
+      "arrow": "Top Bar → Mega Menu"
+    },
+    {
+      "step": "Applied Persona Override",
+      "layer": "persona",
+      "property": "desktop_review_display",
+      "before": "Recent 3- 5",
+      "after": "All Paginated",
+      "arrow": "Recent 3- 5 → All Paginated"
+    },
+    {
+      "step": "Applied Persona Override",
+      "layer": "persona",
+      "property": "mobile_sticky_header",
+      "before": "Default",
+      "after": "No",
+      "arrow": "Default → No"
+    },
+    {
+      "step": "Applied Mood Override",
+      "layer": "mood",
+      "property": "checkout_style",
+      "before": "One Page",
+      "after": "Progress Bar",
+      "arrow": "One Page → Progress Bar"
+    },
+    {
+      "step": "Applied Mood Override",
+      "layer": "mood",
+      "property": "desktop_grid_pref",
+      "before": "3 Columns",
+      "after": "2 Columns",
+      "arrow": "3 Columns → 2 Columns"
+    },
+    {
+      "step": "Applied Mood Override",
+      "layer": "mood",
+      "property": "desktop_search_visibility",
+      "before": "Always Visible Top",
+      "after": "Collapsible",
+      "arrow": "Always Visible Top → Collapsible"
+    },
+    {
+      "step": "Applied Mood Override",
+      "layer": "mood",
+      "property": "desktop_price_display",
+      "before": "With Savings Highlighted",
+      "after": "With Comparison",
+      "arrow": "With Savings Highlighted → With Comparison"
+    },
+    {
+      "step": "Applied Mood Override",
+      "layer": "mood",
+      "property": "desktop_filter_location",
+      "before": "Sidebar Left",
+      "after": "Top Bar",
+      "arrow": "Sidebar Left → Top Bar"
+    },
+    {
+      "step": "Applied Mood Override",
+      "layer": "mood",
+      "property": "mobile_category_display",
+      "before": "Default",
+      "after": "Visual Grid",
+      "arrow": "Default → Visual Grid"
+    },
+    {
+      "step": "Applied Personality Nudge",
+      "layer": "trait_nudge",
+      "property": "Recommendation Strength",
+      "ui_element": "social_proof_display",
+      "before": "4",
+      "after": "-1",
+      "arrow": "4 → -1",
+      "trait": "Extraversion",
+      "level": "High"
+    },
+    {
+      "step": "Applied Personality Nudge",
+      "layer": "trait_nudge",
+      "property": "Information Density",
+      "ui_element": "desktop_info_density",
+      "before": "1",
+      "after": "-1",
+      "arrow": "1 → -1",
+      "trait": "Extraversion",
+      "level": "High"
+    },
+    {
+      "step": "Applied Personality Nudge",
+      "layer": "trait_nudge",
+      "property": "Information Density",
+      "ui_element": "desktop_info_density",
+      "before": "0",
+      "after": "+1",
+      "arrow": "0 → +1",
+      "trait": "Conscientiousness",
+      "level": "High"
+    },
+    {
+      "step": "Applied Personality Nudge",
+      "layer": "trait_nudge",
+      "property": "Visual Richness",
+      "ui_element": "desktop_image_text_ratio",
+      "before": "2",
+      "after": "+1",
+      "arrow": "2 → +1",
+      "trait": "Openness",
+      "level": "High"
+    },
+    {
+      "step": "Applied Personality Nudge",
+      "layer": "trait_nudge",
+      "property": "Visual Richness",
+      "ui_element": "hero_banner_size",
+      "before": "2",
+      "after": "+1",
+      "arrow": "2 → +1",
+      "trait": "Openness",
+      "level": "High"
+    }
+  ],
+  "summary": {
+    "n_persona_overrides": 7,
+    "n_mood_overrides": 6,
+    "n_trait_nudges": 5
+  }
+}

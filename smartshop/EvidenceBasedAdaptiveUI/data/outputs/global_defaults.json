@@ -1,0 +1,77 @@
+{
+  "version": "1.0",
+  "source": "survey_majority",
+  "n_elements": 14,
+  "defaults": {
+    "font_style_pref": {
+      "value": "2. Classic Serif (Traditional fonts with decorative strokes like Times New Roman)",
+      "percentage": 36.5,
+      "count": 73
+    },
+    "font_size_pref": {
+      "value": "3. Large (16-18px - Easy to read, comfortable)",
+      "percentage": 48.0,
+      "count": 96
+    },
+    "color_theme_pref": {
+      "value": "Minimalist Black & White (Clean, high contrast, professional)",
+      "percentage": 24.5,
+      "count": 49
+    },
+    "accent_color_pref": {
+      "value": "Blue (Trustworthy, professional, calm)",
+      "percentage": 60.5,
+      "count": 121
+    },
+    "background_pref": {
+      "value": "Cream/Off-white (Warm, comfortable, paper-like)",
+      "percentage": 36.0,
+      "count": 72
+    },
+    "whitespace_pref": {
+      "value": "Balanced (Moderate spacing - comfortable middle ground)",
+      "percentage": 73.5,
+      "count": 147
+    },
+    "button_style_pref": {
+      "value": "Rounded Corners (Soft, modern rounded edges)",
+      "percentage": 41.5,
+      "count": 83
+    },
+    "hero_banner_size": {
+      "value": "Medium Split (Takes up half the screen)",
+      "percentage": 53.5,
+      "count": 107
+    },
+    "recommendation_type": {
+      "value": "Deals (Products on sale or special offers)",
+      "percentage": 47.0,
+      "count": 94
+    },
+    "social_proof_display": {
+      "value": "User Photos (Photos uploaded by customers)",
+      "percentage": 36.5,
+      "count": 73
+    },
+    "urgency_pref": {
+      "value": "Both (Show both stock and time based urgency)",
+      "percentage": 32.5,
+      "count": 65
+    },
+    "checkout_style": {
+      "value": "One Page (All checkout steps on a single scrolling page)",
+      "percentage": 38.5,
+      "count": 77
+    },
+    "form_field_style": {
+      "value": "Rounded Border Fields (Outlined field with rounded corners)",
+      "percentage": 24.5,
+      "count": 49
+    },
+    "product_desc_length": {
+      "value": "Expandable Sections (Organized into collapsible sections)",
+      "percentage": 35.0,
+      "count": 70
+    }
+  }
+}

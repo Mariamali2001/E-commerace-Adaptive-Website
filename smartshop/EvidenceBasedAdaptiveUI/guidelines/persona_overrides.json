@@ -1,0 +1,357 @@
+[
+  {
+    "persona": "Browser",
+    "n_respondents": 30,
+    "n_overrides": 7,
+    "overrides": {
+      "font_style_pref": {
+        "value": "1. Modern Sans-serif (Clean, contemporary fonts like Arial or Helvetica)",
+        "confidence": 0.3,
+        "support": 0.045,
+        "evidence": [
+          "Statistics",
+          "Random Forest"
+        ]
+      },
+      "color_theme_pref": {
+        "value": "Vibrant Bold (Bright, energetic colors - exciting and dynamic)",
+        "confidence": 0.3,
+        "support": 0.045,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "urgency_pref": {
+        "value": "None (I find these annoying and manipulative)",
+        "confidence": 0.333333,
+        "support": 0.05,
+        "evidence": [
+          "Statistics",
+          "Random Forest"
+        ]
+      },
+      "form_field_style": {
+        "value": "Outlined (Border around the field)",
+        "confidence": 0.3,
+        "support": 0.045,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "desktop_navigation": {
+        "value": "Mega Menu (Dropdown with images and subcategories)",
+        "confidence": 0.333333,
+        "support": 0.05,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "desktop_review_display": {
+        "value": "All Paginated (Show all reviews with pagination)",
+        "confidence": 0.566667,
+        "support": 0.085,
+        "evidence": [
+          "Statistics",
+          "Random Forest"
+        ]
+      },
+      "mobile_sticky_header": {
+        "value": "No (Header scrolls away with content)",
+        "confidence": 0.533333,
+        "support": 0.08,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      }
+    }
+  },
+  {
+    "persona": "Deal Hunter",
+    "n_respondents": 24,
+    "n_overrides": 3,
+    "overrides": {
+      "font_style_pref": {
+        "value": "3. Rounded Friendly (Soft, approachable fonts with rounded edges)",
+        "confidence": 0.5,
+        "support": 0.06,
+        "evidence": [
+          "Statistics",
+          "Random Forest"
+        ]
+      },
+      "color_theme_pref": {
+        "value": "Cool Blues (Blues and grays - calm and trustworthy)",
+        "confidence": 0.333333,
+        "support": 0.04,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "checkout_style": {
+        "value": "Progress Bar (Multi step with visual progress indicator)",
+        "confidence": 0.291667,
+        "support": 0.035,
+        "evidence": [
+          "Statistics",
+          "Random Forest"
+        ]
+      }
+    }
+  },
+  {
+    "persona": "Impulsive Buyer",
+    "n_respondents": 28,
+    "n_overrides": 6,
+    "overrides": {
+      "color_theme_pref": {
+        "value": "Warm Earthy (Browns, beiges, warm oranges - natural and cozy)",
+        "confidence": 0.392857,
+        "support": 0.055,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "checkout_style": {
+        "value": "Progress Bar (Multi step with visual progress indicator)",
+        "confidence": 0.392857,
+        "support": 0.055,
+        "evidence": [
+          "Statistics",
+          "Random Forest"
+        ]
+      },
+      "form_field_style": {
+        "value": "Outlined (Border around the field)",
+        "confidence": 0.285714,
+        "support": 0.04,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "product_desc_length": {
+        "value": "Moderate (Key details with option to expand)",
+        "confidence": 0.285714,
+        "support": 0.04,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "desktop_navigation": {
+        "value": "Mega Menu (Dropdown with images and subcategories)",
+        "confidence": 0.321429,
+        "support": 0.045,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "desktop_search_visibility": {
+        "value": "Collapsible (Search bar that expands when clicked)",
+        "confidence": 0.428571,
+        "support": 0.06,
+        "evidence": [
+          "Statistics",
+          "SHAP"
+        ]
+      }
+    }
+  },
+  {
+    "persona": "Loyal Customer",
+    "n_respondents": 22,
+    "n_overrides": 9,
+    "overrides": {
+      "font_style_pref": {
+        "value": "3. Rounded Friendly (Soft, approachable fonts with rounded edges)",
+        "confidence": 0.409091,
+        "support": 0.045,
+        "evidence": [
+          "Statistics",
+          "Random Forest"
+        ]
+      },
+      "color_theme_pref": {
+        "value": "Cool Blues (Blues and grays - calm and trustworthy)",
+        "confidence": 0.272727,
+        "support": 0.03,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "background_pref": {
+        "value": "Dark (Dark gray or black background)",
+        "confidence": 0.318182,
+        "support": 0.035,
+        "evidence": [
+          "Statistics",
+          "Random Forest"
+        ]
+      },
+      "hero_banner_size": {
+        "value": "Small Strip (Thin banner across the top)",
+        "confidence": 0.5,
+        "support": 0.055,
+        "evidence": [
+          "Statistics",
+          "SHAP"
+        ]
+      },
+      "urgency_pref": {
+        "value": "Countdown Timers (Show \"Sale ends in 2 hours\")",
+        "confidence": 0.318182,
+        "support": 0.035,
+        "evidence": [
+          "Statistics",
+          "Random Forest"
+        ]
+      },
+      "product_desc_length": {
+        "value": "Detailed Full (All specifications and information visible)",
+        "confidence": 0.363636,
+        "support": 0.04,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "desktop_image_text_ratio": {
+        "value": "Balanced (50% images, 50% text - equal emphasis)",
+        "confidence": 0.5,
+        "support": 0.055,
+        "evidence": [
+          "Statistics",
+          "Random Forest"
+        ]
+      },
+      "desktop_whitespace": {
+        "value": "Spacious (clean and uncluttered)",
+        "confidence": 0.545455,
+        "support": 0.06,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "mobile_review_display": {
+        "value": "Summary Only (Average rating and total count)",
+        "confidence": 0.545455,
+        "support": 0.06,
+        "evidence": [
+          "Random Forest",
+          "SHAP"
+        ]
+      }
+    }
+  },
+  {
+    "persona": "Minimalist",
+    "n_respondents": 44,
+    "n_overrides": 2,
+    "overrides": {
+      "desktop_image_text_ratio": {
+        "value": "Balanced (50% images, 50% text - equal emphasis)",
+        "confidence": 0.454545,
+        "support": 0.1,
+        "evidence": [
+          "Statistics",
+          "Random Forest"
+        ]
+      },
+      "desktop_search_visibility": {
+        "value": "Collapsible (Search bar that expands when clicked)",
+        "confidence": 0.454545,
+        "support": 0.1,
+        "evidence": [
+          "Statistics",
+          "SHAP"
+        ]
+      }
+    }
+  },
+  {
+    "persona": "Researcher",
+    "n_respondents": 52,
+    "n_overrides": 6,
+    "overrides": {
+      "color_theme_pref": {
+        "value": "Vibrant Bold (Bright, energetic colors - exciting and dynamic)",
+        "confidence": 0.230769,
+        "support": 0.06,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "recommendation_type": {
+        "value": "Category based (Similar items from the same category)",
+        "confidence": 0.384615,
+        "support": 0.1,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "checkout_style": {
+        "value": "Progress Bar (Multi step with visual progress indicator)",
+        "confidence": 0.384615,
+        "support": 0.1,
+        "evidence": [
+          "Statistics",
+          "Random Forest"
+        ]
+      },
+      "form_field_style": {
+        "value": "Filled Background (Shaded background, no border)",
+        "confidence": 0.25,
+        "support": 0.065,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "desktop_navigation": {
+        "value": "Combination of top bar and dropdowns",
+        "confidence": 0.326923,
+        "support": 0.085,
+        "evidence": [
+          "Statistics",
+          "Random Forest",
+          "SHAP"
+        ]
+      },
+      "desktop_review_display": {
+        "value": "All Paginated (Show all reviews with pagination)",
+        "confidence": 0.423077,
+        "support": 0.11,
+        "evidence": [
+          "Statistics",
+          "Random Forest"
+        ]
+      }
+    }
+  }
+]

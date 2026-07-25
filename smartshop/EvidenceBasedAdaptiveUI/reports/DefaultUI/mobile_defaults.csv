@@ -1,0 +1,15 @@
+UI_Element,Default_Value,Percentage,Count,Total_Responses,Unique_Options
+mobile_grid_pref,Compact stacked cards (more products per screen),47.0,94,200,4
+mobile_info_density,"Moderate (Balanced - some details visible, click for more)",68.5,137,200,3
+mobile_image_text_ratio,"Balanced (50% images, 50% text - equal emphasis)",83.0,166,200,3
+mobile_whitespace,Balanced,85.0,170,200,3
+mobile_navigation,Bottom Nav (Navigation bar at the bottom - mobile style),50.0,100,200,4
+mobile_search_visibility,Collapsible (Search bar that expands when clicked),39.5,79,200,3
+mobile_category_display,Dropdown Menu (Text-based dropdown list),42.5,85,200,3
+mobile_product_card,"Info Rich (Lots of details, ratings, specs visible)",39.0,78,200,5
+mobile_price_display,Strike-through Original (Shows original price crossed out with sale price),62.5,125,200,3
+mobile_filter_location,Drawer Overlay (Slides in from the side when clicked),58.0,116,200,3
+mobile_quick_view,Slide-Up Panel (Preview product details in a slide-up panel without leaving the product lis),52.0,104,200,3
+mobile_review_display,Collapsible Sections (Reviews can be expanded or collapsed within the product details),53.0,106,200,3
+mobile_sticky_header,Yes (Header stays at top while scrolling),64.5,129,200,2
+mobile_touch_size,"Standard (Normal size, more content visible)",55.5,111,200,3

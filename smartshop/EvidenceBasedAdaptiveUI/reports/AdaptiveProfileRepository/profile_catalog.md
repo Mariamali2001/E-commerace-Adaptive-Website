@@ -1,0 +1,109 @@
+# Adaptive Profile Repository Catalog
+
+- Profiles exported: 80
+- Average profile score: 0.594
+- Validation status: PASS
+
+## Profiles
+- **Profile 4** — persona=None, mood=None, device=None, score=0.565, UI keys: image_text_ratio, whitespace
+- **Profile 5** — persona=None, mood=None, device=None, score=0.557, UI keys: whitespace
+- **Profile 6** — persona=None, mood=Relaxed, device=None, score=0.633, UI keys: whitespace
+- **Profile 10** — persona=None, mood=None, device=None, score=0.564, UI keys: hero_banner_size, whitespace
+- **Profile 12** — persona=None, mood=None, device=None, score=0.552, UI keys: info_density, persistent_filters, whitespace
+- **Profile 14** — persona=None, mood=None, device=None, score=0.598, UI keys: image_text_ratio, whitespace
+- **Profile 21** — persona=None, mood=Relaxed, device=None, score=0.591, UI keys: filter_location, font_size, image_text_ratio, info_density, persistent_filters, quick_view, review_display, whitespace
+- **Profile 23** — persona=None, mood=None, device=None, score=0.553, UI keys: image_text_ratio, info_density, persistent_filters, whitespace
+- **Profile 27** — persona=Browser, mood=None, device=None, score=0.569, UI keys: accent_color_pref
+- **Profile 28** — persona=Browser, mood=None, device=Smartphone, score=0.569, UI keys: accent_color_pref
+- **Profile 29** — persona=None, mood=Neutral, device=None, score=0.569, UI keys: whitespace
+- **Profile 56** — persona=Deal Hunter, mood=None, device=None, score=0.561, UI keys: image_text_ratio, info_density, persistent_filters, price_display, recommendation_type, sticky_header, whitespace
+- **Profile 59** — persona=None, mood=Neutral, device=None, score=0.556, UI keys: accent_color_pref, image_text_ratio, info_density, persistent_filters, sticky_header, whitespace
+- **Profile 81** — persona=None, mood=Neutral, device=None, score=0.578, UI keys: image_text_ratio, info_density, review_display, whitespace
+- **Profile 82** — persona=Researcher, mood=None, device=None, score=0.565, UI keys: image_text_ratio, persistent_filters, touch_size, whitespace
+- **Profile 83** — persona=Researcher, mood=None, device=Smartphone, score=0.557, UI keys: image_text_ratio, info_density, whitespace
+- **Profile 127** — persona=None, mood=Neutral, device=None, score=0.554, UI keys: category_display, font_size, info_density, persistent_filters, whitespace
+- **Profile 128** — persona=None, mood=Neutral, device=Smartphone, score=0.554, UI keys: category_display, font_size, info_density, persistent_filters, whitespace
+- **Profile 167** — persona=None, mood=Neutral, device=Smartphone, score=0.552, UI keys: image_text_ratio, info_density, sticky_header, whitespace
+- **Profile 284** — persona=None, mood=Neutral, device=None, score=0.554, UI keys: image_text_ratio, info_density, persistent_filters, price_display, whitespace
+- **Profile 317** — persona=None, mood=None, device=None, score=0.561, UI keys: image_text_ratio, info_density, persistent_filters, whitespace
+- **Profile 318** — persona=Researcher, mood=Neutral, device=None, score=0.685, UI keys: persistent_filters
+- **Profile 319** — persona=None, mood=None, device=Laptop/Desktop, score=0.608, UI keys: persistent_filters
+- **Profile 320** — persona=None, mood=None, device=None, score=0.641, UI keys: persistent_filters
+- **Profile 321** — persona=None, mood=Neutral, device=Smartphone, score=0.667, UI keys: persistent_filters, whitespace
+- **Profile 322** — persona=Researcher, mood=None, device=Smartphone, score=0.579, UI keys: persistent_filters, whitespace
+- **Profile 323** — persona=None, mood=Neutral, device=None, score=0.601, UI keys: info_density
+- **Profile 324** — persona=None, mood=Neutral, device=Smartphone, score=0.601, UI keys: info_density
+- **Profile 327** — persona=None, mood=None, device=Smartphone, score=0.567, UI keys: image_text_ratio, persistent_filters
+- **Profile 328** — persona=Researcher, mood=None, device=None, score=0.560, UI keys: persistent_filters, whitespace
+- **Profile 329** — persona=None, mood=Stressed, device=None, score=0.584, UI keys: info_density, persistent_filters, price_display, whitespace
+- **Profile 330** — persona=None, mood=None, device=Smartphone, score=0.582, UI keys: image_text_ratio, quick_view
+- **Profile 331** — persona=None, mood=Relaxed, device=Smartphone, score=0.627, UI keys: image_text_ratio, info_density, whitespace
+- **Profile 332** — persona=None, mood=Neutral, device=None, score=0.601, UI keys: info_density, persistent_filters, whitespace
+- **Profile 338** — persona=Impulsive Buyer, mood=None, device=None, score=0.590, UI keys: image_text_ratio, info_density, price_display, whitespace
+- **Profile 339** — persona=None, mood=None, device=Smartphone, score=0.576, UI keys: info_density, persistent_filters, whitespace
+- **Profile 341** — persona=None, mood=Stressed, device=None, score=0.578, UI keys: info_density, price_display, whitespace
+- **Profile 342** — persona=None, mood=Neutral, device=Smartphone, score=0.554, UI keys: image_text_ratio, persistent_filters, whitespace
+- **Profile 343** — persona=None, mood=Neutral, device=None, score=0.550, UI keys: image_text_ratio, persistent_filters, whitespace
+- **Profile 350** — persona=Deal Hunter, mood=None, device=None, score=0.599, UI keys: image_text_ratio, info_density, price_display, sticky_header, whitespace
+- **Profile 351** — persona=Deal Hunter, mood=None, device=Smartphone, score=0.599, UI keys: image_text_ratio, info_density, price_display, sticky_header, whitespace
+- **Profile 358** — persona=None, mood=None, device=None, score=0.641, UI keys: category_display, filter_location, navigation, quick_view
+- **Profile 359** — persona=None, mood=None, device=Smartphone, score=0.597, UI keys: quick_view
+- **Profile 360** — persona=Deal Hunter, mood=None, device=None, score=0.685, UI keys: price_display, whitespace
+- **Profile 361** — persona=None, mood=None, device=None, score=0.638, UI keys: info_density
+- **Profile 362** — persona=None, mood=None, device=None, score=0.629, UI keys: image_text_ratio, whitespace
+- **Profile 364** — persona=None, mood=Happy, device=Smartphone, score=0.558, UI keys: image_text_ratio
+- **Profile 366** — persona=Browser, mood=None, device=None, score=0.592, UI keys: image_text_ratio
+- **Profile 367** — persona=None, mood=None, device=None, score=0.636, UI keys: whitespace
+- **Profile 368** — persona=None, mood=None, device=None, score=0.636, UI keys: whitespace
+- **Profile 369** — persona=None, mood=None, device=None, score=0.636, UI keys: whitespace
+- **Profile 370** — persona=None, mood=Neutral, device=None, score=0.669, UI keys: whitespace
+- **Profile 371** — persona=None, mood=Neutral, device=Smartphone, score=0.669, UI keys: whitespace
+- **Profile 372** — persona=Researcher, mood=None, device=None, score=0.599, UI keys: whitespace
+- **Profile 373** — persona=Researcher, mood=None, device=Smartphone, score=0.599, UI keys: whitespace
+- **Profile 374** — persona=Researcher, mood=None, device=None, score=0.663, UI keys: whitespace
+- **Profile 377** — persona=None, mood=None, device=Smartphone, score=0.624, UI keys: whitespace
+- **Profile 378** — persona=None, mood=Relaxed, device=Smartphone, score=0.669, UI keys: whitespace
+- **Profile 382** — persona=None, mood=Neutral, device=Smartphone, score=0.639, UI keys: image_text_ratio
+- **Profile 384** — persona=None, mood=None, device=None, score=0.582, UI keys: image_text_ratio, whitespace
+- **Profile 385** — persona=None, mood=Neutral, device=Smartphone, score=0.567, UI keys: image_text_ratio, whitespace
+- **Profile 387** — persona=Researcher, mood=None, device=None, score=0.622, UI keys: whitespace
+- **Profile 388** — persona=Researcher, mood=None, device=Smartphone, score=0.558, UI keys: whitespace
+- **Profile 390** — persona=None, mood=None, device=None, score=0.575, UI keys: sticky_header
+- **Profile 391** — persona=None, mood=None, device=Smartphone, score=0.575, UI keys: sticky_header
+- **Profile 392** — persona=Deal Hunter, mood=None, device=None, score=0.648, UI keys: sticky_header
+- **Profile 395** — persona=None, mood=Neutral, device=None, score=0.636, UI keys: image_text_ratio
+- **Profile 398** — persona=None, mood=None, device=None, score=0.589, UI keys: image_text_ratio
+- **Profile 402** — persona=None, mood=Relaxed, device=None, score=0.579, UI keys: image_text_ratio, whitespace
+- **Profile 403** — persona=Minimalist, mood=None, device=None, score=0.619, UI keys: whitespace
+- **Profile 404** — persona=Minimalist, mood=None, device=Smartphone, score=0.619, UI keys: whitespace
+- **Profile 405** — persona=None, mood=None, device=None, score=0.592, UI keys: whitespace
+- **Profile 407** — persona=None, mood=None, device=Smartphone, score=0.580, UI keys: whitespace
+- **Profile 408** — persona=Researcher, mood=Neutral, device=None, score=0.561, UI keys: whitespace
+- **Profile 409** — persona=Researcher, mood=None, device=None, score=0.619, UI keys: whitespace
+- **Profile 410** — persona=None, mood=None, device=Smartphone, score=0.580, UI keys: whitespace
+- **Profile 416** — persona=Deal Hunter, mood=None, device=Smartphone, score=0.555, UI keys: image_text_ratio, info_density, price_display, whitespace
+- **Profile 420** — persona=None, mood=None, device=Smartphone, score=0.552, UI keys: image_text_ratio
+- **Profile 424** — persona=None, mood=None, device=None, score=0.555, UI keys: whitespace
+- **Profile 425** — persona=None, mood=None, device=Smartphone, score=0.555, UI keys: whitespace
+
+## Warnings
+- profile 5: fewer than 2 UI adaptations
+- profile 6: fewer than 2 UI adaptations
+- profile 27: fewer than 2 UI adaptations
+- profile 28: fewer than 2 UI adaptations
+- profile 29: fewer than 2 UI adaptations
+- profile 318: fewer than 2 UI adaptations
+- profile 319: fewer than 2 UI adaptations
+- profile 320: fewer than 2 UI adaptations
+- profile 323: fewer than 2 UI adaptations
+- profile 324: fewer than 2 UI adaptations
+- profile 359: fewer than 2 UI adaptations
+- profile 361: fewer than 2 UI adaptations
+- profile 364: fewer than 2 UI adaptations
+- profile 366: fewer than 2 UI adaptations
+- profile 367: fewer than 2 UI adaptations
+- profile 368: fewer than 2 UI adaptations
+- profile 369: fewer than 2 UI adaptations
+- profile 370: fewer than 2 UI adaptations
+- profile 371: fewer than 2 UI adaptations
+- profile 372: fewer than 2 UI adaptations

@@ -1,0 +1,15 @@
+UI_Element,Default_Value,Percentage,Count,Total_Responses,Unique_Options
+font_style_pref,2. Classic Serif (Traditional fonts with decorative strokes like Times New Roman),36.5,73,200,4
+font_size_pref,"3. Large (16-18px - Easy to read, comfortable)",48.0,96,200,4
+color_theme_pref,"Minimalist Black & White (Clean, high contrast, professional)",24.5,49,200,6
+accent_color_pref,"Blue (Trustworthy, professional, calm)",60.5,121,200,7
+background_pref,"Cream/Off-white (Warm, comfortable, paper-like)",36.0,72,200,5
+whitespace_pref,Balanced (Moderate spacing - comfortable middle ground),73.5,147,200,3
+button_style_pref,"Rounded Corners (Soft, modern rounded edges)",41.5,83,200,6
+hero_banner_size,Medium Split (Takes up half the screen),53.5,107,200,4
+recommendation_type,Deals (Products on sale or special offers),47.0,94,200,4
+social_proof_display,User Photos (Photos uploaded by customers),36.5,73,200,5
+urgency_pref,Both (Show both stock and time based urgency),32.5,65,200,5
+checkout_style,One Page (All checkout steps on a single scrolling page),38.5,77,200,5
+form_field_style,Rounded Border Fields (Outlined field with rounded corners),24.5,49,200,8
+product_desc_length,Expandable Sections (Organized into collapsible sections),35.0,70,200,4

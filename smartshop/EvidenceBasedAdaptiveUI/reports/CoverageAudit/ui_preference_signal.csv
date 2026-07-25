@@ -1,0 +1,42 @@
+UI_Element,Unique_Values,Missing_Pct,Top_Share,Top_Value,Signal
+mobile_whitespace,3,0.0,0.85,Balanced,Low signal (one value dominates)
+mobile_image_text_ratio,3,0.0,0.83,Balanced,Low signal (one value dominates)
+desktop_persistent_filters,2,0.0,0.75,Yes,Low signal (one value dominates)
+whitespace_pref,3,0.0,0.735,Balanced,Low signal (one value dominates)
+desktop_info_density,3,0.0,0.725,Moderate,Low signal (one value dominates)
+mobile_info_density,3,0.0,0.685,Moderate,Moderate signal
+mobile_sticky_header,2,0.0,0.645,Yes,Moderate signal
+mobile_price_display,3,0.0,0.625,Strike-through Original,Moderate signal
+accent_color_pref,7,0.0,0.605,Blue,Moderate signal
+mobile_filter_location,3,0.0,0.58,Drawer Overlay,Moderate signal
+desktop_whitespace,3,0.0,0.57,Balanced,Moderate signal
+mobile_touch_size,3,0.0,0.555,Standard,Moderate signal
+desktop_image_text_ratio,3,0.0,0.535,Image-focused,Good diversity
+hero_banner_size,4,0.0,0.535,Medium Split,Good diversity
+mobile_review_display,3,0.0,0.53,Collapsible Sections,Good diversity
+mobile_quick_view,3,0.0,0.52,Slide-Up Panel,Good diversity
+mobile_navigation,4,0.0,0.5,Bottom Nav,Good diversity
+font_size_pref,4,0.0,0.48,3. Large,Good diversity
+desktop_quick_view,4,0.0,0.48,Sidebar Slide,Good diversity
+recommendation_type,4,0.0,0.47,Deals,Good diversity
+mobile_grid_pref,4,0.0,0.47,Compact stacked cards,Good diversity
+desktop_filter_location,3,0.0,0.455,Sidebar Left,Good diversity
+desktop_search_visibility,3,0.0,0.43,Always Visible Top,Good diversity
+mobile_category_display,3,0.0,0.425,Dropdown Menu,Good diversity
+desktop_category_display,4,0.0,0.425,Visual Grid,Good diversity
+button_style_pref,6,0.0,0.415,Rounded Corners,Good diversity
+mobile_search_visibility,3,0.0,0.395,Collapsible,Good diversity
+desktop_review_display,4,0.0,0.39,Recent 3- 5,Good diversity
+mobile_product_card,5,0.0,0.39,Info Rich,Good diversity
+checkout_style,5,0.0,0.385,One Page,Good diversity
+social_proof_display,5,0.0,0.365,User Photos,Good diversity
+font_style_pref,4,0.0,0.365,2. Classic Serif,Good diversity
+background_pref,5,0.0,0.36,Cream/Off-white,Good diversity
+product_desc_length,4,0.0,0.35,Expandable Sections,Good diversity
+desktop_grid_pref,5,0.0,0.335,3 Columns,Good diversity
+urgency_pref,5,0.0,0.325,Both,Good diversity
+desktop_product_card,5,0.0,0.3,Info Rich,Good diversity
+desktop_navigation,4,0.0,0.295,Top Bar,Good diversity
+desktop_price_display,5,0.0,0.265,With Savings Highlighted,Good diversity
+form_field_style,8,0.0,0.245,Rounded Border Fields,Good diversity
+color_theme_pref,6,0.0,0.245,Minimalist Black & White,Good diversity

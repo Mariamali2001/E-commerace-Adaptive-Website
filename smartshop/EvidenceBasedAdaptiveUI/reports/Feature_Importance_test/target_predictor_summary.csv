@@ -1,0 +1,4 @@
+UI_Group,UI_Target,Top_Predictor,Top_Predictor_Importance,Top_3_Predictors,Top_3_Importance_Values,Top_SHAP_Predictors,Top_SHAP_Values,Top_Mean_ABS_SHAP
+Global_UI,font_style_pref,Neuroticism,0.16278672119593884,"Neuroticism, Openness, Conscientiousness","0.1628, 0.1484, 0.1424","primary_device, Neuroticism, current_mood","0.0462, 0.0393, 0.0280",0.04618737637245555
+Desktop_UI,desktop_grid_pref,Neuroticism,0.15307314649017473,"Neuroticism, Conscientiousness, Agreeableness","0.1531, 0.1492, 0.1420","Neuroticism, primary_persona, current_mood","0.0232, 0.0221, 0.0208",0.02322110517864937
+Mobile_UI,mobile_grid_pref,Openness,0.1504476056440278,"Openness, Neuroticism, Agreeableness","0.1504, 0.1436, 0.1387","current_mood, Agreeableness, primary_persona","0.0346, 0.0278, 0.0240",0.034601350949142275
