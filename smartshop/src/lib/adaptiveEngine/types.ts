@@ -40,6 +40,29 @@ export type FinalUIConfiguration = {
   log: AdaptationLogEntry[];
   /** Human-readable pipeline summary */
   pipeline: string[];
+  /**
+   * Explicit factor fallbacks from the matrix ladder:
+   * mood → device → persona (null = exact match used).
+   */
+  factorFallbacks?: {
+    persona: { requested: string | null; used: string } | null;
+    device: { requested: string | null; used: string } | null;
+    mood: { requested: string | null; used: string } | null;
+  } | null;
+  /**
+   * @deprecated Prefer factorFallbacks.mood — kept for banner/compat.
+   */
+  moodFallback?: {
+    requested: string | null;
+    used: string;
+  } | null;
+  /**
+   * Token keys filled from global_defaults.json because the specialized
+   * master cell was missing them (never overwrites master values).
+   */
+  globalFill?: {
+    keys: string[];
+  } | null;
 };
 
 export type AdaptiveEngineResult = {

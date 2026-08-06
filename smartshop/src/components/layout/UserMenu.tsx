@@ -2,47 +2,15 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
-
 import { isAdminEmailClient } from "@/lib/admin-email";
 import { clearAdaptiveExperiment } from "@/lib/experiment/clearAdaptive";
-
-type User = {
-  id: string;
-  email: string;
-  name: string;
-};
+import { useAuthSession } from "@/lib/experiment/AdaptiveAuthProvider";
 
 export function UserMenu() {
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const { ready, user, clearUser } = useAuthSession();
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Fetch current user
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
-  const fetchUser = async () => {
-    try {
-      const response = await fetch("/api/auth/me", {
-        credentials: "include",
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch user:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -57,41 +25,45 @@ export function UserMenu() {
   const handleLogout = async () => {
     try {
       clearAdaptiveExperiment();
+      clearUser();
       await fetch("/api/auth/logout", {
         method: "POST",
         credentials: "include",
       });
-      setUser(null);
       setIsOpen(false);
-      // Full reload so adaptive banner/theme cannot linger
       window.location.href = "/";
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
 
-  if (isLoading) {
+  if (!ready) {
     return (
       <div className="flex items-center gap-3">
-        <div className="h-8 w-20 bg-neutral-200 rounded animate-pulse" />
+        <div className="h-8 w-20 animate-pulse rounded bg-neutral-200" />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <>
-        <Link href="/auth/login" className="text-sm hover:text-neutral-600 transition-colors">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <Link
+          href="/auth/login"
+          className="text-sm font-medium text-neutral-800 transition-colors hover:text-neutral-600"
+        >
           Log in
         </Link>
-        <Link href="/auth/signup" className="hidden md:inline-block text-sm hover:text-neutral-600 transition-colors">
+        <Link
+          href="/auth/signup"
+          className="rounded-full bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-neutral-800 sm:text-sm"
+        >
           Sign up
         </Link>
-      </>
+      </div>
     );
   }
 
-  // Get initials for avatar
   const initials = user.name
     .split(" ")
     .map((n) => n[0])
@@ -103,44 +75,44 @@ export function UserMenu() {
     <div ref={menuRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+        className="flex items-center gap-2 transition-opacity hover:opacity-80"
         aria-label="User menu"
       >
-        <div className="hidden md:flex flex-col items-end">
+        <div className="hidden flex-col items-end md:flex">
           <span className="text-sm font-medium">{user.name}</span>
           <span className="text-xs text-neutral-500">{user.email}</span>
         </div>
-        <div className="h-10 w-10 rounded-full bg-neutral-900 text-white flex items-center justify-center font-semibold text-sm">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-900 text-sm font-semibold text-white">
           {initials}
         </div>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-xl border border-neutral-200 py-2 z-50">
-          <div className="px-4 py-3 border-b border-neutral-100">
-            <p className="text-sm font-semibold truncate">{user.name}</p>
-            <p className="text-xs text-neutral-500 truncate">{user.email}</p>
+        <div className="absolute right-0 top-full z-50 mt-2 w-56 rounded-lg border border-neutral-200 bg-white py-2 shadow-xl">
+          <div className="border-b border-neutral-100 px-4 py-3">
+            <p className="truncate text-sm font-semibold">{user.name}</p>
+            <p className="truncate text-xs text-neutral-500">{user.email}</p>
           </div>
 
           <div className="py-1">
             <Link
               href="/shop/wishlist"
               onClick={() => setIsOpen(false)}
-              className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors"
+              className="block px-4 py-2 text-sm transition-colors hover:bg-neutral-50"
             >
               My Wishlist
             </Link>
             <Link
               href="/orders"
               onClick={() => setIsOpen(false)}
-              className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors"
+              className="block px-4 py-2 text-sm transition-colors hover:bg-neutral-50"
             >
               My Orders
             </Link>
             <Link
               href="/profile"
               onClick={() => setIsOpen(false)}
-              className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors"
+              className="block px-4 py-2 text-sm transition-colors hover:bg-neutral-50"
             >
               Profile Settings
             </Link>
@@ -148,7 +120,7 @@ export function UserMenu() {
               <Link
                 href="/admin"
                 onClick={() => setIsOpen(false)}
-                className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors"
+                className="block px-4 py-2 text-sm transition-colors hover:bg-neutral-50"
               >
                 Admin experiment data
               </Link>
@@ -158,7 +130,7 @@ export function UserMenu() {
           <div className="border-t border-neutral-100 pt-1">
             <button
               onClick={handleLogout}
-              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+              className="w-full px-4 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50"
             >
               Log out
             </button>
@@ -168,4 +140,3 @@ export function UserMenu() {
     </div>
   );
 }
-

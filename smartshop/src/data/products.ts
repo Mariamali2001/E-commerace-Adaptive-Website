@@ -331,8 +331,9 @@ export const products: Product[] = [
     title: "Premium Clear Phone Case",
     price: 29,
     rating: 3.8,
+    // Image index matches color index (0 = black, 1 = clear/white)
     images: ["/images/iphone.jpg", "/images/prod1.jpg"],
-    colors: ["#fff", "#111"],
+    colors: ["#111", "#fff"],
     sizes: ["iPhone 14", "iPhone 15"],
     description: "Slim clear case with raised edges for screen and camera protection.",
     category: "electronics",

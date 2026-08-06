@@ -155,12 +155,30 @@ export async function resetPassword(token: string, newPassword: string): Promise
   return true;
 }
 
-// Seed demo account on startup
+// Seed demo account on startup (with demographics for admin CSV demos)
 (async () => {
   try {
-    await createUser({ email: "demo@smartshop.dev", name: "Demo User", password: "demo1234" });
-  } catch (error) {
-    // Ignore if already exists
+    await createUser({
+      email: "demo@smartshop.dev",
+      name: "Demo User",
+      password: "demo1234",
+      age: 22,
+      gender: "Female",
+    });
+  } catch {
+    // Ignore if already exists — update empty demographics if needed
+    try {
+      await connectDB();
+      await UserModel.updateOne(
+        {
+          email: "demo@smartshop.dev",
+          $or: [{ age: null }, { age: { $exists: false } }, { gender: null }, { gender: "" }],
+        },
+        { $set: { age: 22, gender: "Female" } }
+      );
+    } catch {
+      /* ignore */
+    }
   }
 })();
 

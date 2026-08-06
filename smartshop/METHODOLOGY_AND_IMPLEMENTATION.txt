@@ -1,0 +1,562 @@
+================================================================================
+METHODOLOGY AND IMPLEMENTATION
+Evidence-Based Adaptive E-Commerce Interface (SmartShop)
+Master’s Research Project — Technical Narrative for the Methodology Chapter
+================================================================================
+Document purpose: Support writing the Methodology and Implementation sections
+of the thesis. Language is research-oriented; claims reflect the system as
+implemented in the SmartShop codebase.
+
+Last reviewed against the live project structure under:
+  New_Master copy 2 / smartshop/
+
+
+--------------------------------------------------------------------------------
+0. DIRECT ANSWER: IS THE MASTER SYSTEM “HARD-CODED”?
+--------------------------------------------------------------------------------
+
+Short answer: No — not for adaptive decisions.
+
+A precise distinction is required for academic honesty:
+
+A) ADAPTATION DECISIONS (what UI preferences apply)
+   NOT hard-coded.
+   Persona × device × mood categorical UI tokens are retrieved from a
+   survey-derived master rules matrix (master_adaptive_ui_rules.json),
+   produced offline from the e-commerce preference survey via majority-vote
+   guideline extraction. At runtime the Adaptive Engine performs an O(1)
+   lookup (with an explicit fallback ladder and global-default fill), then
+   applies soft TIPI trait nudges that never replace categorical tokens.
+
+B) ADAPTATION IMPLEMENTATION (how tokens become visible UI)
+   Intentionally hand-wired.
+   React Adaptive* components and CSS attribute rules map Final UI
+   Configuration tokens to navigation, theme, cards, filters, checkout,
+   reviews, quick view, etc. This is standard engineering practice: the
+   policy comes from evidence; the presentation layer implements that policy
+   deterministically for a controlled experiment.
+
+C) E-COMMERCE SHELL CONTENT (catalog, hero marketing copy, seed products)
+   Hard-coded / seeded.
+   Product titles, hero slogan, and demo catalog are fixed storefront
+   content. They are not claimed as personalized recommendations from the
+   survey matrix. Adaptation concerns interface structure and style tokens,
+   not inventing product inventory.
+
+D) OPTIONAL LLM COMPONENT GENERATOR
+   Does NOT decide UI.
+   After the engine finalizes tokens, an optional LLM step may generate or
+   cache React/TSX artifacts from an ImplementationSpec that deliberately
+   strips persona, mood, device, and traits. The live participant UI is
+   driven by the Adaptive Engine + wired Adaptive components. The LLM is an
+   implementation/assist layer, not the adaptive policy.
+
+Therefore, for the methodology chapter it is accurate to write:
+
+  “The adaptive policy is evidence-based and rule-based (JSON lookup from
+   survey guidelines). The storefront implementation is a controlled
+   software realization of those guidelines. The system is not a hard-coded
+   single layout pretending to adapt, nor an LLM that freely redesigns the
+   interface from raw mood or personality.”
+
+
+--------------------------------------------------------------------------------
+1. RESEARCH PROBLEM AND DESIGN GOALS
+--------------------------------------------------------------------------------
+
+Problem. E-commerce interfaces are typically one-size-fits-all, despite
+documented differences in shopping styles (persona), device constraints, and
+affective state (mood). Personality traits (TIPI) may further modulate
+preference intensity without necessarily changing categorical layout choices.
+
+Design goals of this master’s system:
+
+  1. Ground UI adaptation in empirical preference data (survey), not
+     designer intuition alone.
+  2. Separate CONTEXT (who/what is known) from DECISION (which UI tokens)
+     from IMPLEMENTATION (how tokens are rendered).
+  3. Keep runtime adaptation deterministic and explainable (logs, fallbacks).
+  4. Support a participant experiment with saved outcomes for analysis.
+  5. Optionally explore LLM-assisted component implementation without
+     allowing the LLM to choose the adaptive policy.
+
+
+--------------------------------------------------------------------------------
+2. OVERALL METHODOLOGY (TWO PHASES)
+--------------------------------------------------------------------------------
+
+The work comprises two complementary phases.
+
+PHASE I — OFFLINE EVIDENCE AND GUIDELINE EXTRACTION
+  Source: e-commerce UI preference survey responses (CSV).
+  Tooling: adaptive_ui_app (Streamlit) for cleaning, exploratory analysis,
+  statistical / feature-influence inspection, and majority-vote guideline
+  export.
+  Outputs committed (or placed) as runtime assets:
+    - public/assets/master_adaptive_ui_rules.json
+    - public/assets/global_defaults.json
+    - public/assets/trait_modifiers.json  (soft TIPI intensity table)
+
+PHASE II — ONLINE ADAPTIVE STOREFRONT AND EXPERIMENT
+  Platform: Next.js SmartShop application with MongoDB session/experiment
+  storage, webcam mood inference (EfficientNet-based Mood API), Adaptive
+  Engine, wired Adaptive UI, optional LLM ensure-components, admin CSV
+  export.
+
+This split matters scientifically: heavy statistical work and majority
+aggregation happen offline; the live system only looks up precomputed
+guidelines, which improves transparency, speed, and reproducibility during
+the user study.
+
+
+--------------------------------------------------------------------------------
+3. DATA AND GUIDELINE CONSTRUCTION (PHASE I)
+--------------------------------------------------------------------------------
+
+3.1 Survey instrument (conceptual)
+Participants indicated shopping persona, primary device, current mood, TIPI
+items, and preferences over UI elements (navigation, product cards, theme,
+filters, checkout, form fields, reviews/social proof, quick view, etc.).
+Many items used labeled options with parenthetical descriptions (e.g.
+“Filled Background (Shaded background, no border)”) so that option meaning
+was explicit at elicitation time.
+
+3.2 Cleaning and quality control
+The extraction pipeline applies attention / quality filters so that
+guideline votes are not dominated by low-quality rows. Global defaults
+metadata in the project records a retained dataset size on the order of
+~250 quality-checked records (exact N should be cited from the cleaning
+report / export metadata when writing the thesis).
+
+3.3 Guideline rule (majority)
+For a given slice of (persona, device, mood), the preferred value of each
+UI token is the majority (or analogous aggregate) among respondents in that
+slice. Where a slice is sparse, cells may be missing or marked insufficient;
+the runtime engine is designed to fall back rather than invent preferences.
+
+3.4 Master adaptive UI rules matrix
+Export builds a nested structure:
+
+  rules[persona_label][device_label][mood_label] → { ui_token: preferred_value, ... }
+
+Personas and devices use the survey’s full labels (mapped at runtime from
+short website labels such as “Researcher” or “mobile”).
+Each cell contains both shared (global) preference keys and device-prefixed
+keys (desktop_* / mobile_*), so that the engine can keep only the active
+device’s layout tokens.
+
+3.5 Global defaults (Any / Any / Any)
+A dataset-wide majority across all personas, devices, and moods is exported
+as global_defaults.json. At runtime, these values fill residual missing
+tokens AFTER specialized matrix lookup, and NEVER overwrite an existing
+specialized value. This preserves specificity while ensuring a complete
+configuration.
+
+3.6 Trait modifiers (soft layer)
+TIPI High/Low levels map to small numeric nudges (e.g. information density,
+visual richness, social-proof emphasis, recommendation strength). These
+adjust intensity via CSS variables / attributes; they do not flip categorical
+choices such as “mega menu” vs “top bar”. This encodes the methodological
+claim that traits modulate style intensity rather than redefine the matrix
+cell.
+
+
+--------------------------------------------------------------------------------
+4. ONLINE SYSTEM ARCHITECTURE (PHASE II)
+--------------------------------------------------------------------------------
+
+4.1 Logical layers
+
+  [Participant]
+       │
+       ▼
+  Context Builder ........ gathers & normalizes facts only
+       │                   (device, persona, moods, traits, demographics)
+       ▼
+  Adaptive Engine ........ ONLY decision maker
+       │                   master lookup → global fill → trait nudges
+       │                   → Final UI Configuration + adaptation log
+       ▼
+  toImplementationSpec ... strips context; keeps resolved UI decisions
+       │
+       ├──► Adaptive UI Adapter / Adaptive* components / CSS
+       │         (primary participant experience)
+       │
+       └──► Optional LLM Component Generator
+                 (cache React artifacts; must not re-decide policy)
+       │
+       ▼
+  Experiment persistence + Admin CSV export
+
+
+4.2 Why this separation is methodologically important
+If mood or persona were passed into an LLM with instructions to “design a UI”,
+the adaptation policy would be opaque and unstable. Here, the policy is
+inspectable JSON. The LLM, when used, receives already-decided tokens only.
+That supports claims of controllability and auditability required in a
+thesis experiment.
+
+
+--------------------------------------------------------------------------------
+5. CONTEXT BUILDER
+--------------------------------------------------------------------------------
+
+Role: assemble a Context Object for the session without choosing UI tokens.
+
+Typical fields:
+  - participant / user identifiers
+  - device (client detection: mobile vs desktop)
+  - questionnaire persona (and mapped guideline persona)
+  - self-reported mood (stored for analysis)
+  - model-detected mood + confidence (from Mood API)
+  - bridged guideline mood (FER label → survey mood label)
+  - TIPI trait scores and High/Low levels
+  - optional demographics (e.g. age/gender from signup)
+
+Important: Context Builder does not merge guideline JSON into a layout.
+Decision authority remains with the Adaptive Engine.
+
+
+--------------------------------------------------------------------------------
+6. MOOD SENSING
+--------------------------------------------------------------------------------
+
+6.1 Detection path
+A webcam capture step sends frames to a local Mood API (Python/FastAPI +
+trained EfficientNet-style classifier). The Next.js app proxies predictions.
+
+6.2 Bridging
+Raw model labels (e.g. happy, sad, fear) are mapped to survey guideline
+moods (e.g. Happy, Sad, Stressed) through an explicit bridge table. This
+mapping is a documented methodological assumption and can be refined with
+study data.
+
+6.3 Self-report vs detection
+Self-reported mood is collected and stored. The engine’s guideline mood for
+lookup is based on the bridged detected mood in the implemented experiment
+flow (self-report remains available for disagreement analysis). Mismatch
+between camera and self-report is expected and scientifically interesting;
+it should be logged and discussed, not “fixed” by forcing agreement.
+
+6.4 Fallback for unavailable camera
+Manual mood buttons allow continuation when HTTPS/camera constraints block
+detection (especially on some mobile browsers). For the study protocol,
+prefer real camera when possible; document backup use.
+
+
+--------------------------------------------------------------------------------
+7. ADAPTIVE ENGINE (CORE METHOD)
+--------------------------------------------------------------------------------
+
+7.1 Input
+Context Object (device, persona, mood, traits, …).
+
+7.2 Master lookup
+Map website persona/device to master keys; retrieve
+rules[persona][device][mood].
+
+7.3 Factor fallback ladder (explicit, logged)
+When an exact cell is missing or sparse:
+
+  1) Prefer exact persona × device × mood
+  2) Relax mood (ordered candidates, typically Neutral first)
+  3) Relax device (other device under same persona)
+  4) Relax persona (e.g. Browser, then other available personas)
+  5) Global defaults fill any remaining missing tokens
+
+Each relaxation is recorded (mood_fallback / device_fallback /
+persona_fallback / global_defaults_fill) in the adaptation log and can be
+surfaced on a debug/adaptation banner for transparency during demos.
+
+7.4 Device-scoped tokens
+After lookup, desktop_* vs mobile_* keys are filtered so the active device
+does not apply the other device’s layout tokens.
+
+7.5 Global fill
+mergeWithGlobalDefaults fills holes without overwriting specialized values.
+
+7.6 Soft TIPI nudges
+applyTraitNudges produces bounded numeric deltas; categorical tokens stay
+intact.
+
+7.7 Output: Final UI Configuration
+Includes:
+  - version / engine type (rule_based_json)
+  - context references
+  - device, persona, resolved mood, detected mood
+  - tokens map (value + source provenance)
+  - nudges
+  - structured log + human-readable pipeline steps
+  - factorFallbacks / moodFallback / globalFill summaries
+
+This object is the single source of truth for the adapted session.
+
+
+--------------------------------------------------------------------------------
+8. FROM DECISIONS TO INTERFACE (IMPLEMENTATION)
+--------------------------------------------------------------------------------
+
+8.1 resolveVariants
+Maps repository token keys to short implementation variant IDs
+(e.g. desktop_navigation → navigation → mega_menu / top_bar / …).
+Full survey option text (including parenthetical descriptions) is preserved
+in ImplementationSpec decisions for LLM prompts; variant IDs use the short
+label for stable CSS/component matching.
+
+8.2 AdaptiveThemeProvider
+When the participant is in an allowed adapted session, sets document
+attributes such as data-theme, data-background, data-accent, data-nav,
+data-form-fields, data-quick-view, data-categories, data-filters, mood, and
+nudge variables consumed by CSS.
+
+8.3 Hand-wired Adaptive components (representative)
+  - AdaptiveNavbar — navigation modes
+  - AdaptiveHero — hero size variants (theme-aware surfaces)
+  - AdaptiveCategoryStrip — visual grid / text list / dropdown / mega images
+  - AdaptiveProductCard — card families + price/social-proof snippets
+  - ProductCardWithQuickView — modal / sidebar / slide-up / new tab / direct / none
+  - AdaptiveShopLayout + FilterSidebar — sidebar / top / modal / drawer /
+    bottom sheet / fullscreen; persistent-filters gate for permanent sidebar
+  - AdaptiveCheckout — one-page / multi-step / express + form field styles
+  - AdaptiveReviews — review layout vs social-proof type (kept distinct)
+  - AdaptiveProductDesc — brief / moderate / expandable / detailed
+  - TopSelling recommendation sorting by recommendation_type
+  - globals.css — themes (incl. minimalist B&W end-to-end treatment of
+    chrome/hero/urgency), accents, backgrounds, form fields, fonts, whitespace,
+    urgency strip, trait nudges
+
+8.4 What “wired” means in this thesis
+A survey option is considered implemented when the Final UI Configuration
+token changes observable interface behavior for participants under adapted
+sessions. Banner text alone is insufficient; Adaptive components/CSS must
+consume the token.
+
+
+--------------------------------------------------------------------------------
+9. LLM ROLE (IMPLEMENTATION CHAPTER — CRITICAL CLARITY)
+--------------------------------------------------------------------------------
+
+Claim suitable for the thesis:
+
+  The Large Language Model is not the adaptive decision engine. It is an
+  optional implementer that receives already-resolved UI decisions and may
+  generate React component source for caching. Personality, mood, and device
+  are excluded from the LLM prompt by construction (toImplementationSpec).
+
+Implications:
+  - Reproducibility of policy does not depend on LLM stochasticity.
+  - Cost/latency: identical configuration hashes reuse cache.
+  - Participant-facing reliability: primary UX uses Adaptive Engine + wired
+    components even if LLM generation times out or is skipped.
+  - Scientifically, this avoids confounding “adaptation quality” with
+    “prompt engineering quality”.
+
+
+--------------------------------------------------------------------------------
+10. EXPERIMENT PROTOCOL (AS IMPLEMENTED)
+--------------------------------------------------------------------------------
+
+Recommended participant flow (as built):
+
+  1. Account creation / login (session identity; optional demographics)
+  2. Timed baseline browse (non-adapted or pre-adaptation shopping exposure)
+  3. Questionnaire: TIPI, shopping persona, self-reported mood
+  4. Mood capture (camera) with manual backup if needed
+  5. Context build → Adaptive Engine → Final UI Configuration
+  6. Persist experiment record (answers, moods, traits, UI tokens, log)
+  7. Adapted shopping (home/shop/PDP/cart/checkout) under adaptive gate
+  8. Researcher export via admin CSV for analysis
+
+Adaptive UI is gated so that casual browsing without a completed experiment
+configuration does not incorrectly claim personalization.
+
+Transparency aids (demo / researcher):
+  Adaptation banner listing active tokens and fallbacks.
+  Detailed token dumps can be hidden from participants while retained in
+  MongoDB/admin export for analysis.
+
+
+--------------------------------------------------------------------------------
+11. LOGGING, TRACEABILITY, AND EVALUATION HOOKS
+--------------------------------------------------------------------------------
+
+Every adapted session can record:
+  - detected vs self-reported vs guideline mood
+  - persona and device
+  - full token map with sources (master cell vs global_defaults)
+  - fallback events and global fill keys
+  - trait nudge vector
+  - pipeline step list
+
+These logs support methodology claims such as:
+  - How often exact cells exist vs mood/device/persona fallback
+  - Whether camera–self-report disagreement correlates with outcomes
+  - Which UI tokens actually varied across participants
+
+Admin export aggregates participant rows for statistical analysis in the
+Results chapter.
+
+
+--------------------------------------------------------------------------------
+12. IMPLEMENTATION STATUS RELATIVE TO THE SURVEY
+--------------------------------------------------------------------------------
+
+12.1 Substantially implemented (token → visible behavior)
+Themes, backgrounds, accents, fonts, whitespace, button styles, hero layout,
+navigation, search visibility, category strip modes, product card families,
+grids, image/text emphasis, info density cues, price display modes, filters
+(location + persistent sidebar rule), recommendations, social proof display
+type, review layout, product description length, form field styles, checkout
+modes, urgency cues, quick view modes (desktop + mobile), sticky header /
+touch sizing cues, TIPI soft nudges, factor fallbacks + global fill.
+
+12.2 Soft / limited items (disclose honestly)
+  - social_proof_influence: soft “how much proof matters”; display TYPE is
+    wired, intensity influence is weak/optional.
+  - Urgency: visual cue strip rather than full inventory-backed countdown
+    widgets.
+  - Hero marketing copy remains shared storefront text (theme/chrome adapt;
+    slogan is not re-authored per persona).
+  - LLM-generated TSX files may exist on disk as artifacts; primary live
+    rendering is the Adaptive wired path.
+  - Sparse matrix cells are inherent to the survey coverage; handled by
+    fallbacks rather than imputed fake majorities without logging.
+
+
+--------------------------------------------------------------------------------
+13. THREATS TO VALIDITY (METHODOLOGY DISCUSSION)
+--------------------------------------------------------------------------------
+
+Internal validity
+  - Camera mood noise and bridge mapping may mis-select matrix cells.
+  - Manual mood backup differs from automatic detection conditions.
+  - Fallback to Neutral (or other cells) changes the intended factor
+    combination; must be reported via logs.
+
+Construct validity
+  - Survey options are categorical preferences, not guaranteed causal
+    drivers of purchase. The system operationalizes stated preference
+    majorities as UI guidelines.
+
+External validity
+  - Catalog and brand context are a controlled demo storefront.
+  - Sample size and demographics of the original survey limit
+    generalizability of the matrix.
+
+Reliability
+  - Rule-based lookup is deterministic given the same context and assets.
+  - LLM steps, if enabled, are non-essential to policy reproducibility.
+
+
+--------------------------------------------------------------------------------
+14. IDEAS AND EXTENSIONS (IF TIME REMAINS)
+--------------------------------------------------------------------------------
+
+These are optional improvements, not required to claim a complete master’s
+implementation of the core method:
+
+  1. Validation study metrics from admin CSV: fallback rates; mood agreement;
+     post-task preference / SUS; task success (checkout completion).
+  2. Coverage appendix: persona×device×mood cell occupancy heatmap.
+  3. Either wire social_proof_influence as a true intensity control or remove
+     it from defaults to avoid a phantom token.
+  4. Stronger inventory-linked urgency widgets still driven by the same
+     urgency token.
+  5. Publish a frozen asset hash (master/global/trait JSON versions) with the
+     study protocol so replications use identical guidelines.
+  6. If “LLM implements” must be visually demonstrable, mount one generated
+     catalog component under strict validation — without feeding context
+     keys back into the model.
+  7. Deploy study build (HTTPS) with Mood API hosted or documented manual
+     mood path for remote participants.
+
+
+--------------------------------------------------------------------------------
+15. SUGGESTED WORDING FOR THE THESIS (READY-TO-ADAPT PARAGRAPHS)
+--------------------------------------------------------------------------------
+
+Paragraph — Decision vs implementation
+“In this work, interface adaptation is treated as a decision problem over
+survey-derived UI guidelines. A master matrix maps shopping persona, device,
+and mood to categorical interface tokens. Soft personality nudges adjust
+presentation intensity without overriding those categorical choices. The
+SmartShop application implements the resulting Final UI Configuration through
+deterministic Adaptive components and stylesheets. An optional language-model
+stage may synthesize component source from the resolved decisions but is
+architecturally forbidden from receiving raw persona, mood, or trait context
+as redesign inputs.”
+
+Paragraph — Not hard-coded adaptation
+“Although the e-commerce shell (product catalog and shared marketing copy)
+is a controlled storefront, the adaptive policy itself is not hard-coded as
+a single layout. Different persona–device–mood contexts retrieve different
+guideline cells from the evidence matrix, with explicit fallbacks and global
+defaults when survey coverage is incomplete. Session logs record which cell
+and which fallbacks were used, enabling transparent analysis.”
+
+Paragraph — Experiment
+“Participants progress through baseline browsing, a psychometric and persona
+questionnaire, affective sensing, engine resolution, and adapted shopping.
+Outcomes and UI tokens are stored for administrative export, linking each
+participant’s context to the exact interface configuration they experienced.”
+
+
+--------------------------------------------------------------------------------
+16. KEY PROJECT LOCATIONS (FOR THE IMPLEMENTATION APPENDIX)
+--------------------------------------------------------------------------------
+
+Evidence / export
+  smartshop/adaptive_ui_app/
+  smartshop/public/assets/master_adaptive_ui_rules.json
+  smartshop/public/assets/global_defaults.json
+  smartshop/public/assets/trait_modifiers.json
+
+Engine / context
+  smartshop/src/lib/context/
+  smartshop/src/lib/adaptiveEngine/
+  smartshop/src/app/api/adaptive-engine/generate/
+
+UI realization
+  smartshop/src/lib/uiAdapter/
+  smartshop/src/components/adaptive/
+  smartshop/src/app/globals.css
+
+LLM (optional implementer)
+  smartshop/src/llm/
+  smartshop/src/app/api/llm/ensure-components/
+  smartshop/generated_components/
+
+Mood
+  smartshop/mood_model/mood_api.py
+  smartshop/src/app/api/mood/predict/
+  smartshop/src/lib/guidelines/moodBridge.ts
+
+Experiment / admin
+  smartshop/src/components/experiment/
+  smartshop/src/server/experiment.ts
+  smartshop/src/app/admin/
+
+
+--------------------------------------------------------------------------------
+17. BOTTOM LINE FOR THE METHODOLOGY CHAPTER
+--------------------------------------------------------------------------------
+
+This master’s system operationalizes evidence-based adaptive UI as:
+
+  Survey evidence
+    → offline majority guidelines
+    → master matrix + global defaults + soft trait table
+    → runtime Adaptive Engine (explainable lookup + fallbacks)
+    → Final UI Configuration
+    → deterministic Adaptive storefront implementation
+    → optional LLM implementation assist
+    → logged participant experiment
+
+It is therefore accurate to describe the project as an evidence-based,
+rule-based adaptive interface system with a carefully scoped LLM role —
+not as a hard-coded fake personalization demo, and not as an unconstrained
+generative UI.
+
+================================================================================
+END OF DOCUMENT
+================================================================================

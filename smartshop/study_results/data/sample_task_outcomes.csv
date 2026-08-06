@@ -1,0 +1,7 @@
+participant_id,reached_cart,placed_order
+u001,yes,yes
+u002,yes,no
+u003,yes,yes
+u004,yes,yes
+u005,yes,no
+u006,no,no

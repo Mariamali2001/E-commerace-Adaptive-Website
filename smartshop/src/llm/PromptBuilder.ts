@@ -1,52 +1,49 @@
 import type { SupportedComponent, VariantRequest } from "./LLMTypes";
+import { ADAPTIVE_COMPONENT_NAMES } from "./componentNames";
 
-const SYSTEM_PROMPT = `You are an expert React and TypeScript developer.
+const SYSTEM_PROMPT = `You are an expert React/TypeScript implementer.
 
-The adaptive interface has already been designed by a rule-based Adaptive Engine.
-Every UI decision has been validated from survey guidelines.
+The Adaptive Engine has already finalized every UI decision.
+Implement the supplied configuration exactly — do not redesign, recommend, infer, or invent UI.
+Do not use personality, mood, persona, or device (already processed upstream).
 
-Do NOT redesign anything.
-Do NOT recommend anything.
-Do NOT invent new UI decisions, colors, layouts, or components.
-Do NOT mention mood, persona, traits, or survey data.
-
-Implement the supplied configuration exactly as a single React TypeScript component variant.
-Use Tailwind CSS utility classes.
-Use existing project patterns: "use client" only if needed, lucide-react sparingly, next/link when linking.
-Return ONLY valid TypeScript/TSX code — no markdown fences, no explanations.`;
+Output only valid React TypeScript (Tailwind utilities; next/link OK).
+No markdown, no explanations.`;
 
 /**
- * Build a deterministic prompt for offline variant generation.
- * Input is ImplementationSpec decisions only — never raw context.
+ * Deterministic prompt from ImplementationSpec decisions only.
+ * Never pass FinalUIConfiguration, persona, mood, or device here.
  */
 export function buildVariantPrompt(request: VariantRequest): {
   system: string;
   user: string;
 } {
-  const decisionJson = JSON.stringify(request.decisions, null, 2);
+  const adaptiveName = ADAPTIVE_COMPONENT_NAMES[request.componentName];
+  const namedExport = exportName(request.componentName, request.variantId);
+  // Compact JSON — fewer prompt tokens than pretty-printed decisions
+  const decisionJson = JSON.stringify(request.decisions);
 
-  const user = `Generate ONE React TypeScript variant component.
+  const user = `Generate ONLY ${adaptiveName}.tsx
+Family: ${request.componentName}
+Variant: ${request.variantId}
+Decisions (implement exactly — each value is the full survey option; honor the text in parentheses as the visual spec): ${decisionJson}
 
-Component family: ${request.componentName}
-Variant id: ${request.variantId}
-
-Implementation decisions (already finalized — implement exactly):
-${decisionJson}
-
-Requirements:
-- Export a named function component: ${exportName(request.componentName, request.variantId)}
-- Props: use a minimal typed props interface appropriate for ${request.componentName}
-- Do not import from @/llm or adaptive engine modules
-- Do not hardcode mood/persona
-- Realize ONLY the decisions above (e.g. button_style Rounded → rounded classes)
-- No markdown, no comments that suggest alternative designs`;
+- Export named function: ${namedExport}
+- Minimal typed props for ${request.componentName}
+- No imports from @/llm, @/lib/adaptiveEngine, or @/lib/context
+- No mood/persona/traits/device; no markdown or explanations`;
 
   return { system: SYSTEM_PROMPT, user };
 }
 
-export function exportName(componentName: SupportedComponent, variantId: string): string {
+export function exportName(
+  componentName: SupportedComponent,
+  variantId: string
+): string {
   const parts = variantId.split("_").filter(Boolean);
-  const pascal = parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join("");
+  const pascal = parts
+    .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+    .join("");
   return `${pascal}${componentName}`;
 }
 

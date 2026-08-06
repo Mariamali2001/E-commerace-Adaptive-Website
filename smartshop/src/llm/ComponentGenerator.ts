@@ -36,13 +36,19 @@ export type GenerateOpts = {
 };
 
 /**
- * Offline-only: generate ONE component variant via Gemini or OpenAI.
- * Never used on the live shop render path.
+ * Generate ONE React/TSX component variant via Gemini or OpenAI.
+ * Input must be ImplementationSpec decisions only (via VariantRequest).
+ * Called only for unseen configuration hashes (cache miss).
  */
 export async function generateVariantWithLLM(
   request: VariantRequest,
   opts?: GenerateOpts
-): Promise<Omit<GenerationResult, "cacheHit" | "source"> & { raw?: string }> {
+): Promise<
+  Omit<
+    GenerationResult,
+    "cacheHit" | "source" | "configurationHash" | "filePath" | "modulePath"
+  > & { raw?: string }
+> {
   const provider = resolveLlmProvider(opts?.provider);
   const model = resolveModel(provider, opts?.model);
   const { system, user } = buildVariantPrompt(request);
@@ -85,7 +91,7 @@ async function callGemini(input: {
   const apiKey = input.apiKey ?? process.env.GEMINI_API_KEY;
   if (!apiKey?.trim()) {
     throw new Error(
-      "GEMINI_API_KEY is not set. Add it to .env.local (Google AI Studio). Live shop does not need this key."
+      "GEMINI_API_KEY is not set. Add it to .env.local (Google AI Studio), or rely on cached/catalog components."
     );
   }
 
@@ -148,20 +154,29 @@ async function callOpenAI(input: {
     );
   }
 
+  const model = input.model.trim();
+  // gpt-5 / o-series style models often only allow default temperature
+  // and reject temperature: 0 (required by older chat models).
+  const supportsCustomTemperature = !/^(gpt-5|o\d|chatgpt-4o)/i.test(model);
+
+  const body: Record<string, unknown> = {
+    model,
+    messages: [
+      { role: "system", content: input.system },
+      { role: "user", content: input.user },
+    ],
+  };
+  if (supportsCustomTemperature) {
+    body.temperature = 0;
+  }
+
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      model: input.model,
-      temperature: 0,
-      messages: [
-        { role: "system", content: input.system },
-        { role: "user", content: input.user },
-      ],
-    }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {

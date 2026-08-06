@@ -1,11 +1,10 @@
 /**
- * Cost model for the offline LLM Component Generator.
+ * Cost model for the LLM Component Generator.
  *
- * Live website path: $0 — VariantResolver only, no LLM calls.
- * Offline / admin: pay once per missing (component, variant) then cache forever.
+ * Identical configuration hash → cache/catalog reuse = $0.
+ * Unseen hash → pay once, then persist under generated_components/.
  *
- * Default provider for testing: Gemini (free tier friendly).
- * Switch later: LLM_PROVIDER=openai + OPENAI_API_KEY.
+ * Default provider: Gemini. Switch: LLM_PROVIDER=openai + OPENAI_API_KEY.
  */
 
 export type ModelPricing = {

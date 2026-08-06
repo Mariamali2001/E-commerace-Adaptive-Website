@@ -105,16 +105,93 @@ function parseItem(answers: Record<string, string> | undefined, id: string) {
 }
 
 /**
+ * Stable Final UI token columns (master_adaptive_ui_rules keys).
+ * Each becomes `ui_<key>` in the CSV, plus full `ui_elements_json`.
+ */
+export const UI_ELEMENT_COLUMN_KEYS = [
+  "color_theme_pref",
+  "accent_color_pref",
+  "background_pref",
+  "font_style_pref",
+  "font_size_pref",
+  "whitespace_pref",
+  "button_style_pref",
+  "form_field_style",
+  "hero_banner_size",
+  "product_desc_length",
+  "recommendation_type",
+  "urgency_pref",
+  "checkout_style",
+  "social_proof_display",
+  "desktop_navigation",
+  "desktop_search_visibility",
+  "desktop_category_display",
+  "desktop_filter_location",
+  "desktop_persistent_filters",
+  "desktop_grid_pref",
+  "desktop_product_card",
+  "desktop_price_display",
+  "desktop_review_display",
+  "desktop_info_density",
+  "desktop_image_text_ratio",
+  "desktop_quick_view",
+  "desktop_whitespace",
+  "mobile_navigation",
+  "mobile_search_visibility",
+  "mobile_category_display",
+  "mobile_filter_location",
+  "mobile_grid_pref",
+  "mobile_product_card",
+  "mobile_price_display",
+  "mobile_review_display",
+  "mobile_info_density",
+  "mobile_image_text_ratio",
+  "mobile_quick_view",
+  "mobile_whitespace",
+  "mobile_sticky_header",
+  "mobile_touch_size",
+] as const;
+
+function uiColumnName(tokenKey: string) {
+  return `ui_${tokenKey}`;
+}
+
+function shortUiValue(value: unknown): string {
+  if (value == null) return "";
+  const s = String(value);
+  // Prefer the short label before "(" for Excel readability
+  const before = s.split("(")[0]?.trim();
+  return before || s;
+}
+
+/**
  * Build Excel-friendly rows. Trait scores use TIPI pair averages on 1–5 scale:
  * E=(outgoing+rev(reserved))/2, A=(trusting+rev(fault))/2,
  * C=(thorough+rev(lazy))/2, N=(nervous+rev(relaxed))/2,
  * O=(imagination+rev(few_artistic))/2
  */
 export function experimentResultsToRows(results: any[]) {
+  // Include any extra token keys present in saved results (forward-compatible)
+  const extraUiKeys = new Set<string>();
+  for (const r of results) {
+    for (const k of Object.keys(r.uiElements ?? {})) {
+      if (
+        !(UI_ELEMENT_COLUMN_KEYS as readonly string[]).includes(k) &&
+        k.trim()
+      ) {
+        extraUiKeys.add(k);
+      }
+    }
+  }
+  const allUiKeys = [
+    ...UI_ELEMENT_COLUMN_KEYS,
+    ...[...extraUiKeys].sort(),
+  ];
+
   return results.map((r) => {
     const a = (r.answers ?? {}) as Record<string, string>;
     const scores = r.traitScores ?? {};
-    const ui = r.uiElements ?? {};
+    const ui = (r.uiElements ?? {}) as Record<string, string>;
 
     // Recompute from raw items when present (authoritative for Excel)
     const reserved = Number(a.tipi_reserved);
@@ -154,6 +231,11 @@ export function experimentResultsToRows(results: any[]) {
     const round = (v: number | string) =>
       typeof v === "number" ? Math.round(v * 100) / 100 : v;
 
+    const uiColumns: Record<string, string> = {};
+    for (const key of allUiKeys) {
+      uiColumns[uiColumnName(key)] = shortUiValue(ui[key]);
+    }
+
     return {
       user_id: r.userId,
       email: r.email,
@@ -189,13 +271,32 @@ export function experimentResultsToRows(results: any[]) {
       model_detected_mood: r.detectedMood ?? "",
       model_confidence: r.detectedConfidence ?? "",
       guideline_mood: r.guidelineMood ?? "",
-      // UI adaptation placeholders (filled later)
-      ui_color_theme: ui.color_theme_pref ?? "",
-      ui_font_style: ui.font_style_pref ?? "",
-      ui_font_size: ui.font_size_pref ?? "",
-      ui_accent_color: ui.accent_color_pref ?? "",
-      ui_urgency: ui.urgency_pref ?? "",
-      ui_recommendation_type: ui.recommendation_type ?? "",
+      guidelines_pipeline: Array.isArray(r.guidelinesPipeline)
+        ? r.guidelinesPipeline.join(" → ")
+        : "",
+      // Fallback flags derived from pipeline steps (for Results chapter metrics)
+      used_mood_fallback: Array.isArray(r.guidelinesPipeline)
+        ? r.guidelinesPipeline.includes("mood_fallback")
+          ? "yes"
+          : "no"
+        : "",
+      used_device_fallback: Array.isArray(r.guidelinesPipeline)
+        ? r.guidelinesPipeline.includes("device_fallback")
+          ? "yes"
+          : "no"
+        : "",
+      used_persona_fallback: Array.isArray(r.guidelinesPipeline)
+        ? r.guidelinesPipeline.includes("persona_fallback")
+          ? "yes"
+          : "no"
+        : "",
+      used_global_fill: Array.isArray(r.guidelinesPipeline)
+        ? r.guidelinesPipeline.includes("global_defaults_fill")
+          ? "yes"
+          : "no"
+        : "",
+      // Final UI options — one column per token + full JSON
+      ...uiColumns,
       ui_elements_json: Object.keys(ui).length ? JSON.stringify(ui) : "",
       completed_at: r.completedAt
         ? new Date(r.completedAt).toISOString()
@@ -207,7 +308,12 @@ export function experimentResultsToRows(results: any[]) {
 
 export function rowsToCsv(rows: Record<string, unknown>[]): string {
   if (!rows.length) return "";
-  const headers = Object.keys(rows[0]);
+  // Union headers so every UI column appears even if first row is sparse
+  const headerSet = new Set<string>();
+  for (const row of rows) {
+    for (const k of Object.keys(row)) headerSet.add(k);
+  }
+  const headers = [...headerSet];
   const escape = (v: unknown) => {
     const s = v == null ? "" : String(v);
     if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;

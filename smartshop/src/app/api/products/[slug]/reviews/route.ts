@@ -1,11 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "crypto";
+import fs from "fs/promises";
+import path from "path";
 
 import { getProductBySlug } from "@/server/products";
 import { createReview, listReviews } from "@/server/reviews";
 import { reviewInputSchema } from "@/server/validation";
 
-export async function GET(_: NextRequest, { params }: { params: { slug: string } }) {
-  const product = await getProductBySlug(params.slug);
+async function resolveSlug(params: { slug: string } | Promise<{ slug: string }>) {
+  return (await params).slug;
+}
+
+export async function GET(
+  _: NextRequest,
+  { params }: { params: Promise<{ slug: string }> | { slug: string } }
+) {
+  const slug = await resolveSlug(params);
+  const product = await getProductBySlug(slug);
   if (!product) {
     return NextResponse.json({ error: "Product not found" }, { status: 404 });
   }
@@ -13,17 +24,80 @@ export async function GET(_: NextRequest, { params }: { params: { slug: string }
   return NextResponse.json({ data });
 }
 
-export async function POST(request: NextRequest, { params }: { params: { slug: string } }) {
-  const product = await getProductBySlug(params.slug);
+async function saveReviewImages(files: File[]): Promise<string[]> {
+  if (!files.length) return [];
+
+  const uploadDir = path.join(process.cwd(), "public", "uploads", "reviews");
+  await fs.mkdir(uploadDir, { recursive: true });
+
+  const urls: string[] = [];
+  for (const file of files.slice(0, 3)) {
+    if (!file.type.startsWith("image/")) continue;
+    const ext =
+      file.type === "image/png"
+        ? "png"
+        : file.type === "image/webp"
+          ? "webp"
+          : "jpg";
+    const name = `${Date.now()}-${randomUUID().slice(0, 8)}.${ext}`;
+    const abs = path.join(uploadDir, name);
+    const buffer = Buffer.from(await file.arrayBuffer());
+    // Cap ~4MB raw upload
+    if (buffer.length > 4 * 1024 * 1024) continue;
+    await fs.writeFile(abs, buffer);
+    urls.push(`/uploads/reviews/${name}`);
+  }
+  return urls;
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> | { slug: string } }
+) {
+  const slug = await resolveSlug(params);
+  const product = await getProductBySlug(slug);
   if (!product) {
     return NextResponse.json({ error: "Product not found" }, { status: 404 });
   }
 
   try {
-    const payload = await request.json();
+    const contentType = request.headers.get("content-type") || "";
+    let author = "";
+    let rating = 0;
+    let comment = "";
+    let images: string[] = [];
+
+    if (contentType.includes("multipart/form-data")) {
+      const form = await request.formData();
+      author = String(form.get("author") ?? "");
+      rating = Number(form.get("rating"));
+      comment = String(form.get("comment") ?? "");
+      const files = form
+        .getAll("images")
+        .filter((v): v is File => typeof v !== "string" && v instanceof File);
+      images = await saveReviewImages(files);
+    } else {
+      const payload = await request.json();
+      author = String(payload.author ?? "");
+      rating = Number(payload.rating);
+      comment = String(payload.comment ?? "");
+      // Ignore huge data-URL payloads — use file upload instead
+      if (Array.isArray(payload.images)) {
+        images = payload.images.filter(
+          (img: unknown) =>
+            typeof img === "string" &&
+            img.startsWith("/uploads/") &&
+            img.length < 500
+        );
+      }
+    }
+
     const parsed = reviewInputSchema.parse({
-      ...payload,
       productId: product.id,
+      author,
+      rating,
+      comment,
+      images,
     });
     const review = await createReview(parsed);
     return NextResponse.json({ data: review }, { status: 201 });
@@ -34,4 +108,3 @@ export async function POST(request: NextRequest, { params }: { params: { slug: s
     );
   }
 }
-

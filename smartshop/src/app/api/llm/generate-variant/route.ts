@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { requireUser } from "@/server/session";
 import { isAdminEmail } from "@/server/admin";
 import {
-  generateComponent,
   SUPPORTED_COMPONENTS,
   resolveLlmProvider,
   resolveModel,
@@ -11,11 +10,12 @@ import type { SupportedComponent } from "@/llm";
 import type { FinalUIConfiguration } from "@/lib/adaptiveEngine/types";
 import { estimateCatalogCostUsd, COST_BUDGET_NOTES } from "@/llm/cost";
 import { llmService } from "@/llm/LLMService";
+import { toImplementationSpec } from "@/llm/toImplementationSpec";
 
 /**
  * POST /api/llm/generate-variant
- * OFFLINE / admin only — never called from live page render.
- * Default provider: Gemini (set LLM_PROVIDER=openai later to switch).
+ * Admin helper to generate one component. Prefer /api/llm/ensure-components
+ * for the experiment pipeline.
  */
 export async function POST(request: Request) {
   try {
@@ -49,6 +49,7 @@ export async function POST(request: Request) {
       );
     }
 
+    const spec = toImplementationSpec(body.configuration);
     const result = await llmService.generateComponent(
       body.componentName as SupportedComponent,
       body.configuration,
@@ -58,15 +59,15 @@ export async function POST(request: Request) {
     const provider = resolveLlmProvider();
     return NextResponse.json({
       data: result,
+      implementationSpec: { hash: spec.hash, decisions: spec.decisions },
       provider,
       model: resolveModel(provider),
       cost: {
-        livePathUsd: COST_BUDGET_NOTES.livePathUsd,
         thisCallEstimatedUsd:
           result.source === "llm"
             ? estimateCatalogCostUsd(1, resolveModel(provider)).estimatedUsd
             : 0,
-        note: "Live shop never hits this endpoint. Cache/catalog = $0.",
+        note: "Identical configuration hash → cache/catalog = $0.",
       },
     });
   } catch (err) {
@@ -88,8 +89,8 @@ export async function GET() {
       hasOpenAIKey: Boolean(process.env.OPENAI_API_KEY?.trim()),
       catalogEstimate: estimateCatalogCostUsd(30, resolveModel(provider)),
       supportedComponents: SUPPORTED_COMPONENTS,
-      switchBackToOpenAI:
-        "Set LLM_PROVIDER=openai and OPENAI_API_KEY in .env.local, restart dev server.",
+      pipeline:
+        "Adaptive Engine → toImplementationSpec → LLM Component Generator (cached) → Adaptive shop",
     },
   });
 }

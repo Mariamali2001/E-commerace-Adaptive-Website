@@ -6,7 +6,10 @@ import { resolveVariants } from "@/lib/uiAdapter";
 import { useAdaptiveAllowed } from "@/lib/experiment/useAdaptiveAllowed";
 import { InfoRichCard } from "./ProductCard/InfoRichCard";
 import { MinimalCleanCard } from "./ProductCard/MinimalCleanCard";
+import { ImageHeavyCard } from "./ProductCard/ImageHeavyCard";
+import { BadgeHeavyCard } from "./ProductCard/BadgeHeavyCard";
 import { ProductCard } from "@/components/product/ProductCard";
+import { ProductCardWithQuickView } from "./ProductCardWithQuickView";
 
 export function AdaptiveProductCard({ product }: { product: Product }) {
   const { ready, allowed } = useAdaptiveAllowed();
@@ -17,11 +20,51 @@ export function AdaptiveProductCard({ product }: { product: Product }) {
   }
 
   const variants = resolveVariants(uiConfig);
-  if (
-    variants.productCard.includes("minimal") ||
-    variants.productCard.includes("clean")
-  ) {
-    return <MinimalCleanCard product={product} />;
+  const card = variants.productCard.toLowerCase();
+  const socialProofMode = variants.socialProofDisplay;
+  const priceMode = variants.priceDisplay;
+
+  let body;
+  if (card.includes("minimal") || card.includes("clean")) {
+    body = (
+      <MinimalCleanCard
+        product={product}
+        reviewMode={socialProofMode}
+        priceMode={priceMode}
+      />
+    );
+  } else if (card.includes("image")) {
+    body = (
+      <ImageHeavyCard
+        product={product}
+        reviewMode={socialProofMode}
+        priceMode={priceMode}
+      />
+    );
+  } else if (card.includes("badge") || card.includes("social")) {
+    body = (
+      <BadgeHeavyCard
+        product={product}
+        reviewMode={socialProofMode}
+        priceMode={priceMode}
+      />
+    );
+  } else {
+    body = (
+      <InfoRichCard
+        product={product}
+        reviewMode={socialProofMode}
+        priceMode={priceMode}
+      />
+    );
   }
-  return <InfoRichCard product={product} />;
+
+  return (
+    <ProductCardWithQuickView
+      product={product}
+      quickViewVariant={variants.quickView}
+    >
+      {body}
+    </ProductCardWithQuickView>
+  );
 }

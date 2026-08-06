@@ -6,4 +6,6 @@ export type Review = {
   rating: number;
   comment: string;
   date: string;
+  /** Optional customer photos of the product */
+  images?: string[];
 };

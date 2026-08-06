@@ -1,9 +1,10 @@
 import type { SupportedComponent } from "./LLMTypes";
 
 /**
- * Hand-seeded variant registry for the offline generator.
- * When a variant exists here, LLM is NOT called ($0).
- * Runtime React modules live under src/components/adaptive/.
+ * Hand-seeded React module registry.
+ * When a variant exists here, LLMService treats it as a cache hit ($0)
+ * and records it in generated_components/ for the configuration hash.
+ * Runtime modules live under src/components/adaptive/.
  */
 const CATALOG: Partial<
   Record<SupportedComponent, Record<string, string>>

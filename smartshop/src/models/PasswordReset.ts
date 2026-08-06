@@ -34,7 +34,6 @@ const PasswordResetSchema = new Schema<IPasswordReset>(
     expiresAt: {
       type: Date,
       required: true,
-      index: true,
     },
     used: {
       type: Boolean,

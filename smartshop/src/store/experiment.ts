@@ -10,6 +10,7 @@ import type {
 import type { SurveyPersona } from "@/lib/experiment/questions";
 import type { ContextObject } from "@/lib/context/types";
 import type { FinalUIConfiguration } from "@/lib/adaptiveEngine/types";
+import type { GeneratedComponentBundle } from "@/llm/LLMTypes";
 
 export type ExperimentPhase =
   | "idle"
@@ -19,6 +20,8 @@ export type ExperimentPhase =
   | "guidelines_ready";
 
 export type QuestionnaireAnswers = Record<string, string>;
+
+export type GeneratedUiStatus = "idle" | "loading" | "ready" | "error";
 
 type ExperimentState = {
   phase: ExperimentPhase;
@@ -36,6 +39,10 @@ type ExperimentState = {
   guidelines: ResolvedGuidelines | null;
   uiConfig: FinalUIConfiguration | null;
   context: ContextObject | null;
+  /** LLM component generator bundle (decisions → React), cached by hash */
+  generatedBundle: GeneratedComponentBundle | null;
+  generatedUiStatus: GeneratedUiStatus;
+  generatedUiError: string | null;
   startBrowse: (durationMs?: number) => void;
   setDevice: (device: "desktop" | "mobile") => void;
   setAnswers: (answers: QuestionnaireAnswers) => void;
@@ -51,11 +58,22 @@ type ExperimentState = {
   setGuidelines: (guidelines: ResolvedGuidelines) => void;
   setUiConfig: (uiConfig: FinalUIConfiguration | null) => void;
   setContext: (context: ContextObject | null) => void;
+  setGeneratedBundle: (bundle: GeneratedComponentBundle | null) => void;
+  setGeneratedUiStatus: (
+    status: GeneratedUiStatus,
+    error?: string | null
+  ) => void;
   setPhase: (phase: ExperimentPhase) => void;
   reset: () => void;
 };
 
 const BROWSE_MS = 3 * 60 * 1000;
+
+const emptyGenerated = {
+  generatedBundle: null as GeneratedComponentBundle | null,
+  generatedUiStatus: "idle" as GeneratedUiStatus,
+  generatedUiError: null as string | null,
+};
 
 export const useExperimentStore = create<ExperimentState>()(
   persist(
@@ -75,6 +93,7 @@ export const useExperimentStore = create<ExperimentState>()(
       guidelines: null,
       uiConfig: null,
       context: null,
+      ...emptyGenerated,
       startBrowse: (durationMs = BROWSE_MS) =>
         set({
           phase: "browse",
@@ -85,6 +104,7 @@ export const useExperimentStore = create<ExperimentState>()(
           context: null,
           detectedMood: null,
           detectedConfidence: null,
+          ...emptyGenerated,
         }),
       setDevice: (device) => set({ device }),
       setAnswers: (answers) => set({ answers }),
@@ -110,6 +130,14 @@ export const useExperimentStore = create<ExperimentState>()(
         }),
       setUiConfig: (uiConfig) => set({ uiConfig }),
       setContext: (context) => set({ context }),
+      setGeneratedBundle: (generatedBundle) =>
+        set({
+          generatedBundle,
+          generatedUiStatus: generatedBundle ? "ready" : "idle",
+          generatedUiError: null,
+        }),
+      setGeneratedUiStatus: (status, error = null) =>
+        set({ generatedUiStatus: status, generatedUiError: error }),
       setPhase: (phase) => set({ phase }),
       reset: () =>
         set({
@@ -128,10 +156,11 @@ export const useExperimentStore = create<ExperimentState>()(
           guidelines: null,
           uiConfig: null,
           context: null,
+          ...emptyGenerated,
         }),
     }),
     {
-      name: "smartshop-experiment-v5",
+      name: "smartshop-experiment-v7",
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
         phase: state.phase,
@@ -149,6 +178,9 @@ export const useExperimentStore = create<ExperimentState>()(
         guidelines: state.guidelines,
         uiConfig: state.uiConfig,
         context: state.context,
+        generatedBundle: state.generatedBundle,
+        generatedUiStatus: state.generatedUiStatus,
+        generatedUiError: state.generatedUiError,
       }),
     }
   )

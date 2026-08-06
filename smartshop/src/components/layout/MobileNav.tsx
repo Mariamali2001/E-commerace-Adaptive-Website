@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { SearchBar } from "./SearchBar";
+import { useAuthSession } from "@/lib/experiment/AdaptiveAuthProvider";
 
 type NavLink = { label: string; href: string };
 
@@ -24,6 +25,7 @@ type MobileNavProps = {
 
 export function MobileNav({ open, onClose }: MobileNavProps) {
   const [mounted, setMounted] = useState(false);
+  const { user } = useAuthSession();
 
   useEffect(() => {
     setMounted(true);
@@ -88,6 +90,43 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
               {link.label}
             </Link>
           ))}
+
+          <div className="mt-4 border-t border-neutral-100 px-2 pt-4">
+            <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+              Account
+            </p>
+            {user ? (
+              <>
+                <p className="px-4 py-2 text-sm text-neutral-600">
+                  Signed in as <strong>{user.name}</strong>
+                </p>
+                <Link
+                  href="/profile"
+                  onClick={onClose}
+                  className="block rounded-xl px-4 py-3.5 text-base font-medium text-neutral-900 hover:bg-neutral-50"
+                >
+                  Profile
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  onClick={onClose}
+                  className="block rounded-xl px-4 py-3.5 text-base font-medium text-neutral-900 hover:bg-neutral-50"
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  onClick={onClose}
+                  className="mt-1 block rounded-xl bg-neutral-900 px-4 py-3.5 text-center text-base font-semibold text-white"
+                >
+                  Sign up
+                </Link>
+              </>
+            )}
+          </div>
         </nav>
       </aside>
     </div>,

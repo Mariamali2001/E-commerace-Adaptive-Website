@@ -7,6 +7,7 @@ export interface IReview extends Document {
   author: string;
   rating: number;
   comment: string;
+  images?: string[];
   createdAt: Date;
 }
 
@@ -36,11 +37,19 @@ const ReviewSchema = new Schema<IReview>(
       required: true,
       minlength: 3,
     },
+    images: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.models.Review || mongoose.model<IReview>("Review", ReviewSchema);
+// Re-register if an older schema (without images) was cached in hot reload
+if (mongoose.models.Review) {
+  delete mongoose.models.Review;
+}
 
+export default mongoose.model<IReview>("Review", ReviewSchema);

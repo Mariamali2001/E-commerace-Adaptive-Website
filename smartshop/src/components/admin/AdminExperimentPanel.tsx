@@ -53,14 +53,17 @@ export function AdminExperimentPanel() {
     "age",
     "gender",
     "survey_persona",
-    "score_extraversion",
-    "score_agreeableness",
-    "score_conscientiousness",
-    "score_neuroticism",
-    "score_openness",
+    "device",
     "self_reported_mood",
     "model_detected_mood",
-    "device",
+    "guideline_mood",
+    "ui_checkout_style",
+    "ui_social_proof_display",
+    "ui_desktop_review_display",
+    "ui_mobile_review_display",
+    "ui_desktop_navigation",
+    "ui_mobile_navigation",
+    "ui_color_theme_pref",
   ];
 
   return (
@@ -69,8 +72,9 @@ export function AdminExperimentPanel() {
         <div>
           <h1 className="text-3xl font-bold text-neutral-900">Admin — experiment data</h1>
           <p className="mt-1 text-sm text-neutral-600">
-            Restricted to <code className="text-xs">{ADMIN_EMAIL}</code>. Signup /
-            questionnaire demographics + TIPI scores + moods.
+            Restricted to <code className="text-xs">{ADMIN_EMAIL}</code>. Signup
+            demographics, questionnaire, moods, and final UI options (per-column
+            + <code className="text-xs">ui_elements_json</code> in CSV).
           </p>
         </div>
         {allowed && (

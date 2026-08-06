@@ -32,10 +32,12 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <div className="group block relative">
       <Link href={`/shop/product/${product.slug}`}>
-        <div className="aspect-[3/4] w-full overflow-hidden rounded-xl bg-neutral-100 relative">
+        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-neutral-100">
           <img
             src={product.images[0]}
             alt=""
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover transition group-hover:scale-105"
           />
         </div>

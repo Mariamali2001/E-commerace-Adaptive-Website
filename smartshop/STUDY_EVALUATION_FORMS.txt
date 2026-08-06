@@ -1,0 +1,185 @@
+================================================================================
+STUDY EVALUATION PACK
+One Google Form (4 sections) + admin CSV metrics + matrix coverage
+================================================================================
+
+Files you already have:
+  - Admin CSV from /admin  (participant context + ui_* tokens)
+  - study_results/MATRIX_COVERAGE_APPENDIX.txt
+  - study_results/  (Results notebook + sample data; see README.txt)
+
+--------------------------------------------------------------------------------
+A. ONE GOOGLE FORM — 4 sections (share after adapted browsing)
+--------------------------------------------------------------------------------
+
+Title suggestion: SmartShop — Post-session evaluation
+
+Instructions:
+  “Please answer based on the shopping website you just used
+   (after the camera / personalization step).”
+
+Join key (required):
+  Participant ID — same ID you assign / they use in SmartShop
+  (join to admin CSV user_id, or keep a participant_id column).
+
+
+SECTION 1 — Participant ID
+  - Participant ID (required text / short answer)
+
+
+SECTION 2 — System Usability Scale (SUS) — official 10 items (Brooke, 1996)
+  Scale: 1 = Strongly disagree … 5 = Strongly agree
+
+  1. I think that I would like to use this system frequently.
+  2. I found the system unnecessarily complex.
+  3. I thought the system was easy to use.
+  4. I think that I would need the support of a technical person to be able
+     to use this system.
+  5. I found the various functions in this system were well integrated.
+  6. I thought there was too much inconsistency in this system.
+  7. I would imagine that most people would learn to use this system
+     very quickly.
+  8. I found the system very cumbersome to use.
+  9. I felt very confident using the system.
+ 10. I needed to learn a lot of things before I could get going with
+      this system.
+
+  SUS scoring (official):
+    - Scores for individual items are not meaningful alone.
+    - Each item contributes 0–4.
+    - Items 1,3,5,7,9: contribution = scale position − 1
+    - Items 2,4,6,8,10: contribution = 5 − scale position
+    - Sum contributions (0–40) × 2.5 → overall SUS (0–100)
+    - Rule of thumb: ~68 is average; higher is better
+
+
+SECTION 3 — UEQ Short (UEQ-S / UEQ-8) — official adjective pairs
+  7-point scale between the left (negative) and right (positive) word.
+  English version:
+
+  1. obstructive  —  supportive
+  2. complicated  —  easy
+  3. inefficient  —  efficient
+  4. confusing    —  clear
+  5. boring       —  exciting
+  6. not interesting — interesting
+  7. conventional —  inventive
+  8. usual        —  leading edge
+
+  UEQ-S scoring (standard):
+    - Code answers as 1…7 (left → right), then transform to −3…+3:
+        transformed = response − 4
+    - Pragmatic Quality (PQ) = mean of items 1–4
+    - Hedonic Quality (HQ)   = mean of items 5–8
+    - Optional Overall UX    = mean of all 8
+    - Higher (closer to +3) is better
+
+
+SECTION 4 — Adaptive Website Experience Questionnaire (AWEQ) — 7 items
+  Instructions: The following statements evaluate your experience with the
+  adaptive features of the website.
+  Scale: 1 = Strongly Disagree … 5 = Strongly Agree
+
+  AWEQ-1  The website interface felt tailored to my preferences and
+          shopping style.
+          → Perceived personalization / adaptation
+
+  AWEQ-2  The interface adapted appropriately throughout my shopping
+          experience.
+          → Adaptation appropriateness over the session
+
+  AWEQ-3  The interface changes felt natural and did not distract me
+          while using the website.
+          → Adaptation quality
+
+  AWEQ-4  The interface was appropriate for the device I was using.
+          → Device adaptation
+
+  AWEQ-5  The interface reflected my current emotional state.
+          → Emotion adaptation
+
+  AWEQ-6  The adaptive interface made it easier to browse and find
+          products.
+          → Effectiveness
+
+  AWEQ-7  Overall, I would prefer using this adaptive website over a
+          traditional non-adaptive e-commerce website.
+          → Overall acceptance
+
+  AWEQ scoring:
+    - Mean of AWEQ-1…AWEQ-7 (overall)
+    - Optional: per-item means (personalization, device, emotion, etc.)
+
+
+OPTIONAL (3 open-text items — qualitative; not scored)
+  opt_1  What did you like most about the adaptive website?
+  opt_2  What would you improve?
+  opt_3  If you could improve one aspect of the adaptive website, what would it be?
+
+  Export columns: opt_1, opt_2, opt_3
+  Map Google Forms headers → these names in the notebook SURVEY_COLUMN_MAP.
+
+
+Protocol tip:
+  After adapted shop (and ideally after a checkout attempt), open this
+  single form. Always use the same Participant ID as in SmartShop so
+  the notebook can join to the admin CSV.
+
+
+--------------------------------------------------------------------------------
+B. METRICS FROM ADMIN CSV (objective)
+--------------------------------------------------------------------------------
+
+1) Mood agreement
+   Columns: self_reported_mood , model_detected_mood
+   Metric: % rows where normalize(self) == normalize(detected)
+   Also report: disagreement table (self × detected counts)
+   Optional: only count rows with model_confidence above a threshold
+
+2) Fallback rate
+   Flags: used_mood_fallback, used_device_fallback,
+          used_persona_fallback, used_global_fill
+   Also report exact-cell rate (no mood/device/persona fallback).
+
+3) Config diversity
+   Columns: ui_color_theme_pref, ui_*_navigation, ui_*_product_card, etc.
+   Metrics: unique themes, top combinations, entropy / top-share
+
+4) Task outcomes
+   reached_cart / placed_order — join by participant_id or email
+
+
+--------------------------------------------------------------------------------
+C. MATRIX COVERAGE APPENDIX
+--------------------------------------------------------------------------------
+
+See: study_results/MATRIX_COVERAGE_APPENDIX.txt
+
+  - 6 personas × 2 devices × 8 mood labels → 96 possible cells
+  - 65 filled (~67.7%); rest use the engine fallback ladder
+
+
+--------------------------------------------------------------------------------
+D. HOW THE PIECES FIT IN THE RESULTS CHAPTER
+--------------------------------------------------------------------------------
+
+  Evidence matrix coverage (appendix)
+       +
+  Admin CSV (objective: moods, UI tokens, optional orders)
+       +
+  Google Form Section 2 — SUS (usability 0–100)
+       +
+  Google Form Section 3 — UEQ-S (PQ / HQ)
+       +
+  Google Form Section 4 — AWEQ (adaptive experience)
+       =
+  Full evaluation story: did adaptation vary, was mood sensing reliable,
+  did people complete tasks, and did the UI feel usable, pleasant,
+  and appropriately adaptive?
+
+Analysis notebook:
+  study_results/notebooks/01_Study_Results_Analysis.ipynb
+
+================================================================================
+END
+================================================================================

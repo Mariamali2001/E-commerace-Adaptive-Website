@@ -15,38 +15,63 @@ export type ProductFilters = {
   sort?: "price-asc" | "price-desc" | "rating" | "title";
 };
 
-// Seed / sync catalog from src/data/products.ts (upsert by slug)
-let seeded = false;
+type SeedCache = { done: boolean; promise: Promise<void> | null };
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __smartshopProductSeed: SeedCache | undefined;
+}
+
+const seedCache: SeedCache = global.__smartshopProductSeed ?? {
+  done: false,
+  promise: null,
+};
+if (!global.__smartshopProductSeed) {
+  global.__smartshopProductSeed = seedCache;
+}
+
+/** One-shot catalog sync — no N+1 findOne loop (was a major cold-path cost). */
 async function seedProducts() {
-  if (seeded) return;
+  if (seedCache.done) return;
+  if (seedCache.promise) {
+    await seedCache.promise;
+    return;
+  }
 
-  await connectDB();
+  seedCache.promise = (async () => {
+    await connectDB();
 
-  const count = await ProductModel.countDocuments();
-  if (count === 0) {
-    await ProductModel.insertMany(
-      seedProductsData.map((p: Product) => {
-        const { id, ...rest } = p;
-        return rest;
-      })
-    );
-    console.log(`✅ Seeded ${seedProductsData.length} products`);
-  } else {
-    // DB already has products — add any new slugs from the seed file
-    let added = 0;
-    for (const p of seedProductsData) {
-      const { id, ...rest } = p;
-      const exists = await ProductModel.findOne({ slug: rest.slug }).lean();
-      if (!exists) {
-        await ProductModel.create(rest);
-        added += 1;
+    const count = await ProductModel.countDocuments();
+    if (count === 0) {
+      await ProductModel.insertMany(
+        seedProductsData.map((p: Product) => {
+          const { id, ...rest } = p;
+          return rest;
+        })
+      );
+      console.log(`✅ Seeded ${seedProductsData.length} products`);
+    } else {
+      const existing = await ProductModel.find({}, { slug: 1 }).lean();
+      const have = new Set(
+        existing.map((d) => (d as { slug?: string }).slug).filter(Boolean)
+      );
+      const missing = seedProductsData
+        .filter((p) => p.slug && !have.has(p.slug))
+        .map(({ id, ...rest }) => rest);
+      if (missing.length > 0) {
+        await ProductModel.insertMany(missing);
+        console.log(`✅ Added ${missing.length} new catalog products`);
       }
     }
-    if (added > 0) {
-      console.log(`✅ Added ${added} new catalog products`);
-    }
+    seedCache.done = true;
+  })();
+
+  try {
+    await seedCache.promise;
+  } catch (e) {
+    seedCache.promise = null;
+    throw e;
   }
-  seeded = true;
 }
 
 function convertToProduct(doc: any): Product {
@@ -70,12 +95,11 @@ function convertToProduct(doc: any): Product {
 export async function listProducts(filters: ProductFilters = {}) {
   await connectDB();
   await seedProducts();
-  
+
   const { search, limit, minPrice, maxPrice, sort } = filters;
-  
-  // Build MongoDB query
+
   const query: any = {};
-  
+
   if (search && search.trim()) {
     query.$or = [
       { title: { $regex: search.trim(), $options: "i" } },
@@ -84,14 +108,13 @@ export async function listProducts(filters: ProductFilters = {}) {
       { brand: { $regex: search.trim(), $options: "i" } },
     ];
   }
-  
+
   if (minPrice !== undefined || maxPrice !== undefined) {
     query.price = {};
     if (minPrice !== undefined) query.price.$gte = minPrice;
     if (maxPrice !== undefined) query.price.$lte = maxPrice;
   }
-  
-  // Build sort option
+
   let sortOption: any = {};
   switch (sort) {
     case "price-asc":
@@ -107,29 +130,30 @@ export async function listProducts(filters: ProductFilters = {}) {
       sortOption = { title: 1 };
       break;
     default:
-      sortOption = { rating: -1 }; // Default to popular (by rating)
+      sortOption = { rating: -1 };
   }
-  
+
   const products = await ProductModel.find(query)
     .sort(sortOption)
-    .limit(limit || 0);
-  
+    .limit(limit || 0)
+    .lean();
+
   return products.map(convertToProduct);
 }
 
 export async function getProductBySlug(slug: string) {
   await connectDB();
   await seedProducts();
-  
-  const product = await ProductModel.findOne({ slug });
+
+  const product = await ProductModel.findOne({ slug }).lean();
   return product ? convertToProduct(product) : null;
 }
 
 export async function getProductById(id: string) {
   await connectDB();
   await seedProducts();
-  
-  const product = await ProductModel.findById(id);
+
+  const product = await ProductModel.findById(id).lean();
   return product ? convertToProduct(product) : null;
 }
 
@@ -143,17 +167,15 @@ function slugify(value: string) {
 
 export async function createProduct(input: ProductInput) {
   await connectDB();
-  
+
   const baseSlug = input.slug ? input.slug : slugify(input.title);
   const slug = slugify(baseSlug);
-  
-  // Check if slug already exists
-  const existing = await ProductModel.findOne({ slug });
+
+  const existing = await ProductModel.findOne({ slug }).lean();
   if (existing) {
     throw new Error("Product slug already exists");
   }
 
-  // Don't set _id, let MongoDB generate it
   const product = await ProductModel.create({
     slug,
     title: input.title,
@@ -177,7 +199,7 @@ export async function updateProduct(
   updates: Partial<Omit<Product, "id" | "slug">> & { slug?: string }
 ) {
   await connectDB();
-  
+
   const existing = await ProductModel.findById(id);
   if (!existing) {
     return null;
@@ -192,7 +214,6 @@ export async function updateProduct(
     existing.slug = normalizedSlug;
   }
 
-  // Update fields
   Object.assign(existing, updates);
   await existing.save();
 
@@ -201,7 +222,7 @@ export async function updateProduct(
 
 export async function deleteProduct(id: string) {
   await connectDB();
-  
+
   const result = await ProductModel.findByIdAndDelete(id);
   return !!result;
 }

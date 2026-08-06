@@ -1,12 +1,14 @@
 import { useExperimentStore } from "@/store/experiment";
 
-export const EXPERIMENT_STORAGE_KEY = "smartshop-experiment-v5";
+export const EXPERIMENT_STORAGE_KEY = "smartshop-experiment-v7";
 
 /** Older keys that must not resurrect adaptive UI after logout */
 const LEGACY_KEYS = [
   "smartshop-experiment-v3",
   "smartshop-experiment-v4",
   "smartshop-experiment-v5",
+  "smartshop-experiment-v6",
+  "smartshop-experiment-v7",
 ];
 
 function stripAdaptiveDom() {
@@ -15,6 +17,7 @@ function stripAdaptiveDom() {
   [
     "data-adaptive",
     "data-theme",
+    "data-background",
     "data-accent",
     "data-grid",
     "data-urgency",
@@ -22,10 +25,34 @@ function stripAdaptiveDom() {
     "data-product-card",
     "data-nav",
     "data-price",
+    "data-mood",
+    "data-checkout",
+    "data-review",
+    "data-form-fields",
+    "data-whitespace",
+    "data-font-style",
+    "data-font-size",
+    "data-button-style",
+    "data-search",
+    "data-filters",
+    "data-product-desc",
+    "data-image-text",
+    "data-info-density",
+    "data-touch",
+    "data-sticky-header",
+    "data-recommendation",
+    "data-quick-view",
+    "data-categories",
+    "data-persistent-filters",
   ].forEach((attr) => root.removeAttribute(attr));
   root.style.removeProperty("--adaptive-density");
   root.style.removeProperty("--adaptive-visual-richness");
+  root.style.removeProperty("--adaptive-social-proof");
+  root.style.removeProperty("--adaptive-recommendation");
   root.style.removeProperty("--adaptive-gap");
+  root.removeAttribute("data-nudge-density");
+  root.removeAttribute("data-nudge-visual");
+  root.removeAttribute("data-nudge-social");
   document.body.classList.remove("adaptive-active");
 }
 

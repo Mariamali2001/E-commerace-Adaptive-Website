@@ -56,30 +56,11 @@ export const LIKERT_5: QuestionOption[] = [
  * TIPI-style items (1–5). Scoring uses reverse-coded pairs.
  * Order matches the list you provided.
  */
+/**
+ * Experiment questionnaire (TIPI + persona + self-mood).
+ * Age/gender come from signup — not asked again here.
+ */
 export const EXPERIMENT_QUESTIONS: ExperimentQuestion[] = [
-  {
-    id: "age",
-    text: "What is your age?",
-    kind: "choice",
-    mapsTo: { type: "note" },
-    options: Array.from({ length: 48 }, (_, i) => {
-      const n = i + 18;
-      return { label: String(n), value: String(n) };
-    }),
-  },
-  {
-    id: "gender",
-    text: "What is your gender?",
-    kind: "choice",
-    mapsTo: { type: "note" },
-    options: [
-      { label: "Female", value: "Female" },
-      { label: "Male", value: "Male" },
-      { label: "Non-binary", value: "Non-binary" },
-      { label: "Prefer not to say", value: "Prefer not to say" },
-      { label: "Other", value: "Other" },
-    ],
-  },
   {
     id: "tipi_reserved",
     text: "I see myself as someone who is reserved.",

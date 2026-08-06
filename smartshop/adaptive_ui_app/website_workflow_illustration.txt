@@ -1,0 +1,76 @@
+Adaptive E-Commerce UI Generator - Workflow Illustration
+
+This document outlines the complete workflow and functionality of the "Adaptive E-Commerce UI Generator" website.
+
+1. APPLICATION ENTRY & DATA LOADING (Home.py)
+---------------------------------------------
+- The user launches the application via Streamlit.
+- The "Home" page is the primary entry point.
+- **Data Input:**
+  - The app looks for a default dataset at `data/E-Commerce.csv`.
+  - Alternatively, a Sidebar File Uploader allows the user to upload a custom CSV dataset.
+- **Initialization:**
+  - The dataset is loaded into a Pandas DataFrame.
+  - Basic validation is performed (dropping empty rows).
+  - The DataFrame is stored in the global `st.session_state` to be accessible by all other pages.
+  - Dataset statistics (number of rows and columns) are displayed in the sidebar.
+
+2. LOGICAL CORE (utils.py)
+--------------------------
+This module handles all backend logic and machine learning operations:
+- **Feature Grouping:** Columns are rigorously categorized into:
+  - Demographics (Age, Gender, Education)
+  - Context (Device, Mood, Motivation)
+  - Personality Traits (Introversion, Trust, Neuroticism, etc.)
+  - Target UI Preferences (Font style, Button style, Layouts for Mobile/Desktop)
+- **Guideline Generation Engine (`get_guideline`):**
+  - Filters the dataset based on user inputs (e.g., "Show me preferences for 'Stressed' users on 'Mobile'").
+  - Determines the "Winning" UI preference based on frequency (majority vote).
+  - Calculates **Confidence**: % of users in the filtered group who voted for the winner.
+  - Calculates **Stability**: Uses Bootstrapping (resampling data 20 times) to see if the recommendation holds up against data variations.
+- **Explainability Engine (`get_shap_explanation`):**
+  - Trains a Random Forest Classifier on the fly for a specific UI Element.
+  - Uses SHAP (SHapley Additive exPlanations) to identify which user features (Traits, Demographics) most strongly influenced the preference.
+- **Clustering:** Uses K-Means clustering to group users into "UI Variants" based on varied preferences.
+
+3. PAGE: GUIDELINE EXPLORER (pages/1_Guideline_Explorer.py)
+-----------------------------------------------------------
+This is the main interactive dashboard for designers.
+
+A. Sidebar Controls (Context Definition)
+   - **Persona & Mood:** User selects a target user profile (e.g., "Impulsive Shopper" or "Sad").
+   - **Device Context:** Selects "Smartphone" or "Desktop/Laptop".
+   - **Personality Sliders:** Fine-tune specific traits (e.g., High Openness, Low Conscientiousness).
+
+B. Guideline Generation (Main Panel)
+   - The app dynamically filters the dataset based on sidebar inputs.
+   - **Categorization:** Guidelines are split into:
+     - **Primary Guidelines:** Core Structure, Navigation, Layout (Critical for usability).
+     - **Secondary Guidelines:** Visuals, Aesthetics, Colors (Adaptive styling).
+   - **Display:** Each guideline is shown as a card with:
+     - The Recommended Decision (e.g., "Mega Menu").
+     - Statistical Support (User count, Agreement %, Stability Label).
+
+C. Comparison Mode
+   - A toggle "Compare Mobile vs Desktop" splits the view.
+   - Simultaneously calculates and shows how the *same* user type expects different UIs on different devices.
+
+D. Explainability (The "Why?")
+   - Clicking an "Explain" button on any guideline triggers the Explainability Panel.
+   - It runs the SHAP analysis for that specific UI element.
+   - **Output:** "This guideline is heavily influenced by [Feature Name]." (e.g., "Users with high Neuroticism prefer detailed product info").
+
+4. OTHER PAGES (Overview)
+-------------------------
+- **UI Variant Discovery:** Uses K-Means clustering to find "Latent Design Patterns" (hidden groups of users with similar tastes).
+- **Methodology:** Explains the ML pipeline to the user.
+- **Data & Feature Analysis:** Allows raw data inspection and feature correlation studies.
+
+SUMMARY OF DATA FLOW:
+[User Input (CSV)] -> [Home.py (Session State)] 
+       v
+[Guideline Explorer UI] -> [User Selects Persona/Context] 
+       v
+[utils.py Filters Data] -> [Majority Vote & Bootstrapping] 
+       v
+[Display Recommendation] -> (Optional) [Train RF Model -> SHAP Analysis -> Explain Driver]

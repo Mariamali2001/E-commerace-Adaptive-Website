@@ -7,6 +7,23 @@ import { SearchBar } from "./SearchBar";
 import { UserMenu } from "./UserMenu";
 import { MobileNav } from "./MobileNav";
 
+export type HeaderVariant = "mega_menu" | "top_bar" | "fullscreen";
+
+type HeaderProps = {
+  /** Guideline-driven layout. Default mega_menu keeps prior behavior. */
+  variant?: HeaderVariant;
+  /** Slimmer bar when paired with bottom nav */
+  compact?: boolean;
+};
+
+const TOP_BAR_LINKS = [
+  { label: "Shop", href: "/shop" },
+  { label: "On Sale", href: "/shop?sale=50" },
+  { label: "New Arrivals", href: "/shop?new=week" },
+  { label: "Brands", href: "/shop?brand=nike" },
+  { label: "Mood camera", href: "/shop/mood" },
+];
+
 const shopMenuColumns = [
   {
     title: "SHOP BY PRODUCT",
@@ -160,29 +177,69 @@ const newArrivalsMenuColumns = [
   },
 ];
 
-export function Header() {
+export function Header({
+  variant = "mega_menu",
+  compact = false,
+}: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const barH = compact ? "h-14" : "h-16";
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70 border-b border-neutral-100">
-      <div className="container flex h-16 items-center justify-between gap-4">
+    <header
+      className="sticky top-0 z-40 w-full border-b border-neutral-200/70 bg-neutral-50/95 backdrop-blur supports-[backdrop-filter]:bg-neutral-50/90"
+      data-header-variant={variant}
+    >
+      <div className={`container flex ${barH} items-center justify-between gap-3 sm:gap-4`}>
         <Link href="/" className="flex min-w-0 items-center gap-2">
-          <img src="/images/logo.png" className="h-14 w-14 shrink-0 sm:h-20 sm:w-20" alt="" />
-          <span className="truncate text-sm font-bold sm:text-base">SMARTSHOPPING</span>
+          <img
+            src="/images/logo.png"
+            className={
+              compact
+                ? "h-10 w-10 shrink-0 sm:h-12 sm:w-12"
+                : "h-14 w-14 shrink-0 sm:h-20 sm:w-20"
+            }
+            alt=""
+          />
+          <span className="truncate text-sm font-bold sm:text-base">
+            SMARTSHOPPING
+          </span>
         </Link>
 
-        <nav className="hidden items-center gap-6 text-sm md:flex">
-          <MegaMenuTrigger label="Shop" columns={shopMenuColumns} />
-          <MegaMenuTrigger label="On Sale" columns={saleMenuColumns} />
-          <MegaMenuTrigger label="New Arrivals" columns={newArrivalsMenuColumns} />
-          <MegaMenuTrigger label="Brands" columns={brandsMenuColumns} />
-          <Link
-            href="/shop/mood"
-            className="font-medium text-neutral-800 hover:text-neutral-600"
-          >
-            Mood camera
-          </Link>
-        </nav>
+        {variant === "top_bar" ? (
+          <nav className="hidden items-center gap-5 text-sm font-medium md:flex">
+            {TOP_BAR_LINKS.map((link) => (
+              <Link
+                key={link.href + link.label}
+                href={link.href}
+                className="text-neutral-800 hover:text-neutral-600"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        ) : variant === "fullscreen" ? (
+          <nav className="hidden md:block">
+            <p className="text-xs text-neutral-500">
+              Categories open full-screen from the menu
+            </p>
+          </nav>
+        ) : (
+          <nav className="hidden items-center gap-6 text-sm md:flex">
+            <MegaMenuTrigger label="Shop" columns={shopMenuColumns} />
+            <MegaMenuTrigger label="On Sale" columns={saleMenuColumns} />
+            <MegaMenuTrigger
+              label="New Arrivals"
+              columns={newArrivalsMenuColumns}
+            />
+            <MegaMenuTrigger label="Brands" columns={brandsMenuColumns} />
+            <Link
+              href="/shop/mood"
+              className="font-medium text-neutral-800 hover:text-neutral-600"
+            >
+              Mood camera
+            </Link>
+          </nav>
+        )}
 
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="hidden md:block">

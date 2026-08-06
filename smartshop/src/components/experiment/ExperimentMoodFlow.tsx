@@ -10,6 +10,22 @@ import { buildContext } from "@/lib/context/buildContext";
 import type { ContextObject } from "@/lib/context/types";
 import type { FinalUIConfiguration } from "@/lib/adaptiveEngine/types";
 import type { ResolvedGuidelines } from "@/lib/guidelines/types";
+import type { GeneratedComponentBundle } from "@/llm/LLMTypes";
+
+/** Core surfaces warmed after each Final UI Configuration */
+const ENSURE_COMPONENTS = [
+  "Navbar",
+  "HeroBanner",
+  "ProductCard",
+  "ProductGrid",
+  "FilterPanel",
+  "RecommendationSection",
+  "ReviewSection",
+  "Footer",
+  "Checkout",
+  "SearchBar",
+  "CategorySection",
+] as const;
 
 export function ExperimentMoodFlow() {
   const searchParams = useSearchParams();
@@ -26,6 +42,13 @@ export function ExperimentMoodFlow() {
   const setGuidelines = useExperimentStore((s) => s.setGuidelines);
   const setUiConfig = useExperimentStore((s) => s.setUiConfig);
   const setContext = useExperimentStore((s) => s.setContext);
+  const setGeneratedBundle = useExperimentStore((s) => s.setGeneratedBundle);
+  const setGeneratedUiStatus = useExperimentStore(
+    (s) => s.setGeneratedUiStatus
+  );
+  const generatedUiStatus = useExperimentStore((s) => s.generatedUiStatus);
+  const generatedUiError = useExperimentStore((s) => s.generatedUiError);
+  const generatedBundle = useExperimentStore((s) => s.generatedBundle);
   const guidelines = useExperimentStore((s) => s.guidelines);
   const uiConfig = useExperimentStore((s) => s.uiConfig);
   const context = useExperimentStore((s) => s.context);
@@ -63,6 +86,15 @@ export function ExperimentMoodFlow() {
           /* optional */
         }
 
+        const age =
+          auth?.age != null && Number.isFinite(Number(auth.age))
+            ? Number(auth.age)
+            : null;
+        const gender =
+          typeof auth?.gender === "string" && auth.gender.trim()
+            ? auth.gender.trim()
+            : null;
+
         // 1) Context Builder
         const ctx: ContextObject = buildContext({
           userId: auth?.id ?? null,
@@ -75,8 +107,8 @@ export function ExperimentMoodFlow() {
           detectedConfidence: confidence,
           traits,
           traitScores,
-          age: answers.age ? Number(answers.age) : auth?.age ?? null,
-          gender: answers.gender ?? auth?.gender ?? null,
+          age,
+          gender,
           name: auth?.name ?? null,
           email: auth?.email ?? null,
           answers,
@@ -85,7 +117,7 @@ export function ExperimentMoodFlow() {
         });
         setContext(ctx);
 
-        // 2) Adaptive Engine — Context → Final UI Configuration
+        // 2) Adaptive Engine — only decision maker
         const res = await fetch("/api/adaptive-engine/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -96,7 +128,8 @@ export function ExperimentMoodFlow() {
           throw new Error(payload.error || "Adaptive Engine failed");
         }
         const configuration = payload.data as FinalUIConfiguration;
-        const resolved = (payload.guidelines ?? configuration) as ResolvedGuidelines;
+        const resolved = (payload.guidelines ??
+          configuration) as ResolvedGuidelines;
         if (payload.context) setContext(payload.context as ContextObject);
         setUiConfig(configuration);
         setGuidelines(resolved);
@@ -106,7 +139,36 @@ export function ExperimentMoodFlow() {
           uiElements[key] = tok.value;
         }
 
-        // 3) Persist experiment
+        // 3) LLM Component Generator — ImplementationSpec only → React/TSX
+        setGeneratedUiStatus("loading");
+        setGeneratedBundle(null);
+        try {
+          const genRes = await fetch("/api/llm/ensure-components", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+              configuration,
+              components: [...ENSURE_COMPONENTS],
+            }),
+          });
+          const genPayload = await genRes.json();
+          if (!genRes.ok) {
+            throw new Error(
+              genPayload.error || "LLM component generation failed"
+            );
+          }
+          setGeneratedBundle(genPayload.data as GeneratedComponentBundle);
+        } catch (genErr) {
+          setGeneratedUiStatus(
+            "error",
+            genErr instanceof Error
+              ? genErr.message
+              : "LLM component generation failed"
+          );
+        }
+
+        // 4) Persist experiment
         const saveRes = await fetch("/api/experiment/save", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -118,8 +180,8 @@ export function ExperimentMoodFlow() {
               _context: JSON.stringify(ctx),
               _adaptation_log: JSON.stringify(configuration.log),
             },
-            age: ctx.user.age,
-            gender: ctx.user.gender,
+            age,
+            gender,
             surveyPersona: ctx.surveyPersona,
             guidelinePersona: configuration.persona,
             traitScores,
@@ -155,6 +217,8 @@ export function ExperimentMoodFlow() {
       setGuidelines,
       setMood,
       setUiConfig,
+      setGeneratedBundle,
+      setGeneratedUiStatus,
       surveyPersona,
       traitScores,
       traits,
@@ -164,9 +228,9 @@ export function ExperimentMoodFlow() {
   return (
     <div className="space-y-6">
       {inExperiment && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-          Flow: <strong>Context Builder</strong> →{" "}
-          <strong>Adaptive Engine</strong> → save. UI Adapter comes next.
+        <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
+          Step: look at the camera (or pick a mood below if the camera is
+          unavailable). We will prepare your personalized shop next.
         </div>
       )}
 
@@ -176,9 +240,43 @@ export function ExperimentMoodFlow() {
         }}
       />
 
+      {inExperiment && (
+        <div className="rounded-2xl border border-neutral-200 bg-white p-4">
+          <p className="text-sm font-semibold text-neutral-900">
+            Camera not working?
+          </p>
+          <p className="mt-1 text-xs text-neutral-600">
+            Choose how you feel right now — this is only a backup if the camera
+            cannot run.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {[
+              "Happy",
+              "Neutral",
+              "Sad",
+              "Stressed",
+              "Excited",
+              "Bored",
+              "Relaxed",
+              "Frustrated",
+            ].map((mood) => (
+              <button
+                key={mood}
+                type="button"
+                disabled={resolving}
+                onClick={() => void resolve(mood, null)}
+                className="rounded-full border border-neutral-300 bg-neutral-50 px-3 py-1.5 text-xs font-medium text-neutral-900 hover:bg-neutral-100 disabled:opacity-50"
+              >
+                {mood}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {resolving && (
         <p className="text-sm text-neutral-600">
-          Building context, running Adaptive Engine & saving…
+          Personalizing your shop…
         </p>
       )}
       {error && (
@@ -188,119 +286,59 @@ export function ExperimentMoodFlow() {
       )}
 
       {inExperiment && guidelines && (
-        <div className="rounded-2xl border border-neutral-200 bg-white p-5">
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6 text-center sm:text-left">
           <h2 className="text-lg font-semibold text-neutral-900">
-            Final UI Configuration ready
+            Your shop is ready
           </h2>
+          <p className="mt-2 text-sm text-neutral-600">
+            We personalized the shopping experience for this session. Continue
+            to browse products — you can shop, add to cart, and checkout as
+            usual.
+          </p>
           {saved && (
-            <p className="mt-1 text-sm text-emerald-700">
-              Experiment data saved for admin Excel export.
+            <p className="mt-2 text-xs text-emerald-700">
+              Session saved. Thank you for participating.
             </p>
           )}
-          <p className="mt-1 text-sm text-neutral-600">
-            Detected mood:{" "}
-            <span className="font-medium capitalize">{detectedMood}</span>
-            {" → "}
-            guideline mood:{" "}
-            <span className="font-medium">{guidelines.mood}</span>
-          </p>
-          <p className="mt-1 text-sm text-neutral-600">
-            Device: {guidelines.device} · Persona (questionnaire):{" "}
-            {surveyPersona ?? "—"}
-            {guidelines.persona && guidelines.persona !== surveyPersona ? (
-              <span className="text-neutral-400">
-                {" "}
-                (engine key: {guidelines.persona})
-              </span>
-            ) : null}
-          </p>
-          <p className="mt-2 text-xs text-neutral-500">
-            Pipeline: {guidelines.pipeline.join(" → ")}
-          </p>
 
-          {context && (
-            <details className="mt-3">
-              <summary className="cursor-pointer text-sm font-medium text-neutral-800">
-                Context Object
-              </summary>
-              <pre className="mt-2 max-h-48 overflow-auto rounded-xl bg-neutral-50 p-3 text-[11px] text-neutral-700">
-                {JSON.stringify(context, null, 2)}
-              </pre>
-            </details>
-          )}
-
-          {uiConfig?.log && (
-            <details className="mt-3" open>
-              <summary className="cursor-pointer text-sm font-medium text-neutral-800">
-                Adaptation log ({uiConfig.log.length} steps)
-              </summary>
-              <ul className="mt-2 max-h-48 space-y-1.5 overflow-auto text-xs text-neutral-700">
-                {uiConfig.log.map((entry, i) => (
-                  <li key={`${entry.step}-${i}`} className="rounded-lg bg-neutral-50 px-2 py-1.5">
-                    <span className="font-medium text-neutral-900">
-                      {entry.step}
-                    </span>
-                    {entry.id ? (
-                      <span className="text-neutral-500"> · {entry.id}</span>
-                    ) : null}
-                    <div className="text-neutral-600">{entry.message}</div>
-                    {entry.keysOverridden?.length ? (
-                      <div className="text-neutral-400">
-                        keys: {entry.keysOverridden.join(", ")}
-                      </div>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            </details>
-          )}
-
-          <details className="mt-3">
-            <summary className="cursor-pointer text-sm font-medium text-neutral-800">
-              Categorical tokens ({Object.keys(guidelines.tokens).length})
-            </summary>
-            <ul className="mt-2 max-h-48 space-y-1 overflow-auto text-xs text-neutral-600">
-              {Object.entries(guidelines.tokens)
-                .slice(0, 24)
-                .map(([key, tok]) => (
-                  <li key={key}>
-                    <span className="font-medium">{key}</span>: {tok.value}{" "}
-                    <span className="text-neutral-400">({tok.source})</span>
-                  </li>
-                ))}
-            </ul>
-          </details>
-
-          {uiConfig && Object.keys(uiConfig.nudges).length > 0 && (
-            <details className="mt-3">
-              <summary className="cursor-pointer text-sm font-medium text-neutral-800">
-                Trait nudges ({Object.keys(uiConfig.nudges).length})
-              </summary>
-              <ul className="mt-2 space-y-1 text-xs text-neutral-600">
-                {Object.entries(uiConfig.nudges).map(([key, delta]) => (
-                  <li key={key}>
-                    <span className="font-medium">{key}</span>:{" "}
-                    {delta > 0 ? `+${delta}` : delta}
-                  </li>
-                ))}
-              </ul>
-            </details>
-          )}
-
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-5 flex flex-wrap justify-center gap-2 sm:justify-start">
             <Link
               href="/?experiment=adapted"
-              className="inline-flex rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white"
+              className="inline-flex rounded-xl bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white"
             >
-              See adapted home
+              Continue to shop
             </Link>
             <Link
               href="/shop?experiment=adapted"
-              className="inline-flex rounded-xl border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-900"
+              className="inline-flex rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm font-medium text-neutral-900"
             >
-              See adapted shop
+              Browse products
             </Link>
           </div>
+
+          {/* Researcher/debug only — collapsed, not shown open to participants */}
+          {searchParams.get("debugAdaptive") === "1" && (
+            <details className="mt-6 text-left">
+              <summary className="cursor-pointer text-xs font-medium text-neutral-500">
+                Debug: adaptation details
+              </summary>
+              <div className="mt-2 space-y-2 text-xs text-neutral-600">
+                <p>
+                  Mood: {detectedMood} → {guidelines.mood} · Device:{" "}
+                  {guidelines.device} · Persona: {surveyPersona ?? "—"}
+                </p>
+                <p>Pipeline: {guidelines.pipeline.join(" → ")}</p>
+                {generatedUiStatus === "error" && generatedUiError && (
+                  <p className="text-amber-700">LLM: {generatedUiError}</p>
+                )}
+                {uiConfig?.log && (
+                  <pre className="max-h-40 overflow-auto rounded-lg bg-neutral-50 p-2">
+                    {JSON.stringify(uiConfig.log, null, 2)}
+                  </pre>
+                )}
+              </div>
+            </details>
+          )}
         </div>
       )}
     </div>

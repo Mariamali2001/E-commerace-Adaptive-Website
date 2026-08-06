@@ -1,10 +1,10 @@
 import React from "react";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ExperimentBrowseBannerHost } from "@/components/experiment/ExperimentBrowseBannerHost";
 import { AdaptiveThemeProvider } from "@/components/adaptive/AdaptiveThemeProvider";
 import { AdaptationBanner } from "@/components/adaptive/AdaptationBanner";
+import { AdaptiveNavbar } from "@/components/adaptive/AdaptiveNavbar";
 import { AdaptiveAuthProvider } from "@/lib/experiment/AdaptiveAuthProvider";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AdaptiveAuthProvider>
           <AdaptiveThemeProvider>
             <AdaptationBanner />
-            <Header />
+            <AdaptiveNavbar />
             <main className="flex-1">{children}</main>
             <Footer />
             <ExperimentBrowseBannerHost />

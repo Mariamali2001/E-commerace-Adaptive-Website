@@ -4,11 +4,19 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Product } from "@/types/product";
 import { Price } from "@/components/shared/Price";
-import { RatingStars } from "@/components/shared/RatingStars";
 import { useWishlist, wishlistSelectors } from "@/store/wishlist";
+import { AdaptiveReviewSnippet } from "./AdaptiveReviewSnippet";
 
 /** Implements product_card = Info Rich */
-export function InfoRichCard({ product }: { product: Product }) {
+export function InfoRichCard({
+  product,
+  reviewMode = "customer_reviews",
+  priceMode = "bold_large",
+}: {
+  product: Product;
+  reviewMode?: string;
+  priceMode?: string;
+}) {
   const wishlist = useWishlist(wishlistSelectors.list);
   const toggle = useWishlist((s) => s.toggle);
   const [isInWishlist, setIsInWishlist] = useState(false);
@@ -17,12 +25,20 @@ export function InfoRichCard({ product }: { product: Product }) {
     setIsInWishlist(wishlist.some((item) => item.id === product.id));
   }, [wishlist, product.id]);
 
+  const showCompare =
+    priceMode.includes("strike") ||
+    priceMode.includes("comparison") ||
+    priceMode.includes("bold") ||
+    (product.compareAt != null && product.compareAt > product.price);
+
   return (
     <div className="group relative block rounded-xl border border-neutral-100 bg-white p-2">
       <Link href={`/shop/product/${product.slug}`}>
         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-neutral-100">
           <img
             src={product.images[0]}
+            loading="lazy"
+            decoding="async"
             alt=""
             className="h-full w-full object-cover transition group-hover:scale-105"
           />
@@ -48,15 +64,27 @@ export function InfoRichCard({ product }: { product: Product }) {
           ♥
         </span>
       </button>
-      <Link href={`/shop/product/${product.slug}`} className="mt-3 block space-y-1.5 px-1">
+      <Link
+        href={`/shop/product/${product.slug}`}
+        className="mt-3 block space-y-1.5 px-1"
+      >
         <p className="text-xs uppercase tracking-wide text-neutral-500">
           {product.brand || product.category}
         </p>
         <h3 className="text-sm font-semibold text-neutral-900 line-clamp-2">
           {product.title}
         </h3>
-        <RatingStars rating={product.rating} />
-        <Price price={product.price} compareAt={product.compareAt} />
+        <AdaptiveReviewSnippet rating={product.rating} mode={reviewMode} />
+        <div
+          className={
+            priceMode.includes("bold") ? "text-base font-bold" : "text-sm"
+          }
+        >
+          <Price
+            price={product.price}
+            compareAt={showCompare ? product.compareAt : undefined}
+          />
+        </div>
       </Link>
     </div>
   );

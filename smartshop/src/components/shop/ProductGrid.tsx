@@ -75,42 +75,42 @@ export function ProductGrid({ products: initialProducts, totalCount }: ProductGr
   return (
     <div className="flex-1 space-y-4">
       {/* Header with count, sort, and view options */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b">
+      <div className="flex flex-col items-start justify-between gap-4 border-b pb-4 sm:flex-row sm:items-center">
         <p className="text-sm text-neutral-600">
           Showing <span className="font-semibold">{sortedProducts.length}</span> of{" "}
           <span className="font-semibold">{totalCount}</span> products
         </p>
 
         <div className="flex items-center gap-4">
-          {/* View Mode Toggle */}
-          <div className="flex items-center gap-1 border rounded-lg p-1">
+          <div className="flex items-center gap-1 rounded-lg border p-1">
             <button
+              type="button"
               onClick={() => handleViewModeChange("grid")}
               className={cn(
-                "p-2 rounded transition-colors",
+                "rounded p-2 transition-colors",
                 viewMode === "grid" ? "bg-neutral-900 text-white" : "hover:bg-neutral-100"
               )}
               aria-label="Grid view"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
               </svg>
             </button>
             <button
+              type="button"
               onClick={() => handleViewModeChange("list")}
               className={cn(
-                "p-2 rounded transition-colors",
+                "rounded p-2 transition-colors",
                 viewMode === "list" ? "bg-neutral-900 text-white" : "hover:bg-neutral-100"
               )}
               aria-label="List view"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
           </div>
 
-          {/* Sort Dropdown */}
           <select
             value={sortBy}
             onChange={(e) => handleSortChange(e.target.value as SortOption)}
@@ -137,7 +137,7 @@ export function ProductGrid({ products: initialProducts, totalCount }: ProductGr
             viewMode === "list"
               ? "space-y-4"
               : adaptiveGrid ??
-                  "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                  "grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-3"
           )}
         >
           {sortedProducts.map((product) => (

@@ -14,12 +14,17 @@ export async function POST(request: Request) {
       );
     }
 
-    const ageNum = body.age != null ? Number(body.age) : Number(body.answers?.age);
+    // Prefer explicit body (from signup via mood flow), then user record.
+    // Questionnaire no longer collects age/gender.
+    const ageNum =
+      body.age != null && body.age !== ""
+        ? Number(body.age)
+        : Number(user.age);
     const gender =
-      typeof body.gender === "string"
-        ? body.gender
-        : typeof body.answers?.gender === "string"
-          ? body.answers.gender
+      typeof body.gender === "string" && body.gender.trim()
+        ? body.gender.trim()
+        : typeof user.gender === "string"
+          ? user.gender
           : null;
 
     const doc = await saveExperimentResult({

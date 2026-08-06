@@ -1,0 +1,310 @@
+{
+  "project": "Towards Intelligent User-Adaptive Interfaces",
+  "description": "Global UI defaults \u2014 dataset-wide majority (persona/device/mood = Any). Used by Adaptive Engine to fill missing tokens after master matrix lookup.",
+  "version": "1.0",
+  "source": "adaptive_ui_app data/E-Commerce.csv majority vote Any/Any/Any",
+  "total_dataset_records": 250,
+  "applied_filters": {
+    "primary_persona": "Any",
+    "current_mood": "Any",
+    "primary_device": "Any"
+  },
+  "tokens": {
+    "hero_banner_size": "Medium Split (Takes up half the screen)",
+    "desktop_navigation": "Top Bar (Categories always visible across the top)",
+    "mobile_navigation": "Bottom Nav (Navigation bar at the bottom - mobile style)",
+    "desktop_category_display": "Visual Grid (Category tiles with images)",
+    "mobile_category_display": "Dropdown Menu (Text-based dropdown list)",
+    "desktop_search_visibility": "Always Visible Top (Large, prominent search bar always shown)",
+    "mobile_search_visibility": "Collapsible (Search bar that expands when clicked)",
+    "desktop_filter_location": "Sidebar Left (Permanent filter panel on the left side)",
+    "mobile_filter_location": "Drawer Overlay (Slides in from the side when clicked)",
+    "desktop_persistent_filters": "Yes (Always visible sidebar with filters)",
+    "mobile_sticky_header": "Yes (Header stays at top while scrolling)",
+    "desktop_info_density": "Moderate (Balanced - some details visible, click for more)",
+    "mobile_info_density": "Moderate (Balanced - some details visible, click for more)",
+    "recommendation_type": "Deals (Products on sale or special offers)",
+    "social_proof_display": "User Photos (Photos uploaded by customers)",
+    "urgency_pref": "Both (Show both stock and time based urgency)",
+    "checkout_style": "One Page (All checkout steps on a single scrolling page)",
+    "desktop_product_card": "Info Rich (Lots of details, ratings, specs visible)",
+    "mobile_product_card": "Info Rich (Lots of details, ratings, specs visible)",
+    "desktop_review_display": "Recent 3- 5 (Show a few recent reviews)",
+    "mobile_review_display": "Collapsible Sections (Reviews can be expanded or collapsed within the product details)",
+    "desktop_price_display": "With Savings Highlighted (Shows discount amount prominently)",
+    "mobile_price_display": "Strike-through Original (Shows original price crossed out with sale price)",
+    "font_style_pref": "2. Classic Serif (Traditional fonts with decorative strokes like Times New Roman)",
+    "font_size_pref": "3. Large (16-18px - Easy to read, comfortable)",
+    "color_theme_pref": "Warm Earthy (Browns, beiges, warm oranges - natural and cozy)",
+    "accent_color_pref": "Blue (Trustworthy, professional, calm)",
+    "background_pref": "Cream/Off-white (Warm, comfortable, paper-like)",
+    "whitespace_pref": "Balanced (Moderate spacing - comfortable middle ground)",
+    "button_style_pref": "Rounded Corners (Soft, modern rounded edges)",
+    "desktop_whitespace": "Balanced",
+    "mobile_whitespace": "Balanced",
+    "desktop_quick_view": "Sidebar Slide (Details slide in from the right)",
+    "mobile_quick_view": "Slide-Up Panel (Preview product details in a slide-up panel without leaving the product lis)",
+    "desktop_grid_pref": "3 Columns (Balanced view, moderate item size)",
+    "mobile_grid_pref": "Compact stacked cards (more products per screen)",
+    "desktop_image_text_ratio": "Image-focused (80% images, 20% text - highly visual)",
+    "mobile_image_text_ratio": "Balanced (50% images, 50% text - equal emphasis)",
+    "mobile_touch_size": "Standard (Normal size, more content visible)",
+    "form_field_style": "Rounded Border Fields (Outlined field with rounded corners)",
+    "product_desc_length": "Moderate (Key details with option to expand)",
+    "social_proof_influence": "Moderate influence (They help me decide)"
+  },
+  "token_details": {
+    "hero_banner_size": {
+      "value": "Medium Split (Takes up half the screen)",
+      "confidence": 0.52,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "desktop_navigation": {
+      "value": "Top Bar (Categories always visible across the top)",
+      "confidence": 0.296,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "mobile_navigation": {
+      "value": "Bottom Nav (Navigation bar at the bottom - mobile style)",
+      "confidence": 0.488,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "desktop_category_display": {
+      "value": "Visual Grid (Category tiles with images)",
+      "confidence": 0.416,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "mobile_category_display": {
+      "value": "Dropdown Menu (Text-based dropdown list)",
+      "confidence": 0.44,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "desktop_search_visibility": {
+      "value": "Always Visible Top (Large, prominent search bar always shown)",
+      "confidence": 0.408,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "mobile_search_visibility": {
+      "value": "Collapsible (Search bar that expands when clicked)",
+      "confidence": 0.404,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "desktop_filter_location": {
+      "value": "Sidebar Left (Permanent filter panel on the left side)",
+      "confidence": 0.436,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "mobile_filter_location": {
+      "value": "Drawer Overlay (Slides in from the side when clicked)",
+      "confidence": 0.564,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "desktop_persistent_filters": {
+      "value": "Yes (Always visible sidebar with filters)",
+      "confidence": 0.744,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "mobile_sticky_header": {
+      "value": "Yes (Header stays at top while scrolling)",
+      "confidence": 0.664,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "desktop_info_density": {
+      "value": "Moderate (Balanced - some details visible, click for more)",
+      "confidence": 0.716,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "mobile_info_density": {
+      "value": "Moderate (Balanced - some details visible, click for more)",
+      "confidence": 0.676,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "recommendation_type": {
+      "value": "Deals (Products on sale or special offers)",
+      "confidence": 0.484,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "social_proof_display": {
+      "value": "User Photos (Photos uploaded by customers)",
+      "confidence": 0.364,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "urgency_pref": {
+      "value": "Both (Show both stock and time based urgency)",
+      "confidence": 0.328,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "checkout_style": {
+      "value": "One Page (All checkout steps on a single scrolling page)",
+      "confidence": 0.36,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "desktop_product_card": {
+      "value": "Info Rich (Lots of details, ratings, specs visible)",
+      "confidence": 0.304,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "mobile_product_card": {
+      "value": "Info Rich (Lots of details, ratings, specs visible)",
+      "confidence": 0.392,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "desktop_review_display": {
+      "value": "Recent 3- 5 (Show a few recent reviews)",
+      "confidence": 0.38,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "mobile_review_display": {
+      "value": "Collapsible Sections (Reviews can be expanded or collapsed within the product details)",
+      "confidence": 0.548,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "desktop_price_display": {
+      "value": "With Savings Highlighted (Shows discount amount prominently)",
+      "confidence": 0.26,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "mobile_price_display": {
+      "value": "Strike-through Original (Shows original price crossed out with sale price)",
+      "confidence": 0.608,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "font_style_pref": {
+      "value": "2. Classic Serif (Traditional fonts with decorative strokes like Times New Roman)",
+      "confidence": 0.384,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "font_size_pref": {
+      "value": "3. Large (16-18px - Easy to read, comfortable)",
+      "confidence": 0.444,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "color_theme_pref": {
+      "value": "Warm Earthy (Browns, beiges, warm oranges - natural and cozy)",
+      "confidence": 0.24,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "accent_color_pref": {
+      "value": "Blue (Trustworthy, professional, calm)",
+      "confidence": 0.54,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "background_pref": {
+      "value": "Cream/Off-white (Warm, comfortable, paper-like)",
+      "confidence": 0.368,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "whitespace_pref": {
+      "value": "Balanced (Moderate spacing - comfortable middle ground)",
+      "confidence": 0.732,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "button_style_pref": {
+      "value": "Rounded Corners (Soft, modern rounded edges)",
+      "confidence": 0.404,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "desktop_whitespace": {
+      "value": "Balanced",
+      "confidence": 0.572,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "mobile_whitespace": {
+      "value": "Balanced",
+      "confidence": 0.816,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "desktop_quick_view": {
+      "value": "Sidebar Slide (Details slide in from the right)",
+      "confidence": 0.456,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "mobile_quick_view": {
+      "value": "Slide-Up Panel (Preview product details in a slide-up panel without leaving the product lis)",
+      "confidence": 0.54,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "desktop_grid_pref": {
+      "value": "3 Columns (Balanced view, moderate item size)",
+      "confidence": 0.32,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "mobile_grid_pref": {
+      "value": "Compact stacked cards (more products per screen)",
+      "confidence": 0.48,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "desktop_image_text_ratio": {
+      "value": "Image-focused (80% images, 20% text - highly visual)",
+      "confidence": 0.468,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "mobile_image_text_ratio": {
+      "value": "Balanced (50% images, 50% text - equal emphasis)",
+      "confidence": 0.816,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "mobile_touch_size": {
+      "value": "Standard (Normal size, more content visible)",
+      "confidence": 0.548,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "form_field_style": {
+      "value": "Rounded Border Fields (Outlined field with rounded corners)",
+      "confidence": 0.236,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "product_desc_length": {
+      "value": "Moderate (Key details with option to expand)",
+      "confidence": 0.312,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    },
+    "social_proof_influence": {
+      "value": "Moderate influence (They help me decide)",
+      "confidence": 0.356,
+      "user_support_count": 250,
+      "note": "dataset-wide majority (Any/Any/Any)"
+    }
+  }
+}

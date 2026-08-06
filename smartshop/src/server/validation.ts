@@ -19,6 +19,8 @@ export const reviewInputSchema = z.object({
   author: z.string().min(1),
   rating: z.number().min(1).max(5),
   comment: z.string().min(3),
+  /** Optional product photos (data URLs or public paths), max 3 */
+  images: z.array(z.string().min(1)).max(3).optional().default([]),
 });
 
 export const signupSchema = z.object({

@@ -1,0 +1,97 @@
+MATRIX COVERAGE APPENDIX
+Source: public/assets/master_adaptive_ui_rules.json
+Legend: Y = cell exists in master matrix; . = missing (runtime may fallback)
+
+========================================================================
+The Impulsive Buyer
+------------------------------------------------------------------------
+Mood        Laptop/Desktop  Smartphone      
+Neutral     Y               Y               
+Happy       Y               Y               
+Sad         .               Y               
+Stressed    Y               Y               
+Excited     .               Y               
+Bored       .               Y               
+Relaxed     .               Y               
+Frustrated  .               .               
+  Laptop/Desktop: 3 mood cell(s) — [Neutral, Happy, Stressed]
+  Smartphone: 7 mood cell(s) — [Neutral, Happy, Stressed, Bored, Excited, Sad, Relaxed]
+
+========================================================================
+The Loyal Customer
+------------------------------------------------------------------------
+Mood        Laptop/Desktop  Smartphone      
+Neutral     Y               Y               
+Happy       Y               Y               
+Sad         Y               Y               
+Stressed    Y               Y               
+Excited     .               Y               
+Bored       .               .               
+Relaxed     Y               Y               
+Frustrated  .               .               
+  Laptop/Desktop: 5 mood cell(s) — [Neutral, Happy, Stressed, Sad, Relaxed]
+  Smartphone: 6 mood cell(s) — [Neutral, Happy, Stressed, Excited, Sad, Relaxed]
+
+========================================================================
+The Browser
+------------------------------------------------------------------------
+Mood        Laptop/Desktop  Smartphone      
+Neutral     Y               Y               
+Happy       Y               Y               
+Sad         .               Y               
+Stressed    .               Y               
+Excited     .               Y               
+Bored       .               Y               
+Relaxed     Y               Y               
+Frustrated  .               .               
+  Laptop/Desktop: 3 mood cell(s) — [Neutral, Happy, Relaxed]
+  Smartphone: 7 mood cell(s) — [Neutral, Happy, Stressed, Bored, Excited, Sad, Relaxed]
+
+========================================================================
+The Minimalist
+------------------------------------------------------------------------
+Mood        Laptop/Desktop  Smartphone      
+Neutral     Y               Y               
+Happy       Y               Y               
+Sad         .               .               
+Stressed    Y               Y               
+Excited     .               .               
+Bored       Y               Y               
+Relaxed     Y               Y               
+Frustrated  .               Y               
+  Laptop/Desktop: 5 mood cell(s) — [Neutral, Happy, Stressed, Bored, Relaxed]
+  Smartphone: 6 mood cell(s) — [Neutral, Happy, Stressed, Bored, Relaxed, Frustrated]
+
+========================================================================
+The Researcher
+------------------------------------------------------------------------
+Mood        Laptop/Desktop  Smartphone      
+Neutral     Y               Y               
+Happy       Y               .               
+Sad         Y               .               
+Stressed    Y               Y               
+Excited     Y               Y               
+Bored       .               Y               
+Relaxed     Y               Y               
+Frustrated  Y               Y               
+  Laptop/Desktop: 7 mood cell(s) — [Neutral, Happy, Stressed, Excited, Sad, Relaxed, Frustrated]
+  Smartphone: 6 mood cell(s) — [Neutral, Stressed, Bored, Excited, Relaxed, Frustrated]
+
+========================================================================
+The Deal Hunter
+------------------------------------------------------------------------
+Mood        Laptop/Desktop  Smartphone      
+Neutral     Y               Y               
+Happy       Y               Y               
+Sad         .               .               
+Stressed    Y               Y               
+Excited     .               Y               
+Bored       Y               Y               
+Relaxed     .               Y               
+Frustrated  .               .               
+  Laptop/Desktop: 4 mood cell(s) — [Neutral, Happy, Stressed, Bored]
+  Smartphone: 6 mood cell(s) — [Neutral, Happy, Stressed, Bored, Excited, Relaxed]
+
+========================================================================
+Total filled cells (8 mood labels × 2 devices × personas): 65 / 96 (67.7%)
+Note: survey may use fewer mood labels in some slices; missing cells use the engine fallback ladder.

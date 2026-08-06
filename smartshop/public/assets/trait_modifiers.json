@@ -1,0 +1,34 @@
+{
+  "project": "Towards Intelligent User-Adaptive Interfaces",
+  "description": "Soft trait nudges applied after master matrix + global fill. Never replace categorical UI tokens. Deltas are small and capped.",
+  "version": "1.0",
+  "nudge_keys": [
+    "information_density",
+    "visual_richness",
+    "social_proof",
+    "recommendation_strength"
+  ],
+  "clamp": { "min": -2, "max": 2 },
+  "modifiers": {
+    "Extraversion": {
+      "High": { "social_proof": 1, "visual_richness": 1 },
+      "Low": { "social_proof": -1, "visual_richness": -1 }
+    },
+    "Agreeableness": {
+      "High": { "social_proof": 1 },
+      "Low": { "social_proof": -1 }
+    },
+    "Conscientiousness": {
+      "High": { "information_density": 1, "recommendation_strength": -1 },
+      "Low": { "information_density": -1, "recommendation_strength": 1 }
+    },
+    "Neuroticism": {
+      "High": { "information_density": 1, "visual_richness": -1, "recommendation_strength": -1 },
+      "Low": { "visual_richness": 1 }
+    },
+    "Openness": {
+      "High": { "visual_richness": 1, "social_proof": 1 },
+      "Low": { "visual_richness": -1 }
+    }
+  }
+}

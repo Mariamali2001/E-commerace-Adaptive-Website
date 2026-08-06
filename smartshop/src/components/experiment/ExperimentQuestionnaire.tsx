@@ -63,13 +63,7 @@ export function ExperimentQuestionnaire() {
   const question = EXPERIMENT_QUESTIONS[index];
   const selected = answers[question.id] ?? "";
 
-  const canNext =
-    question.id === "age"
-      ? (() => {
-          const n = Number(selected);
-          return Number.isFinite(n) && n >= 13 && n <= 120;
-        })()
-      : Boolean(selected);
+  const canNext = Boolean(selected);
   const isLast = index === total - 1;
 
   const title = useMemo(
@@ -115,8 +109,6 @@ export function ExperimentQuestionnaire() {
   const selectAndAdvance = (value: string) => {
     const nextAnswers = { ...answers, [question.id]: value };
     setAnswers(nextAnswers);
-    // Age uses typed input — only auto-advance for tap choices
-    if (question.id === "age") return;
 
     if (advanceTimer.current) clearTimeout(advanceTimer.current);
     advanceTimer.current = setTimeout(() => {
@@ -132,11 +124,12 @@ export function ExperimentQuestionnaire() {
         </p>
         <h1 className="mt-2 text-2xl font-bold text-neutral-900">{title}</h1>
         <p className="mt-2 text-sm text-neutral-600">
-          {question.id === "age"
-            ? "Enter your age, then press Next."
-            : question.kind === "likert5"
-              ? "Tap a number (1–5) — we’ll move to the next question automatically."
-              : "Tap an option — we’ll move to the next question automatically."}
+          {question.kind === "likert5"
+            ? "Tap a number (1–5) — we’ll move to the next question automatically."
+            : "Tap an option — we’ll move to the next question automatically."}
+        </p>
+        <p className="mt-1 text-xs text-neutral-500">
+          Age and gender are taken from your signup profile.
         </p>
 
         <div
@@ -148,19 +141,7 @@ export function ExperimentQuestionnaire() {
         >
           <p className="text-base font-medium text-neutral-900">{question.text}</p>
 
-          {question.id === "age" ? (
-            <div className="mt-4">
-              <input
-                type="number"
-                min={13}
-                max={120}
-                className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-neutral-900"
-                placeholder="Enter age"
-                value={selected}
-                onChange={(e) => selectAndAdvance(e.target.value)}
-              />
-            </div>
-          ) : question.kind === "likert5" ? (
+          {question.kind === "likert5" ? (
             <div className="mt-5">
               <div className="flex justify-between gap-2">
                 {question.options.map((opt) => {
@@ -224,24 +205,14 @@ export function ExperimentQuestionnaire() {
           >
             Back
           </button>
-          {question.id === "age" || isLast ? (
-            !isLast ? (
-              <Button
-                type="button"
-                disabled={!canNext}
-                onClick={() => goNext(answers)}
-              >
-                Next
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                disabled={!canNext}
-                onClick={() => finishWith(answers)}
-              >
-                Continue to mood camera
-              </Button>
-            )
+          {isLast ? (
+            <Button
+              type="button"
+              disabled={!canNext}
+              onClick={() => finishWith(answers)}
+            >
+              Continue to mood camera
+            </Button>
           ) : (
             <p className="text-xs text-neutral-500">Auto-advances after you answer</p>
           )}

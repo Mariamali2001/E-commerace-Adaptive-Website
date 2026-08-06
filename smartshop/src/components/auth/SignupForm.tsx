@@ -9,12 +9,12 @@ type AvatarState = "idle" | "typing" | "password" | "error" | "success";
 const GENDERS = ["Female", "Male", "Non-binary", "Prefer not to say", "Other"] as const;
 
 export function SignupForm() {
-  const [name, setName] = useState("Demo User");
-  const [email, setEmail] = useState("demo+1@smartshop.dev");
-  const [password, setPassword] = useState("demo1234");
-  const [age, setAge] = useState("22");
-  const [gender, setGender] = useState<string>("Female");
-  const [accepted, setAccepted] = useState(true);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState<string>("");
+  const [accepted, setAccepted] = useState(false);
   const [status, setStatus] = useState<Status>({ type: "idle" });
   const [submitting, setSubmitting] = useState(false);
   const [avatarState, setAvatarState] = useState<AvatarState>("idle");
@@ -53,9 +53,9 @@ export function SignupForm() {
         "@/lib/experiment/clearAdaptive"
       );
       clearAdaptiveExperiment();
-      // Land on full shop catalog (not search results)
+      // Land on home (not shop/filters); browse timer still starts
       setTimeout(() => {
-        window.location.href = "/shop?experiment=browse";
+        window.location.href = "/?experiment=browse";
       }, 800);
     } catch (error) {
       setStatus({
@@ -119,6 +119,9 @@ export function SignupForm() {
             onChange={(event) => setGender(event.target.value)}
             required
           >
+            <option value="" disabled>
+              Select
+            </option>
             {GENDERS.map((g) => (
               <option key={g} value={g}>
                 {g}

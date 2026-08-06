@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --hostname 0.0.0.0",
+    "dev:turbo": "next dev --turbopack --hostname 0.0.0.0",
+    "dev:https": "bash scripts/dev-https.sh",
+    "dev:tunnel": "bash scripts/dev-tunnel.sh",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

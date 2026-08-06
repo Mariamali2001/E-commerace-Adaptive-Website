@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 
 import { ProductDetailClient } from "@/components/product/ProductDetailClient";
-import { ReviewsList } from "@/components/product/Reviews";
-import { Price } from "@/components/shared/Price";
-import { RatingStars } from "@/components/shared/RatingStars";
+import { AdaptiveReviews } from "@/components/adaptive/AdaptiveReviews";
+import { AdaptiveProductDetailsTab } from "@/components/adaptive/AdaptiveProductDetailsTab";
+import { AdaptiveProductCard } from "@/components/adaptive/AdaptiveProductCard";
 import { Tabs } from "@/components/shared/Tabs";
 import { listProducts, getProductBySlug } from "@/server/products";
 import { listReviews } from "@/server/reviews";
@@ -15,38 +15,45 @@ export async function generateStaticParams() {
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+
+  // Product + related in parallel (reviews need product.id after)
+  const [product, relatedCandidates] = await Promise.all([
+    getProductBySlug(slug),
+    listProducts({ sort: "rating", limit: 8 }),
+  ]);
   if (!product) {
     return notFound();
   }
 
-  const [productReviews, relatedCandidates] = await Promise.all([
-    listReviews(product.id),
-    listProducts({ sort: "rating", limit: 8 }),
-  ]);
+  const productReviews = await listReviews(product.id);
 
   const related = relatedCandidates.filter((item) => item.id !== product.id).slice(0, 4);
 
   return (
-    <div className="container mt-6">
+    <div className="container mt-6 mb-8">
       <ProductDetailClient product={product} />
 
-      <div className="mt-12">
+      <div className="mt-8">
         <Tabs
           tabs={[
             {
               id: "details",
               label: "Product Details",
               content: (
-                <div className="text-sm leading-relaxed text-neutral-700">
-                  {product.details ?? "High-quality fabric, modern fit, breathable and durable."}
-                </div>
+                <AdaptiveProductDetailsTab
+                  text={
+                    product.details ??
+                    "High-quality fabric, modern fit, breathable and durable."
+                  }
+                />
               ),
             },
             {
               id: "reviews",
               label: `Rating & Reviews`,
-              content: <ReviewsList reviews={productReviews} productSlug={slug} />,
+              content: (
+                <AdaptiveReviews reviews={productReviews} productSlug={slug} />
+              ),
               default: true,
             },
             {
@@ -64,29 +71,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         />
       </div>
 
-      <div className="mt-16">
-        <h2 className="mb-6 text-2xl font-bold">You might also like</h2>
+      <div className="mt-8">
+        <h2 className="mb-4 text-2xl font-bold">You might also like</h2>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {related.map((item) => (
-            <a key={item.id} href={`/shop/product/${item.slug}`} className="group">
-              <div className="aspect-[3/4] w-full overflow-hidden rounded-xl bg-neutral-100">
-                <img
-                  src={item.images[0]}
-                  alt={item.title}
-                  className="h-full w-full object-cover transition group-hover:scale-105"
-                />
-              </div>
-              <div className="mt-3 space-y-2">
-                <p className="text-sm font-semibold leading-tight min-h-[2.5rem]">
-                  {item.title}
-                </p>
-                <div className="flex items-center gap-2 pt-1">
-                  <Price price={item.price} compareAt={item.compareAt} />
-                  <span className="text-xs text-neutral-500">•</span>
-                  <RatingStars rating={item.rating} small />
-                </div>
-              </div>
-            </a>
+            <AdaptiveProductCard key={item.id} product={item} />
           ))}
         </div>
       </div>

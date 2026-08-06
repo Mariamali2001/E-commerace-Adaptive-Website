@@ -36,9 +36,16 @@ yarn-error.log*
 # offline LLM variant cache / logs (never needed on live path)
 .llm-cache/
 
+# user-uploaded review photos
+/public/uploads/reviews/*
+!/public/uploads/reviews/.gitkeep
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# study_results analysis venv
+/study_results/.venv/

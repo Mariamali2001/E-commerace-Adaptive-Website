@@ -25,14 +25,26 @@ export default function MoodCameraPage() {
           </Suspense>
         </div>
 
-        <div className="mt-4 space-y-1 text-xs text-neutral-500">
+        <div className="mt-4 space-y-2 text-xs text-neutral-500">
           <p>
-            Tip: use <strong>http://localhost:3000/shop/mood</strong> and allow
-            camera access.
+            <strong>Desktop:</strong>{" "}
+            <code>http://localhost:3000/shop/mood</code> (camera works on
+            localhost).
           </p>
           <p>
-            API:{" "}
-            <code>cd smartshop/mood_model && python3 mood_api.py</code>
+            <strong>iPhone / mobile camera:</strong> Safari only allows the
+            camera on <strong>HTTPS</strong> (or localhost). On your computer run{" "}
+            <code>npm run dev:https</code>, then on the phone open the{" "}
+            <em>Network</em> URL with <code>https://</code> (example:{" "}
+            <code>https://192.168.x.x:3000</code>). If Safari warns about the
+            certificate, tap <em>Advanced → Continue</em>, allow camera, then
+            Detect mood.
+          </p>
+          <p>
+            Do <strong>not</strong> type <code>localhost</code> on the phone —
+            that points at the phone itself. Stay on the same Wi‑Fi as the
+            computer. Mood API stays on the computer:{" "}
+            <code>cd mood_model && python3 mood_api.py</code>
           </p>
         </div>
       </div>

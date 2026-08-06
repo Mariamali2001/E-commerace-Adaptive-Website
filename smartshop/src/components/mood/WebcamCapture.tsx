@@ -51,10 +51,25 @@ export function WebcamCapture({ onMoodDetected }: WebcamCaptureProps = {}) {
   }, [releaseStream]);
 
   const startCamera = useCallback(async () => {
+    const host =
+      typeof window !== "undefined" ? window.location.hostname : "";
+    const isLocalhost = host === "localhost" || host === "127.0.0.1";
+    const isSecure =
+      typeof window !== "undefined" &&
+      (window.isSecureContext || isLocalhost);
+
+    if (!isSecure) {
+      setStatus("error");
+      setErrorMessage(
+        "iPhone/Safari blocks the camera on plain HTTP. On your computer run: npm run dev:https — then open the https://192.168…:3000 link on your iPhone (tap Advanced → Continue if warned). Manual mood buttons remain as backup."
+      );
+      return;
+    }
+
     if (!navigator.mediaDevices?.getUserMedia) {
       setStatus("error");
       setErrorMessage(
-        "Your browser does not support camera access. Try Chrome or Safari on localhost."
+        "This browser cannot open the camera. On mobile over Wi‑Fi IP, use the manual mood buttons below."
       );
       return;
     }
@@ -78,6 +93,8 @@ export function WebcamCapture({ onMoodDetected }: WebcamCaptureProps = {}) {
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        // iOS Safari needs playsInline + explicit play
+        videoRef.current.setAttribute("playsinline", "true");
         await videoRef.current.play();
       }
 
@@ -86,14 +103,23 @@ export function WebcamCapture({ onMoodDetected }: WebcamCaptureProps = {}) {
       setStatus("error");
       const message =
         err instanceof Error ? err.message : "Could not access the webcam.";
-      if (message.toLowerCase().includes("permission")) {
+      const lower = message.toLowerCase();
+      if (lower.includes("permission") || lower.includes("notallowed")) {
         setErrorMessage(
-          "Camera permission denied. Allow camera access in your browser settings and try again."
+          "Camera permission denied. Allow camera access in browser settings, or pick a mood manually below."
         );
-      } else if (message.toLowerCase().includes("notfound")) {
-        setErrorMessage("No camera found on this device.");
+      } else if (lower.includes("notfound") || lower.includes("devices not found")) {
+        setErrorMessage("No camera found on this device. Use manual mood below.");
+      } else if (
+        lower.includes("secure") ||
+        lower.includes("ssl") ||
+        lower.includes("https")
+      ) {
+        setErrorMessage(
+          "Camera blocked on non-HTTPS. Use localhost on your computer, or pick mood manually on the phone."
+        );
       } else {
-        setErrorMessage(message);
+        setErrorMessage(`${message} — you can still pick a mood manually below.`);
       }
     }
   }, [releaseStream]);

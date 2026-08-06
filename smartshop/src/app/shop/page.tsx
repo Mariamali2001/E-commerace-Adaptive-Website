@@ -1,6 +1,7 @@
 import { listProducts } from "@/server/products";
 import { FilterSidebar } from "@/components/shop/FilterSidebar";
 import { ProductGrid } from "@/components/shop/ProductGrid";
+import { AdaptiveShopLayout } from "@/components/adaptive/AdaptiveShopLayout";
 
 export default async function ShopPage({
   searchParams,
@@ -59,6 +60,24 @@ export default async function ShopPage({
     const min = params.minPrice ? parseFloat(params.minPrice as string) : 0;
     const max = params.maxPrice ? parseFloat(params.maxPrice as string) : Infinity;
     filteredProducts = filteredProducts.filter((p) => p.price >= min && p.price <= max);
+  }
+
+  // On sale (has compareAt higher than price)
+  if (params.sale && typeof params.sale === "string") {
+    filteredProducts = filteredProducts.filter(
+      (p) => p.compareAt != null && p.compareAt > p.price
+    );
+  }
+
+  // "New" ≈ newest third of catalog by id
+  if (params.new && typeof params.new === "string") {
+    const newestIds = new Set(
+      [...allProducts]
+        .sort((a, b) => b.id.localeCompare(a.id))
+        .slice(0, Math.max(8, Math.ceil(allProducts.length * 0.35)))
+        .map((p) => p.id)
+    );
+    filteredProducts = filteredProducts.filter((p) => newestIds.has(p.id));
   }
 
   // Extract unique values for filters from all products
@@ -130,17 +149,23 @@ export default async function ShopPage({
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-6">{pageTitle}</h1>
       
-      <div className="flex flex-col lg:flex-row gap-8">
-        <FilterSidebar
-          categories={categories}
-          brands={brands}
-          colors={colors}
-          sizes={sizes}
-          priceRange={priceRange}
-        />
-        
-        <ProductGrid products={filteredProducts} totalCount={allProducts.length} />
-      </div>
+      <AdaptiveShopLayout
+        filters={
+          <FilterSidebar
+            categories={categories}
+            brands={brands}
+            colors={colors}
+            sizes={sizes}
+            priceRange={priceRange}
+          />
+        }
+        grid={
+          <ProductGrid
+            products={filteredProducts}
+            totalCount={allProducts.length}
+          />
+        }
+      />
     </div>
   );
 }

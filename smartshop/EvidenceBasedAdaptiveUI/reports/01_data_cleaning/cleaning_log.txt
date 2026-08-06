@@ -1,2 +1,0 @@
-Final rows: 200
-Columns: 79

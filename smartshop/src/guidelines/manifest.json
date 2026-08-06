@@ -1,35 +1,24 @@
 {
-  "version": "1.0",
-  "description": "Adaptive UI guidelines for the React website. Generated from Notebooks 05–09, validated in Notebook 10.",
+  "version": "2.2",
+  "description": "Adaptive UI guidelines for the React website. Master matrix (persona × device × mood) + global defaults fill + soft TIPI trait nudges.",
   "pipeline_order": [
-    "Detect device (Desktop or Smartphone)",
-    "Load global_defaults.json",
-    "Merge desktop_defaults.json or mobile_defaults.json",
-    "Apply persona overrides (persona_lookup.json or persona_overrides.json)",
-    "Apply mood overrides (mood_lookup.json or mood_overrides.json)",
-    "Apply personality nudges (trait_lookup.json or trait_modifiers.json)"
+    "Detect device (desktop → Laptop/Desktop, mobile → Smartphone)",
+    "Map questionnaire persona → master persona key",
+    "Bridge detected mood → guideline mood label",
+    "Instant lookup: master_adaptive_ui_rules.json → rules[persona][device][mood]",
+    "Fill missing tokens from global_defaults.json (Any/Any/Any majority)",
+    "Apply soft TIPI trait nudges from trait_modifiers.json (intensity only)",
+    "Apply device-relevant tokens + nudge CSS vars to the shop UI"
   ],
   "required_for_website": [
-    "global_defaults.json",
-    "desktop_defaults.json",
-    "mobile_defaults.json",
-    "persona_lookup.json",
-    "mood_lookup.json",
-    "trait_lookup.json"
+    "public/assets/master_adaptive_ui_rules.json",
+    "public/assets/global_defaults.json",
+    "public/assets/trait_modifiers.json"
   ],
-  "alternative_source_files": [
-    "persona_overrides.json",
-    "mood_overrides.json",
-    "trait_modifiers.json"
-  ],
-  "optional": [
-    "lookup_indexes.json"
-  ],
+  "extraction_app": "adaptive_ui_app/",
+  "extraction_notes": "Master + global defaults are exported from Streamlit page 9. Trait modifiers are a fixed soft-nudge table (not a fourth matrix axis).",
   "not_for_runtime": [
-    "Use data/outputs/adaptive_engine/final_ui_configuration.json only as a simulation example, not as the live guideline source."
-  ],
-  "legacy_do_not_use": [
-    "data/outputs/verified_guidelines.json",
-    "data/outputs/profile_lookup.json"
+    "Do not call the Streamlit app or retrain models during browsing.",
+    "Trait nudges must never replace categorical master tokens."
   ]
 }
