@@ -26,8 +26,8 @@ export function InfoRichCard({
   }, [wishlist, product.id]);
 
   return (
-    <div className="group relative block rounded-xl border border-neutral-100 bg-white p-2">
-      <Link href={`/shop/product/${product.slug}`}>
+    <div className="group relative flex h-full flex-col rounded-xl border border-neutral-100 bg-white p-2">
+      <Link href={`/shop/product/${product.slug}`} className="block shrink-0">
         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-neutral-100">
           <img
             src={product.images[0]}
@@ -51,8 +51,9 @@ export function InfoRichCard({
             rating: product.rating,
           });
         }}
-        className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-sm"
+        className="absolute right-4 top-4 z-[1] flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-sm"
         aria-label="Wishlist"
+        data-wishlist-btn=""
       >
         <span className={isInWishlist ? "text-red-500" : "text-neutral-600"}>
           ♥
@@ -60,16 +61,16 @@ export function InfoRichCard({
       </button>
       <Link
         href={`/shop/product/${product.slug}`}
-        className="mt-3 block space-y-1.5 px-1"
+        className="mt-3 flex flex-1 flex-col space-y-1.5 px-1"
       >
         <p className="text-xs uppercase tracking-wide text-neutral-500">
           {product.brand || product.category}
         </p>
-        <h3 className="text-sm font-semibold text-neutral-900 line-clamp-2">
+        <h3 className="min-h-[2.5rem] text-sm font-semibold text-neutral-900 line-clamp-2">
           {product.title}
         </h3>
         <AdaptiveReviewSnippet rating={product.rating} mode={reviewMode} />
-        <div className="text-sm">
+        <div className="mt-auto text-sm">
           <Price
             price={product.price}
             compareAt={product.compareAt}

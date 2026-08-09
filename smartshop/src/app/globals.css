@@ -94,8 +94,53 @@
   color: #f8fafc;
 }
 
-html[data-adaptive="1"] body.adaptive-active {
-  transition: background-color 0.25s ease, color 0.25s ease;
+/* While quick view is open: hide all body children except the portaled modal */
+body[data-quick-view-open] > * {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+body[data-quick-view-open] > [data-quick-view] {
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+/* PDP tabs / reviews / FAQ — follow adaptive surface, not hard white */
+body.adaptive-active .adaptive-panel {
+  background: transparent;
+  color: inherit;
+}
+html[data-surface="dark"] body.adaptive-active .adaptive-panel {
+  background: rgba(15, 23, 42, 0.35);
+  border-radius: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+html[data-theme*="warm_earthy"] body.adaptive-active .adaptive-panel {
+  background: rgba(243, 235, 225, 0.55);
+  border-radius: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+html[data-theme*="cool_blues"] body.adaptive-active .adaptive-panel {
+  background: rgba(219, 234, 254, 0.45);
+  border-radius: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+html[data-theme*="minimalist"] body.adaptive-active .adaptive-panel {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+body.adaptive-active .adaptive-panel .bg-white {
+  background-color: transparent !important;
+}
+body.adaptive-active .adaptive-panel [class*="rounded"][class*="border"] {
+  background-color: color-mix(in srgb, currentColor 4%, transparent);
+}
+
+html[data-adaptive="1"] body.adaptive-active {  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 /* Mood tints the adaptation banner only — page surfaces follow theme/background tokens */
@@ -149,11 +194,6 @@ html[data-theme*="minimalist"] body.adaptive-active a.btn {
   color: #fff !important;
   border-color: #111 !important;
 }
-html[data-theme*="minimalist"] body.adaptive-active main::before {
-  background: #f5f5f5 !important;
-  color: #171717 !important;
-  border-bottom-color: #d4d4d4 !important;
-}
 html[data-theme*="minimalist"] body.adaptive-active header {
   background: #fff !important;
   border-bottom-color: #e5e5e5 !important;
@@ -168,7 +208,7 @@ html[data-theme*="cool_blues"] .adaptation-banner {
 }
 
 html[data-theme*="vibrant_bold"] body.adaptive-active {
-  background: #fff1f2 !important;
+  background: #faf6f0 !important;
   color: #1f1135;
 }
 html[data-theme*="vibrant_bold"] .adaptation-banner {
@@ -297,7 +337,7 @@ html[data-surface="dark"] body.adaptive-active header input {
 
 /* Theme wins over background for distinctive palettes */
 html[data-theme*="vibrant_bold"] body.adaptive-active {
-  background: #fff1f2 !important;
+  background: #faf6f0 !important;
   color: #1f1135;
 }
 html[data-theme*="cool_blues"] body.adaptive-active {
@@ -386,63 +426,90 @@ html[data-accent*="purple"] body.adaptive-active a.btn {
   color: #fff !important;
 }
 
-/* Urgency banner theme (real React strip in AdaptiveUrgencyBanner) */
+/* Kill legacy CSS urgency strip — match old selectors so stale .next CSS cannot win */
+html[data-urgency*="stock"] body.adaptive-active main::before,
+html[data-urgency*="countdown"] body.adaptive-active main::before,
+html[data-urgency*="both"] body.adaptive-active main::before,
+html[data-adaptive] body.adaptive-active main::before,
+html[data-adaptive] body.adaptive-active main::after,
+body.adaptive-active main::before,
+body.adaptive-active main::after {
+  content: none !important;
+  display: none !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  background: none !important;
+  overflow: hidden !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
+/* Single urgency strip — no dividing border line */
 body.adaptive-active .adaptive-urgency-banner {
   background: #f5f5f5;
   color: #171717;
+  border: none !important;
+  box-shadow: none !important;
 }
 html[data-theme*="minimalist"] body.adaptive-active .adaptive-urgency-banner {
   background: #111;
   color: #fff;
-  border-bottom-color: #111;
 }
 html[data-theme*="warm_earthy"] body.adaptive-active .adaptive-urgency-banner {
   background: #f3ebe1;
   color: #7c4a2d;
-  border-bottom-color: #d6c2a8;
 }
 html[data-theme*="cool_blues"] body.adaptive-active .adaptive-urgency-banner {
   background: #dbeafe;
   color: #1e3a5f;
-  border-bottom-color: #93c5fd;
 }
 html[data-theme*="vibrant_bold"] body.adaptive-active .adaptive-urgency-banner {
   background: #fdf2f8 !important;
   color: #9d174d !important;
-  border-bottom-color: #f9a8d4 !important;
 }
 html[data-theme*="pastel_soft"] body.adaptive-active .adaptive-urgency-banner {
   background: #f5f3ff;
   color: #5b21b6;
-  border-bottom-color: #ddd6fe;
 }
 html[data-theme*="dark_mode"] body.adaptive-active .adaptive-urgency-banner {
   background: #020617;
   color: #e2e8f0;
-  border-bottom-color: #334155;
 }
 
-/* Hero follows theme / background (survey mockups) */
-html[data-theme*="minimalist"] body.adaptive-active .adaptive-hero {
+/* Vibrant large-hero: soft left wash; keep face visible on the right */
+html[data-theme*="vibrant_bold"] body.adaptive-active .adaptive-hero[data-hero-size="large"] .adaptive-hero-scrim {
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(88, 28, 135, 0.28) 42%,
+    transparent 72%
+  ) !important;
+}
+
+/* Hero theme tints — never wipe large-full photo heroes (use media filter / scrim only) */
+html[data-theme*="minimalist"] body.adaptive-active .adaptive-hero:not([data-hero-size="large"]) {
   background: #fff !important;
   color: #111;
 }
 html[data-theme*="minimalist"] body.adaptive-active .adaptive-hero img {
   filter: grayscale(1) contrast(1.05);
 }
-html[data-theme*="warm_earthy"] body.adaptive-active .adaptive-hero {
+html[data-theme*="warm_earthy"] body.adaptive-active .adaptive-hero:not([data-hero-size="large"]) {
   background: #f3ebe1 !important;
 }
-html[data-theme*="cool_blues"] body.adaptive-active .adaptive-hero {
+html[data-theme*="cool_blues"] body.adaptive-active .adaptive-hero:not([data-hero-size="large"]) {
   background: #e8f1f8 !important;
 }
-html[data-theme*="vibrant_bold"] body.adaptive-active .adaptive-hero {
+html[data-theme*="vibrant_bold"] body.adaptive-active .adaptive-hero:not([data-hero-size="large"]) {
   background: linear-gradient(135deg, #fff1f2 0%, #eff6ff 50%, #fef9c3 100%) !important;
 }
-html[data-theme*="pastel_soft"] body.adaptive-active .adaptive-hero {
+html[data-theme*="pastel_soft"] body.adaptive-active .adaptive-hero:not([data-hero-size="large"]) {
   background: #f0fdf4 !important;
 }
-html[data-theme*="dark_mode"] body.adaptive-active .adaptive-hero {
+html[data-theme*="dark_mode"] body.adaptive-active .adaptive-hero:not([data-hero-size="large"]) {
   background: #0f172a !important;
   color: #e2e8f0;
 }
@@ -452,18 +519,19 @@ html[data-theme*="dark_mode"] body.adaptive-active .adaptive-hero .text-neutral-
   color: #94a3b8 !important;
 }
 
-/* Background token on hero when theme is subtle */
-html[data-background*="cream"] body.adaptive-active .adaptive-hero,
-html[data-background*="off_white"] body.adaptive-active .adaptive-hero {
-  background: #faf6f0;
+/* Page background token (not the full-bleed photo hero) */
+html[data-background*="cream"] body.adaptive-active,
+html[data-background*="off_white"] body.adaptive-active {
+  background-color: #faf6f0;
 }
-html[data-background*="light_gray"] body.adaptive-active .adaptive-hero {
-  background: #f1f5f9;
+html[data-background*="light_gray"] body.adaptive-active {
+  background-color: #f1f5f9;
 }
-html[data-background*="soft_color"] body.adaptive-active .adaptive-hero {
-  background: #eff6ff;
+html[data-background*="soft_color"] body.adaptive-active {
+  background-color: #eff6ff;
 }
 
+/* Large full hero: keep photo; theme only tints the scrim */
 /* Accent colors (survey buttons/links) — theme can override (e.g. minimalist B&W) */
 html[data-accent*="pink"] body.adaptive-active .btn,
 html[data-accent*="pink"] body.adaptive-active a.btn {

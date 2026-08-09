@@ -118,29 +118,43 @@ export function AdaptiveCategoryStrip() {
 
   if (mode === "dropdown") {
     return (
-      <section className="container py-6" data-categories="dropdown">
-        <h2 className="mb-3 text-lg font-bold">Shop by category</h2>
-        <label className="block max-w-sm text-sm">
-          <span className="mb-1.5 block font-medium text-neutral-700">
-            Categories
-          </span>
-          <select
-            className="adaptive-field w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm"
-            defaultValue=""
-            onChange={(e) => {
-              if (e.target.value) window.location.href = e.target.value;
-            }}
-          >
-            <option value="" disabled>
-              Choose a category…
-            </option>
-            {CATEGORIES.map((c) => (
-              <option key={c.href} value={c.href}>
-                {c.label}
-              </option>
-            ))}
-          </select>
-        </label>
+      <section
+        className="border-b border-neutral-200/60 bg-transparent py-10"
+        data-categories="dropdown"
+      >
+        <div className="container">
+          <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 rounded-2xl border border-neutral-200/80 bg-white px-6 py-6 shadow-sm sm:flex-row sm:items-end sm:justify-between sm:gap-10 sm:px-8">
+            <div className="shrink-0 sm:max-w-[16rem]">
+              <h2 className="whitespace-nowrap text-lg font-bold tracking-tight text-neutral-900">
+                Shop by category
+              </h2>
+              <p className="mt-1 text-sm text-neutral-500">
+                Jump straight to a department
+              </p>
+            </div>
+            <label className="block w-full text-sm sm:max-w-xs sm:flex-1">
+              <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-neutral-500">
+                Categories
+              </span>
+              <select
+                className="adaptive-field w-full rounded-xl border border-neutral-200 bg-white px-3 py-3 text-sm shadow-sm outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-900/10"
+                defaultValue=""
+                onChange={(e) => {
+                  if (e.target.value) window.location.href = e.target.value;
+                }}
+              >
+                <option value="" disabled>
+                  Choose a category…
+                </option>
+                {CATEGORIES.map((c) => (
+                  <option key={c.href} value={c.href}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </div>
       </section>
     );
   }

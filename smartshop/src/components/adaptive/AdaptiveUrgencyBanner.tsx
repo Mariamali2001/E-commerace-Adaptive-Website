@@ -11,8 +11,8 @@ import {
 } from "@/lib/uiAdapter/urgency";
 
 /**
- * Page-level urgency strip driven by urgency_pref.
- * Replaces the old CSS ::before fake message with real stock / countdown copy.
+ * Single page-level urgency strip (stock and/or countdown).
+ * No border line; replaces any legacy CSS ::before strip.
  */
 export function AdaptiveUrgencyBanner() {
   const { ready, allowed } = useAdaptiveAllowed();
@@ -42,7 +42,7 @@ export function AdaptiveUrgencyBanner() {
 
   return (
     <div
-      className="adaptive-urgency-banner border-b px-4 py-2 text-center text-xs font-bold tracking-wide"
+      className="adaptive-urgency-banner px-4 py-2.5 text-center text-xs font-bold tracking-wide"
       data-urgency-banner={urgency}
       role="status"
     >

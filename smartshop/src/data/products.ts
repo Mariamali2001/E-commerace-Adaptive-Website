@@ -6,7 +6,7 @@ import { Product } from "@/types/product";
  * images[] can be local paths (/images/...) or full HTTPS URLs.
  * Bump CATALOG_VERSION whenever you change products so Mongo re-syncs.
  */
-export const CATALOG_VERSION = "2026-08-08-search-rings-v1";
+export const CATALOG_VERSION = "2026-08-09-macbook-path-v1";
 
 export const products: Product[] = [
   {
@@ -75,7 +75,7 @@ export const products: Product[] = [
     price: 1999,
     compareAt: 2199,
     rating: 4.9,
-    images: ["images/macbook.jpg", "/images/prod1.jpg"],
+    images: ["/images/macbook.jpg", "/images/prod1.jpg"],
     colors: ["#2b2b2b", "#c0c0c0"],
     sizes: [],
     description: "Powerful laptop for creators — Liquid Retina XDR display and long battery life.",

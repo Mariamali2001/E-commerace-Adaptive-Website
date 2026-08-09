@@ -82,9 +82,11 @@ export function TopSelling({ products }: { products: Product[] }) {
           </p>
         )}
       </div>
-      <div className={cn(gridClass)}>
+      <div className={cn(gridClass, "items-stretch")}>
         {items.map((p) => (
-          <AdaptiveProductCard key={p.id} product={p} />
+          <div key={p.id} className="h-full">
+            <AdaptiveProductCard product={p} />
+          </div>
         ))}
       </div>
     </section>

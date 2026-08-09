@@ -42,7 +42,12 @@ export function AdaptiveProductCard({ product }: { product: Product }) {
         priceMode={priceMode}
       />
     );
-  } else if (card.includes("badge") || card.includes("social")) {
+  } else if (
+    card.includes("badge") ||
+    card.includes("social") ||
+    card.includes("shadow")
+  ) {
+    // "Card with Shadow" / badge-heavy → elevated card
     body = (
       <BadgeHeavyCard
         product={product}
@@ -61,18 +66,19 @@ export function AdaptiveProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <ProductCardWithQuickView
-      product={product}
-      quickViewVariant={variants.quickView}
-    >
-      <div>
-        {body}
-        <AdaptiveUrgencyCue
-          productId={product.id}
-          compact
-          className="mt-1 px-1"
-        />
+    <div className="flex h-full flex-col gap-1">
+      <div className="min-h-0 flex-1">
+        <ProductCardWithQuickView
+          product={product}
+          quickViewVariant={variants.quickView}
+        >
+          {body}
+        </ProductCardWithQuickView>
       </div>
-    </ProductCardWithQuickView>
+      {/* Reserved row so cards stay equal height even when urgency is off */}
+      <div className="min-h-[1.25rem] px-1">
+        <AdaptiveUrgencyCue productId={product.id} compact />
+      </div>
+    </div>
   );
 }

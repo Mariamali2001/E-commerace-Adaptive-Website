@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { Product } from "@/types/product";
 import { Price } from "@/components/shared/Price";
 import { AdaptiveUrgencyCue } from "@/components/adaptive/AdaptiveUrgencyCue";
@@ -44,6 +45,8 @@ function QuickViewBody({
   onClose: () => void;
 }) {
   const add = useCart((s) => s.add);
+  const router = useRouter();
+  const [added, setAdded] = useState(false);
 
   const addToCart = () => {
     add({
@@ -56,6 +59,7 @@ function QuickViewBody({
       color: product.colors[0] ?? "",
       qty: 1,
     });
+    setAdded(true);
   };
 
   return (
@@ -83,53 +87,95 @@ function QuickViewBody({
         <p className="line-clamp-4 text-sm text-neutral-600">
           {product.description}
         </p>
-        <div className="mt-auto flex flex-col gap-2 pt-2">
-          <button
-            type="button"
-            className="btn w-full bg-neutral-900 text-white hover:opacity-90"
-            onClick={addToCart}
+
+        {added ? (
+          <div
+            className="mt-auto space-y-3 rounded-xl border border-green-200 bg-green-50 p-3"
+            role="status"
+            aria-live="polite"
           >
-            Add to Cart
-          </button>
-          <Link
-            href={`/shop/product/${product.slug}`}
-            onClick={onClose}
-            className="btn w-full border border-neutral-200 bg-white text-center text-neutral-900"
-          >
-            View full details
-          </Link>
-        </div>
+            <p className="text-sm font-semibold text-green-800">
+              Added to your cart!
+            </p>
+            <p className="text-xs text-green-700">{product.title}</p>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <button
+                type="button"
+                className="btn flex-1 bg-neutral-900 text-white hover:opacity-90"
+                onClick={() => {
+                  onClose();
+                  router.push("/shop/cart");
+                }}
+              >
+                Go to Cart
+              </button>
+              <button
+                type="button"
+                className="btn flex-1 border border-neutral-200 bg-white text-neutral-900"
+                onClick={onClose}
+              >
+                Continue shopping
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-auto flex flex-col gap-2 pt-2">
+            <button
+              type="button"
+              className="btn w-full bg-neutral-900 text-white hover:opacity-90"
+              onClick={addToCart}
+            >
+              Add to Cart
+            </button>
+            <Link
+              href={`/shop/product/${product.slug}`}
+              onClick={onClose}
+              className="btn w-full border border-neutral-200 bg-white text-center text-neutral-900"
+            >
+              View full details
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
 /**
- * Quick-view chrome: modal (desktop), sidebar slide (desktop), slide-up (mobile).
+ * Quick-view chrome: modal / sidebar / slide-up.
+ * Portaled to body at z-[300] so header/hearts never paint on top.
  */
 export function AdaptiveQuickViewOverlay({
   product,
   mode,
   onClose,
 }: OverlayProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
+    const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    document.body.setAttribute("data-quick-view-open", "1");
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      document.body.style.overflow = prevOverflow;
+      document.body.removeAttribute("data-quick-view-open");
     };
   }, [onClose]);
 
-  // Portal to <body> so position:fixed is never trapped by transformed card ancestors
-  // (adaptive image-text / social-proof CSS can apply transform and break in-grid overlays).
+  if (!mounted || typeof document === "undefined") return null;
+
   const overlay = (
     <div
-      className="fixed inset-0 z-[60]"
+      className="fixed inset-0 z-[9999]"
       data-quick-view={mode}
       role="dialog"
       aria-modal="true"
@@ -137,7 +183,7 @@ export function AdaptiveQuickViewOverlay({
     >
       <button
         type="button"
-        className="absolute inset-0 bg-black/45"
+        className="absolute inset-0 z-0 bg-black/60"
         aria-label="Close quick view"
         onClick={onClose}
       />
@@ -152,7 +198,7 @@ export function AdaptiveQuickViewOverlay({
             "bottom-0 left-0 right-0 max-h-[88vh] rounded-t-2xl"
         )}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-100 bg-white/95 px-4 py-3 backdrop-blur">
+        <div className="flex shrink-0 items-center justify-between border-b border-neutral-100 bg-white px-4 py-3">
           <p className="text-sm font-semibold text-neutral-900">Quick view</p>
           <button
             type="button"
@@ -170,6 +216,5 @@ export function AdaptiveQuickViewOverlay({
     </div>
   );
 
-  if (typeof document === "undefined") return null;
   return createPortal(overlay, document.body);
 }

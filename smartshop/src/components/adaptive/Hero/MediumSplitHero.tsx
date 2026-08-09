@@ -42,9 +42,9 @@ export function MediumSplitHero() {
         <div className="relative">
           <div className="adaptive-hero-media aspect-[4/3] w-full overflow-hidden rounded-2xl bg-neutral-100">
             <img
-              src="/images/hero-models.png"
+              src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=80"
               alt=""
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-center"
             />
           </div>
         </div>

@@ -73,9 +73,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
       <div className="mt-8">
         <h2 className="mb-4 text-2xl font-bold">You might also like</h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 items-stretch gap-4 md:grid-cols-4">
           {related.map((item) => (
-            <AdaptiveProductCard key={item.id} product={item} />
+            <div key={item.id} className="h-full">
+              <AdaptiveProductCard product={item} />
+            </div>
           ))}
         </div>
       </div>

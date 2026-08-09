@@ -164,6 +164,7 @@ export function ProductGrid({
             <div
               key={product.id}
               className={cn(
+                "h-full",
                 viewMode === "list" &&
                   "rounded-xl border border-neutral-100 bg-white p-3 [&_.group]:relative"
               )}

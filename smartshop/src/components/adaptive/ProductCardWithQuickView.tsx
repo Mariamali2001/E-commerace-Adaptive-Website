@@ -11,8 +11,8 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * Wraps any product card with Adaptive Engine quick_view behavior
- * (desktop: modal / sidebar / new tab / none; mobile: slide-up / direct / none).
+ * Wraps any product card with Adaptive Engine quick_view behavior.
+ * Only shows a control when the guideline is not "none" / "no_quick_view".
  */
 export function ProductCardWithQuickView({
   product,
@@ -36,8 +36,13 @@ export function ProductCardWithQuickView({
   };
 
   return (
-    <div className="group relative" data-quick-view-mode={mode}>
-      {children}
+    <div
+      className="flex h-full flex-col"
+      data-quick-view-mode={mode}
+    >
+      <div className="group relative min-h-0 flex-1" data-product-chrome>
+        {children}
+      </div>
 
       {mode === "none" ? null : mode === "new_tab" ? (
         <button
@@ -48,14 +53,14 @@ export function ProductCardWithQuickView({
             openNewTab();
           }}
           className={cn(
-            "absolute bottom-3 left-3 z-10 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-neutral-900 shadow-sm ring-1 ring-neutral-200",
-            "opacity-100 transition md:opacity-0 md:group-hover:opacity-100"
+            "mt-2 self-start rounded-full bg-white px-3 py-1.5 text-[11px] font-semibold text-neutral-900 shadow-sm ring-1 ring-neutral-200",
+            "hover:bg-neutral-50"
           )}
         >
           Open in new tab
         </button>
       ) : mode === "direct" ? (
-        <div className="mt-2 px-1">
+        <div className="mt-2">
           <Link
             href={`/shop/product/${product.slug}`}
             className="btn flex w-full items-center justify-center bg-neutral-900 py-2 text-xs text-white hover:opacity-90"
@@ -72,8 +77,8 @@ export function ProductCardWithQuickView({
             setOpen(true);
           }}
           className={cn(
-            "absolute bottom-3 left-3 z-10 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-neutral-900 shadow-sm ring-1 ring-neutral-200",
-            "opacity-100 transition md:opacity-0 md:group-hover:opacity-100"
+            "mt-2 self-start rounded-full bg-white px-3 py-1.5 text-[11px] font-semibold text-neutral-900 shadow-sm ring-1 ring-neutral-200",
+            "hover:bg-neutral-50"
           )}
         >
           Quick view
