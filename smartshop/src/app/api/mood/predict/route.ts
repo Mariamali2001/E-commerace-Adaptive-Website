@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error: offline
-          ? "Mood API is not running. Start it with: python mood_api.py (in smartshop/mood_model)"
+          ? "Mood API is unreachable. Locally: npm run mood-api. On Vercel: set MOOD_API_URL to your deployed mood service."
           : message,
       },
       { status: 503 }
@@ -83,7 +83,7 @@ export async function GET() {
       {
         ok: false,
         error:
-          "Mood API is not running. Start it with: python mood_api.py (in smartshop/mood_model)",
+          "Mood API is unreachable. Locally: npm run mood-api. On Vercel: set MOOD_API_URL to your deployed mood service.",
       },
       { status: 503 }
     );

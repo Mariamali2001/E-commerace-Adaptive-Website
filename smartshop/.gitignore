@@ -50,5 +50,10 @@ next-env.d.ts
 # study_results analysis venv
 /study_results/.venv/
 
-# mood model local venv
+# mood model local venv + heavy artifacts (keep out of git / Vercel)
 /mood_model/.venv/
+/mood_model/__pycache__/
+/mood_model/artifacts/models/*.h5
+/mood_model/artifacts/logs/
+/mood_model/artifacts/metrics/
+/mood_model/artifacts/plots/

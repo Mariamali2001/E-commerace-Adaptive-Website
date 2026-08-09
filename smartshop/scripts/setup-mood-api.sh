@@ -10,6 +10,6 @@ fi
 # shellcheck disable=SC1091
 source .venv/bin/activate
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install -r requirements-api.txt
 
 echo "Mood API environment ready. Start with: npm run mood-api"

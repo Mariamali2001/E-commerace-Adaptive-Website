@@ -1,0 +1,10 @@
+# Railway: set service Root Directory to smartshop/mood_model
+# (Settings → Root Directory), then deploy this folder.
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"

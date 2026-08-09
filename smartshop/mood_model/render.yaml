@@ -1,0 +1,15 @@
+# Optional blueprint. In the Render dashboard you can also create a
+# Web Service manually with Root Directory = smartshop/mood_model
+services:
+  - type: web
+    name: smartshop-mood-api
+    runtime: docker
+    rootDir: smartshop/mood_model
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: MODEL_URL
+        sync: false
+      - key: MODEL_PATH
+        value: /app/artifacts/models/best_model_egypt_ft.h5

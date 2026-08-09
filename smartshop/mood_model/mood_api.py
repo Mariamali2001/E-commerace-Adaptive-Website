@@ -1,48 +1,89 @@
-"""Local mood inference API for SmartShop.
+"""Mood inference API for SmartShop.
 
 Loads best_model_egypt_ft.h5 and exposes:
   GET  /health
   POST /predict   (multipart field: image)
 
-Run from smartshop/mood_model:
+Local:
   python mood_api.py
-  # or: uvicorn mood_api:app --host 127.0.0.1 --port 8001
+
+Deploy (Railway / Render / HF Spaces / Fly):
+  set PORT, optional MODEL_URL / MODEL_PATH
+  uvicorn mood_api:app --host 0.0.0.0 --port $PORT
 """
 
 from __future__ import annotations
 
-import io
+import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 import cv2
 import numpy as np
+import requests
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 CLASS_NAMES = ["angry", "disgust", "fear", "happy", "neutral", "sad", "surprise"]
 IMAGE_SIZE = 96
 ROOT = Path(__file__).resolve().parent
-DEFAULT_MODEL = ROOT / "artifacts" / "models" / "best_model_egypt_ft.h5"
-
-app = FastAPI(title="SmartShop Mood API", version="1.0.0")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+DEFAULT_MODEL = Path(
+    os.environ.get(
+        "MODEL_PATH",
+        str(ROOT / "artifacts" / "models" / "best_model_egypt_ft.h5"),
+    )
 )
+MODEL_URL = os.environ.get("MODEL_URL", "").strip()
 
 _model = None
 _cascade: cv2.CascadeClassifier | None = None
 
 
+def download_model(url: str, dest: Path) -> None:
+    """Download weights with redirect + certifi SSL (macOS-safe)."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    tmp = dest.with_suffix(dest.suffix + ".download")
+    print(f"Downloading mood model from MODEL_URL → {dest}")
+    with requests.get(url, stream=True, timeout=120, allow_redirects=True) as res:
+        res.raise_for_status()
+        total = int(res.headers.get("content-length") or 0)
+        done = 0
+        with open(tmp, "wb") as out:
+            for chunk in res.iter_content(chunk_size=1024 * 1024):
+                if not chunk:
+                    continue
+                out.write(chunk)
+                done += len(chunk)
+                if total:
+                    pct = done * 100 // total
+                    print(f"  downloaded {done // (1024 * 1024)}MB ({pct}%)", end="\r")
+        print()
+    tmp.replace(dest)
+
+
+def ensure_model_file() -> Path:
+    """Use local weights, or download once from MODEL_URL when missing."""
+    path = DEFAULT_MODEL
+    if path.exists() and path.stat().st_size > 1_000_000:
+        return path
+
+    if not MODEL_URL:
+        raise FileNotFoundError(
+            f"Model not found at {path}. "
+            "Place the .h5 file there, or set MODEL_URL to download it."
+        )
+
+    download_model(MODEL_URL, path)
+    return path
+
+
 def get_cascade() -> cv2.CascadeClassifier:
     global _cascade
     if _cascade is None:
-        path = Path(cv2.data.haarcascades) / "haarcascade_frontalface_default.xml"
-        _cascade = cv2.CascadeClassifier(str(path))
+        cascade_path = Path(cv2.data.haarcascades) / "haarcascade_frontalface_default.xml"
+        _cascade = cv2.CascadeClassifier(str(cascade_path))
         if _cascade.empty():
-            raise RuntimeError(f"Could not load Haar cascade from {path}")
+            raise RuntimeError(f"Could not load Haar cascade from {cascade_path}")
     return _cascade
 
 
@@ -51,9 +92,8 @@ def get_model():
     if _model is None:
         import tensorflow as tf
 
-        if not DEFAULT_MODEL.exists():
-            raise FileNotFoundError(f"Model not found: {DEFAULT_MODEL}")
-        _model = tf.keras.models.load_model(str(DEFAULT_MODEL), compile=False)
+        model_path = ensure_model_file()
+        _model = tf.keras.models.load_model(str(model_path), compile=False)
     return _model
 
 
@@ -79,11 +119,30 @@ def preprocess_face(face_bgr: np.ndarray) -> np.ndarray:
     return face_resized.astype(np.float32)[None, ...]
 
 
-@app.on_event("startup")
-def startup() -> None:
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
     get_cascade()
     get_model()
     print(f"Mood API ready — model: {DEFAULT_MODEL}")
+    yield
+
+
+app = FastAPI(title="SmartShop Mood API", version="1.0.0", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/")
+def root():
+    return {
+        "service": "smartshop-mood-api",
+        "health": "/health",
+        "predict": "POST /predict (multipart field: image)",
+    }
 
 
 @app.get("/health")
@@ -135,4 +194,6 @@ async def predict(image: UploadFile = File(...)):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("mood_api:app", host="127.0.0.1", port=8001, reload=False)
+    host = os.environ.get("HOST", "127.0.0.1")
+    port = int(os.environ.get("PORT", "8001"))
+    uvicorn.run("mood_api:app", host=host, port=port, reload=False)

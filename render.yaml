@@ -1,0 +1,16 @@
+# Deploy mood API from this monorepo.
+# In Render: New → Blueprint → select this repo
+# OR New Web Service → Root Directory = smartshop/mood_model
+services:
+  - type: web
+    name: smartshop-mood-api
+    runtime: docker
+    rootDir: smartshop/mood_model
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: MODEL_URL
+        sync: false
+      - key: MODEL_PATH
+        value: /app/artifacts/models/best_model_egypt_ft.h5

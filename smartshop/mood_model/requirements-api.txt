@@ -1,0 +1,9 @@
+# Runtime deps for the deployed mood API only (not training notebooks).
+tensorflow==2.21.0
+opencv-python-headless>=4.8,<5
+numpy
+fastapi
+uvicorn[standard]
+python-multipart
+requests
+certifi

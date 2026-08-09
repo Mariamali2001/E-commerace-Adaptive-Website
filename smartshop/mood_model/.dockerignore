@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+*.ipynb
+artifacts/logs/
+artifacts/metrics/
+artifacts/plots/
+artifacts/models/best_model.h5
+data/
+*.xlsx
+*.csv

@@ -65,3 +65,64 @@ Admin export: `/admin`.
 | Experiment | `POST /api/experiment/save`, admin CSV                                                        | Results for thesis                         |
 
 Requires `MONGODB_URI` in `.env.local`.
+
+## Deploy (Vercel website + separate mood API)
+
+The mood model is ~334MB (TensorFlow). **Do not put it on Vercel** — Vercel runs the Next.js shop only. Host the mood API elsewhere and point the shop at it.
+
+```text
+Vercel (smartshop Next.js)  --MOOD_API_URL-->  Railway/Render/HF Spaces (mood_api)
+MongoDB Atlas               <----------------  same Next.js app
+```
+
+### 1) Host the `.h5` weights (once)
+
+Upload only `mood_model/artifacts/models/best_model_egypt_ft.h5` to a place with a **direct download URL**, e.g. a [Hugging Face](https://huggingface.co/) model repo. You do **not** need `best_model.h5` for the API.
+
+Example `MODEL_URL`:
+
+`https://huggingface.co/<you>/<repo>/resolve/main/best_model_egypt_ft.h5`
+
+### 2) Deploy mood API (Docker)
+
+**Important:** commit + push `smartshop/mood_model/Dockerfile` first.  
+**Root directory is not** `mood_model` — it is:
+
+```text
+smartshop/mood_model
+```
+
+#### Railway
+1. New Project → Deploy from GitHub → this repo  
+2. Service **Settings → Root Directory** = `smartshop/mood_model`  
+3. Builder = Dockerfile (uses `Dockerfile` in that folder)  
+4. Variables:
+   - `MODEL_URL` = `https://huggingface.co/MariamBashandy/smartshop-mood-egypt/resolve/main/best_model_egypt_ft.h5`
+5. Settings → Networking → Generate domain  
+6. Open `https://YOUR-DOMAIN/health`
+
+#### Render
+1. New → Web Service → this repo  
+2. **Root Directory** = `smartshop/mood_model`  
+3. Runtime = Docker  
+4. Same `MODEL_URL` as above  
+5. Open `https://YOUR-SERVICE.onrender.com/health`
+
+| Variable     | Value |
+|-------------|--------|
+| `MODEL_URL` | Direct URL to `best_model_egypt_ft.h5` |
+| `PORT`      | Set automatically by Railway/Render — do not hardcode |
+
+Health check: `GET https://YOUR-MOOD-API/health`
+
+### 3) Deploy website on Vercel
+
+1. Import this GitHub repo in Vercel
+2. Set **Root Directory** to `smartshop`
+3. Add env vars from `.env.example`, including:
+   - `MONGODB_URI`
+   - `SESSION_SECRET`
+   - `MOOD_API_URL=https://YOUR-MOOD-API` (no trailing slash)
+4. Deploy
+
+Local still uses `http://127.0.0.1:8001` by default when `MOOD_API_URL` is unset.
