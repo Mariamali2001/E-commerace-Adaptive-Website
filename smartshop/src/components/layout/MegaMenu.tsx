@@ -34,7 +34,7 @@ export function MegaMenuTrigger({ label, columns }: MegaMenuProps) {
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
-      <button className="text-sm hover:text-neutral-600 transition-colors">
+      <button className="text-sm text-current opacity-90 transition-colors hover:opacity-100">
         {label}
       </button>
 

@@ -1,15 +1,15 @@
 # Local webcam smoke test + mood API (Keras .h5)
 tensorflow
-opencv-python
+opencv-python>=4.8,<5
 numpy
 fastapi
 uvicorn
 python-multipart
 
 # Optional / earlier PyTorch pipeline
-torch
-torchvision
-mediapipe
-scikit-learn
-matplotlib
-PyYAML
+# torch
+# torchvision
+# mediapipe
+# scikit-learn
+# matplotlib
+# PyYAML

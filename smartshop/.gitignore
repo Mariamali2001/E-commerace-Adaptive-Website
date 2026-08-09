@@ -49,3 +49,6 @@ next-env.d.ts
 
 # study_results analysis venv
 /study_results/.venv/
+
+# mood model local venv
+/mood_model/.venv/

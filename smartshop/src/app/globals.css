@@ -234,9 +234,9 @@ html[data-theme*="dark_mode"] .adaptation-banner {
 html[data-theme*="dark_mode"] body.adaptive-active header,
 html[data-theme*="dark_mode"] body.adaptive-active .rounded-2xl,
 html[data-theme*="dark_mode"] body.adaptive-active .rounded-xl {
-  background-color: #1e293b;
-  border-color: #334155;
-  color: #e2e8f0;
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
 }
 
 /* Background token (fills when theme alone is subtle) */
@@ -323,16 +323,39 @@ html[data-surface="dark"] body.adaptive-active main h3 {
   color: #f8fafc;
 }
 
+/* Header chrome must stay dark — adaptive rule below uses canvas (light) otherwise */
+html[data-surface="dark"] body.adaptive-active header {
+  background: rgba(30, 41, 59, 0.96) !important;
+  background-color: #1e293b !important;
+  border-bottom-color: #475569 !important;
+  color: #f1f5f9 !important;
+}
+
 html[data-surface="dark"] body.adaptive-active header a,
 html[data-surface="dark"] body.adaptive-active header button,
-html[data-surface="dark"] body.adaptive-active header span {
-  color: #e2e8f0;
+html[data-surface="dark"] body.adaptive-active header span,
+html[data-surface="dark"] body.adaptive-active header nav,
+html[data-surface="dark"] body.adaptive-active header p {
+  color: #f1f5f9 !important;
+}
+
+html[data-surface="dark"] body.adaptive-active header .text-neutral-500,
+html[data-surface="dark"] body.adaptive-active header .text-neutral-400 {
+  color: #cbd5e1 !important;
 }
 
 html[data-surface="dark"] body.adaptive-active header input {
   background-color: #0f172a !important;
   border-color: #475569 !important;
-  color: #e2e8f0 !important;
+  color: #f1f5f9 !important;
+}
+
+html[data-surface="dark"] body.adaptive-active header input::placeholder {
+  color: #94a3b8 !important;
+}
+
+html[data-surface="dark"] body.adaptive-active header [class*="border"] {
+  border-color: #475569 !important;
 }
 
 /* Theme wins over background for distinctive palettes */
@@ -354,12 +377,20 @@ html[data-theme*="warm_earthy"] body.adaptive-active {
   background: #f3ebe1 !important;
 }
 
-/* Header / chrome react to adaptation */
+/* Header / chrome react to adaptation (light surfaces only — dark handled above) */
 html[data-adaptive="1"] body.adaptive-active header {
   background: color-mix(in srgb, canvas 88%, transparent);
   backdrop-filter: blur(8px);
   border-bottom: 2px solid currentColor;
   border-bottom-color: color-mix(in srgb, currentColor 18%, transparent);
+}
+
+html[data-adaptive="1"][data-surface="dark"] body.adaptive-active header,
+html[data-adaptive="1"][data-theme*="dark_mode"] body.adaptive-active header {
+  background: rgba(15, 23, 42, 0.94) !important;
+  background-color: #0f172a !important;
+  border-bottom-color: #334155 !important;
+  color: #f1f5f9 !important;
 }
 
 html[data-mood="stressed"] body.adaptive-active header,

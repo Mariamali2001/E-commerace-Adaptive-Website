@@ -19,15 +19,18 @@ Guideline extraction (offline): `adaptive_ui_app/`.
 
 ## Getting Started
 
+First time after clone (installs Node deps + mood API Python venv):
+
 ```bash
-npm install
-npm run dev
+cd smartshop
+npm run setup
 ```
 
-Mood API (camera step):
+Then run the website and mood API in two terminals:
 
 ```bash
-cd mood_model && python3 mood_api.py
+npm run dev        # website → http://localhost:3000
+npm run mood-api   # mood API → http://127.0.0.1:8001
 ```
 
 Open [http://localhost:3000](http://localhost:3000).

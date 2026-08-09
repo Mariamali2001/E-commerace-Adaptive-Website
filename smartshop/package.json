@@ -7,6 +7,8 @@
     "dev:turbo": "next dev --turbopack --hostname 0.0.0.0",
     "dev:https": "bash scripts/dev-https.sh",
     "dev:tunnel": "bash scripts/dev-tunnel.sh",
+    "mood-api": "bash scripts/run-mood-api.sh",
+    "setup": "npm install && bash scripts/setup-mood-api.sh",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

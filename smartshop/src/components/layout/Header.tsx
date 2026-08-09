@@ -167,7 +167,7 @@ export function Header({
 
   return (
     <header
-      className="sticky top-0 z-40 w-full border-b border-neutral-200/70 bg-neutral-50/95 backdrop-blur supports-[backdrop-filter]:bg-neutral-50/90"
+      className="sticky top-0 z-40 w-full border-b border-neutral-200/70 bg-[color-mix(in_srgb,canvas_92%,transparent)] text-neutral-900 backdrop-blur"
       data-header-variant={variant}
     >
       <div className={`container flex ${barH} items-center justify-between gap-3 sm:gap-4`}>
@@ -181,7 +181,7 @@ export function Header({
             }
             alt=""
           />
-          <span className="truncate text-sm font-bold sm:text-base">
+          <span className="truncate text-sm font-bold text-current sm:text-base">
             SMARTSHOPPING
           </span>
         </Link>
@@ -192,7 +192,7 @@ export function Header({
               <Link
                 key={link.href + link.label}
                 href={link.href}
-                className="text-neutral-800 hover:text-neutral-600"
+                className="text-current opacity-90 hover:opacity-100"
               >
                 {link.label}
               </Link>
@@ -215,7 +215,7 @@ export function Header({
             <MegaMenuTrigger label="Brands" columns={brandsMenuColumns} />
             <Link
               href="/shop/mood"
-              className="font-medium text-neutral-800 hover:text-neutral-600"
+              className="font-medium text-current opacity-90 hover:opacity-100"
             >
               Mood camera
             </Link>
@@ -231,7 +231,7 @@ export function Header({
           <Link
             href="/shop/cart"
             aria-label="Cart"
-            className="rounded-full border p-2 transition hover:bg-neutral-50"
+            className="rounded-full border border-current/20 p-2 transition hover:bg-black/5"
           >
             🛒
           </Link>
