@@ -12,10 +12,17 @@ type SortOption = "price-asc" | "price-desc" | "newest" | "popular" | "rating";
 
 type ProductGridProps = {
   products: Product[];
+  /** Count after filters/search (what the grid is showing) */
   totalCount: number;
+  /** Full catalog size — used only when unfiltered */
+  catalogCount?: number;
 };
 
-export function ProductGrid({ products: initialProducts, totalCount }: ProductGridProps) {
+export function ProductGrid({
+  products: initialProducts,
+  totalCount,
+  catalogCount,
+}: ProductGridProps) {
   const [sortBy, setSortBy] = useState<SortOption>("popular");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const { ready, allowed } = useAdaptiveAllowed();
@@ -77,8 +84,21 @@ export function ProductGrid({ products: initialProducts, totalCount }: ProductGr
       {/* Header with count, sort, and view options */}
       <div className="flex flex-col items-start justify-between gap-4 border-b pb-4 sm:flex-row sm:items-center">
         <p className="text-sm text-neutral-600">
-          Showing <span className="font-semibold">{sortedProducts.length}</span> of{" "}
-          <span className="font-semibold">{totalCount}</span> products
+          {catalogCount != null && catalogCount !== totalCount ? (
+            <>
+              Showing <span className="font-semibold">{sortedProducts.length}</span>{" "}
+              matching product{sortedProducts.length === 1 ? "" : "s"}
+              <span className="text-neutral-400">
+                {" "}
+                (of {catalogCount} in shop)
+              </span>
+            </>
+          ) : (
+            <>
+              Showing <span className="font-semibold">{sortedProducts.length}</span>{" "}
+              product{sortedProducts.length === 1 ? "" : "s"}
+            </>
+          )}
         </p>
 
         <div className="flex items-center gap-4">
@@ -141,7 +161,15 @@ export function ProductGrid({ products: initialProducts, totalCount }: ProductGr
           )}
         >
           {sortedProducts.map((product) => (
-            <AdaptiveProductCard key={product.id} product={product} />
+            <div
+              key={product.id}
+              className={cn(
+                viewMode === "list" &&
+                  "rounded-xl border border-neutral-100 bg-white p-3 [&_.group]:relative"
+              )}
+            >
+              <AdaptiveProductCard product={product} />
+            </div>
           ))}
         </div>
       )}

@@ -2,6 +2,7 @@
 
 import { MediumSplitHero } from "./Hero/MediumSplitHero";
 import { SmallStripHero } from "./Hero/SmallStripHero";
+import { LargeFullHero } from "./Hero/LargeFullHero";
 import { useExperimentStore } from "@/store/experiment";
 import { resolveVariants } from "@/lib/uiAdapter";
 import { useAdaptiveAllowed } from "@/lib/experiment/useAdaptiveAllowed";
@@ -15,11 +16,17 @@ export function AdaptiveHero() {
   }
 
   const variants = resolveVariants(uiConfig);
-  if (
-    variants.heroBanner.includes("small") ||
-    variants.heroBanner.includes("strip")
-  ) {
+  const hero = variants.heroBanner.toLowerCase();
+
+  // None — skip promo, go straight to products
+  if (hero.includes("none") || hero.includes("no_promotional") || hero === "no") {
+    return null;
+  }
+  if (hero.includes("small") || hero.includes("strip")) {
     return <SmallStripHero />;
+  }
+  if (hero.includes("large") || hero.includes("full")) {
+    return <LargeFullHero />;
   }
   return <MediumSplitHero />;
 }

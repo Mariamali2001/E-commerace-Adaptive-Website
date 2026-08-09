@@ -62,7 +62,11 @@ export const useCart = create<CartState>((set, get) => ({
 
   setQty: (key, qty) =>
     set((state) => {
-      const q = Math.max(1, Math.min(99, qty));
+      // qty < 1 → remove line (minus at 1 clears the item)
+      if (qty < 1) {
+        return { list: state.list.filter((l) => l.key !== key) };
+      }
+      const q = Math.min(99, qty);
       return {
         list: state.list.map((l) => (l.key === key ? { ...l, qty: q } : l)),
       };

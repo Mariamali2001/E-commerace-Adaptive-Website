@@ -2,6 +2,7 @@ import { listProducts } from "@/server/products";
 import { FilterSidebar } from "@/components/shop/FilterSidebar";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { AdaptiveShopLayout } from "@/components/adaptive/AdaptiveShopLayout";
+import { productMatchesSearch } from "@/lib/productSearch";
 
 export default async function ShopPage({
   searchParams,
@@ -16,12 +17,9 @@ export default async function ShopPage({
 
   // Filter by search query only when user typed a search (not experiment params)
   if (typeof params.search === "string" && params.search.trim()) {
-    const searchTerm = params.search.trim().toLowerCase();
+    const searchTerm = params.search.trim();
     filteredProducts = filteredProducts.filter((p) =>
-      p.title.toLowerCase().includes(searchTerm) ||
-      p.description.toLowerCase().includes(searchTerm) ||
-      p.category?.toLowerCase().includes(searchTerm) ||
-      p.brand?.toLowerCase().includes(searchTerm)
+      productMatchesSearch(p, searchTerm)
     );
   }
 
@@ -32,10 +30,11 @@ export default async function ShopPage({
     );
   }
 
-  // Filter by brand
+  // Filter by brand (substring so "ordinary" matches "The Ordinary")
   if (params.brand && typeof params.brand === "string") {
-    filteredProducts = filteredProducts.filter((p) => 
-      p.brand?.toLowerCase() === (params.brand as string).toLowerCase()
+    const brandTerm = (params.brand as string).toLowerCase();
+    filteredProducts = filteredProducts.filter((p) =>
+      p.brand?.toLowerCase().includes(brandTerm)
     );
   }
 
@@ -93,6 +92,9 @@ export default async function ShopPage({
     { value: "electronics", label: "Electronics", count: categoryCounts.electronics || 0 },
     { value: "fashion", label: "Fashion", count: categoryCounts.fashion || 0 },
     { value: "accessories", label: "Accessories", count: categoryCounts.accessories || 0 },
+    { value: "beauty", label: "Beauty", count: categoryCounts.beauty || 0 },
+    { value: "home", label: "Home", count: categoryCounts.home || 0 },
+    { value: "caps", label: "Caps", count: categoryCounts.caps || 0 },
   ];
 
   const brandCounts = allProducts.reduce((acc, p) => {
@@ -162,7 +164,8 @@ export default async function ShopPage({
         grid={
           <ProductGrid
             products={filteredProducts}
-            totalCount={allProducts.length}
+            totalCount={filteredProducts.length}
+            catalogCount={allProducts.length}
           />
         }
       />

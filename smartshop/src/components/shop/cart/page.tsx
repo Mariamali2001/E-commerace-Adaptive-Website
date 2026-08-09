@@ -34,7 +34,7 @@ export default function CartPage() {
 
                   <div className="mt-2 flex items-center gap-3">
                     <button
-                      onClick={() => setQty(it.key, Math.max(1, it.qty - 1))}
+                      onClick={() => setQty(it.key, it.qty - 1)}
                       className="rounded-full border px-2 py-1"
                       aria-label="Decrease quantity"
                     >

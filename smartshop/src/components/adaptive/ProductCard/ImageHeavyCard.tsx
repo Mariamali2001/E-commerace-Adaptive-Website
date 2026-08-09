@@ -30,11 +30,8 @@ export function ImageHeavyCard({
           <div className="mt-1 text-white [&_span]:text-white">
             <Price
               price={product.price}
-              compareAt={
-                priceMode.includes("strike") || priceMode.includes("comparison")
-                  ? product.compareAt
-                  : undefined
-              }
+              compareAt={product.compareAt}
+              mode={priceMode}
             />
           </div>
         </div>

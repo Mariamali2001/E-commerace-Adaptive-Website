@@ -696,6 +696,114 @@
       "model": "gpt-5.6-luna",
       "createdAt": "2026-08-05T08:56:03.526Z",
       "modulePath": null
+    },
+    "Navbar:d4ced8c561945c902f1bf351": {
+      "configurationHash": "d4ced8c561945c902f1bf351",
+      "componentName": "Navbar",
+      "adaptiveName": "AdaptiveNavbar",
+      "variantId": "top_bar",
+      "relativePath": "generated_components/AdaptiveNavbar/AdaptiveNavbar_d4ced8c561945c902f1bf351.tsx",
+      "code": "/* Hand-seeded catalog variant (Navbar/top_bar). Runtime: import from @/components/adaptive/Navbar/TopBarNav. LLM skipped. */\nexport {};\n",
+      "source": "catalog",
+      "model": null,
+      "createdAt": "2026-08-08T19:52:44.924Z",
+      "modulePath": "@/components/adaptive/Navbar/TopBarNav"
+    },
+    "HeroBanner:d4ced8c561945c902f1bf351": {
+      "configurationHash": "d4ced8c561945c902f1bf351",
+      "componentName": "HeroBanner",
+      "adaptiveName": "AdaptiveHeroBanner",
+      "variantId": "medium_split",
+      "relativePath": "generated_components/AdaptiveHeroBanner/AdaptiveHeroBanner_d4ced8c561945c902f1bf351.tsx",
+      "code": "/* Hand-seeded catalog variant (HeroBanner/medium_split). Runtime: import from @/components/adaptive/Hero/MediumSplitHero. LLM skipped. */\nexport {};\n",
+      "source": "catalog",
+      "model": null,
+      "createdAt": "2026-08-08T19:52:44.926Z",
+      "modulePath": "@/components/adaptive/Hero/MediumSplitHero"
+    },
+    "ProductCard:d4ced8c561945c902f1bf351": {
+      "configurationHash": "d4ced8c561945c902f1bf351",
+      "componentName": "ProductCard",
+      "adaptiveName": "AdaptiveProductCard",
+      "variantId": "info_rich",
+      "relativePath": "generated_components/AdaptiveProductCard/AdaptiveProductCard_d4ced8c561945c902f1bf351.tsx",
+      "code": "/* Hand-seeded catalog variant (ProductCard/info_rich). Runtime: import from @/components/adaptive/ProductCard/InfoRichCard. LLM skipped. */\nexport {};\n",
+      "source": "catalog",
+      "model": null,
+      "createdAt": "2026-08-08T19:52:44.928Z",
+      "modulePath": "@/components/adaptive/ProductCard/InfoRichCard"
+    },
+    "FilterPanel:d4ced8c561945c902f1bf351": {
+      "configurationHash": "d4ced8c561945c902f1bf351",
+      "componentName": "FilterPanel",
+      "adaptiveName": "AdaptiveFilterPanel",
+      "variantId": "sidebar_left",
+      "relativePath": "generated_components/AdaptiveFilterPanel/AdaptiveFilterPanel_d4ced8c561945c902f1bf351.tsx",
+      "code": "type FilterOption = {\n  label: string;\n  value: string;\n  count?: number;\n};\n\ntype FilterGroup = {\n  id: string;\n  label: string;\n  options: FilterOption[];\n  multiple?: boolean;\n};\n\nexport type FilterPanelProps = {\n  filters: FilterGroup[];\n  selected: Record<string, string[]>;\n  onChange: (groupId: string, value: string, checked: boolean) => void;\n  onClear?: () => void;\n  className?: string;\n};\n\nexport function SidebarLeftFilterPanel({\n  filters,\n  selected,\n  onChange,\n  onClear,\n  className = \"\",\n}: FilterPanelProps) {\n  return (\n    <aside\n      aria-labelledby=\"filter-panel-title\"\n      className={`h-full w-72 shrink-0 border-r border-slate-200 bg-white ${className}`}\n    >\n      <div className=\"flex items-center justify-between border-b border-slate-200 px-5 py-4\">\n        <h2\n          id=\"filter-panel-title\"\n          className=\"text-base font-semibold text-slate-900\"\n        >\n          Filters\n        </h2>\n\n        {onClear ? (\n          <button\n            type=\"button\"\n            onClick={onClear}\n            className=\"text-sm font-medium text-slate-600 transition hover:text-slate-900\"\n          >\n            Clear all\n          </button>\n        ) : null}\n      </div>\n\n      <div className=\"space-y-6 p-5\">\n        {filters.map((filter) => {\n          const values = selected[filter.id] ?? [];\n\n          return (\n            <fieldset key={filter.id} className=\"space-y-3\">\n              <legend className=\"text-sm font-semibold text-slate-900\">\n                {filter.label}\n              </legend>\n\n              <div className=\"space-y-2\">\n                {filter.options.map((option) => {\n                  const checked = values.includes(option.value);\n                  const inputId = `filter-${filter.id}-${option.value}`;\n\n                  return (\n                    <label\n                      key={option.value}\n                      htmlFor={inputId}\n                      className=\"flex cursor-pointer items-center gap-3 text-sm text-slate-700\"\n                    >\n                      <input\n                        id={inputId}\n                        name={filter.multiple ? undefined : filter.id}\n                        type={filter.multiple ? \"checkbox\" : \"radio\"}\n                        value={option.value}\n                        checked={checked}\n                        onChange={(event) =>\n                          onChange(\n                            filter.id,\n                            option.value,\n                            event.currentTarget.checked,\n                          )\n                        }\n                        className=\"h-4 w-4 border-slate-300 text-slate-900 accent-slate-900 focus:ring-slate-500\"\n                      />\n\n                      <span className=\"flex min-w-0 flex-1 items-center justify-between gap-3\">\n                        <span className=\"truncate\">{option.label}</span>\n                        {option.count !== undefined ? (\n                          <span className=\"text-xs tabular-nums text-slate-500\">\n                            {option.count}\n                          </span>\n                        ) : null}\n                      </span>\n                    </label>\n                  );\n                })}\n              </div>\n            </fieldset>\n          );\n        })}\n      </div>\n    </aside>\n  );\n}",
+      "source": "llm",
+      "model": "gpt-5.6-luna",
+      "createdAt": "2026-08-08T19:53:04.605Z",
+      "modulePath": null
+    },
+    "RecommendationSection:d4ced8c561945c902f1bf351": {
+      "configurationHash": "d4ced8c561945c902f1bf351",
+      "componentName": "RecommendationSection",
+      "adaptiveName": "AdaptiveRecommendationSection",
+      "variantId": "deals",
+      "relativePath": "generated_components/AdaptiveRecommendationSection/AdaptiveRecommendationSection_d4ced8c561945c902f1bf351.tsx",
+      "code": "type RecommendationSectionProps = {\n  className?: string;\n};\n\nexport function DealsRecommendationSection({\n  className = \"\",\n}: RecommendationSectionProps) {\n  return (\n    <section\n      aria-labelledby=\"deals-recommendation-heading\"\n      className={`rounded-xl border border-slate-200 bg-white p-5 ${className}`}\n    >\n      <div className=\"space-y-1\">\n        <h2\n          id=\"deals-recommendation-heading\"\n          className=\"text-lg font-semibold text-slate-900\"\n        >\n          Deals\n        </h2>\n        <p className=\"text-sm text-slate-600\">\n          Products on sale or special offers\n        </p>\n      </div>\n    </section>\n  );\n}",
+      "source": "cache",
+      "model": null,
+      "createdAt": "2026-08-08T19:53:04.608Z",
+      "modulePath": null
+    },
+    "ReviewSection:d4ced8c561945c902f1bf351": {
+      "configurationHash": "d4ced8c561945c902f1bf351",
+      "componentName": "ReviewSection",
+      "adaptiveName": "AdaptiveReviewSection",
+      "variantId": "user_photos",
+      "relativePath": "generated_components/AdaptiveReviewSection/AdaptiveReviewSection_d4ced8c561945c902f1bf351.tsx",
+      "code": "import { useState } from \"react\";\n\ntype Review = {\n  id: string;\n  author: string;\n  rating: number;\n  title?: string;\n  content: string;\n  date?: string;\n  verified?: boolean;\n  photos?: string[];\n};\n\ntype ReviewSectionProps = {\n  reviews: Review[];\n};\n\nconst REVIEWS_PER_PAGE = 6;\n\nfunction StarRating({ rating }: { rating: number }) {\n  return (\n    <div\n      className=\"flex items-center gap-0.5\"\n      aria-label={`${rating} out of 5 stars`}\n    >\n      {Array.from({ length: 5 }, (_, index) => (\n        <svg\n          key={index}\n          aria-hidden=\"true\"\n          className={`h-4 w-4 ${\n            index < rating ? \"fill-amber-400 text-amber-400\" : \"fill-gray-200 text-gray-200\"\n          }`}\n          viewBox=\"0 0 20 20\"\n        >\n          <path d=\"M10 1.5l2.63 5.33 5.88.85-4.25 4.14 1 5.85L10 14.91l-5.26 2.76 1-5.85L1.5 7.68l5.87-.85L10 1.5z\" />\n        </svg>\n      ))}\n    </div>\n  );\n}\n\nexport function UserPhotosReviewSection({ reviews }: ReviewSectionProps) {\n  const [currentPage, setCurrentPage] = useState(1);\n\n  const customerPhotos = reviews.flatMap((review) =>\n    (review.photos ?? []).map((src, index) => ({\n      src,\n      author: review.author,\n      reviewId: review.id,\n      index,\n    })),\n  );\n\n  const averageRating =\n    reviews.length > 0\n      ? reviews.reduce((total, review) => total + review.rating, 0) / reviews.length\n      : 0;\n\n  const totalPages = Math.max(1, Math.ceil(reviews.length / REVIEWS_PER_PAGE));\n  const page = Math.min(currentPage, totalPages);\n  const visibleReviews = reviews.slice(\n    (page - 1) * REVIEWS_PER_PAGE,\n    page * REVIEWS_PER_PAGE,\n  );\n\n  return (\n    <section className=\"mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 lg:px-8\" aria-labelledby=\"reviews-heading\">\n      <div className=\"border-b border-gray-200 pb-8\">\n        <div className=\"flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between\">\n          <div>\n            <h2 id=\"reviews-heading\" className=\"text-2xl font-semibold tracking-tight text-gray-900\">\n              Customer reviews\n            </h2>\n            <div className=\"mt-3 flex items-center gap-3\">\n              <span className=\"text-3xl font-semibold text-gray-900\">\n                {averageRating > 0 ? averageRating.toFixed(1) : \"—\"}\n              </span>\n              <div>\n                <StarRating rating={Math.round(averageRating)} />\n                <p className=\"mt-1 text-sm text-gray-600\">\n                  {reviews.length} {reviews.length === 1 ? \"review\" : \"reviews\"}\n                </p>\n              </div>\n            </div>\n          </div>\n          <p className=\"max-w-sm text-sm leading-6 text-gray-600\">\n            See what customers are saying about their experience.\n          </p>\n        </div>\n      </div>\n\n      {customerPhotos.length > 0 && (\n        <div className=\"border-b border-gray-200 py-8\">\n          <div className=\"mb-4 flex items-baseline justify-between gap-4\">\n            <h3 className=\"text-lg font-semibold text-gray-900\">Photos from customers</h3>\n            <span className=\"text-sm text-gray-500\">{customerPhotos.length} photos</span>\n          </div>\n          <div className=\"grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6\">\n            {customerPhotos.map((photo) => (\n              <img\n                key={`${photo.reviewId}-${photo.index}`}\n                src={photo.src}\n                alt={`Photo shared by ${photo.author}`}\n                className=\"aspect-square w-full rounded-lg object-cover\"\n                loading=\"lazy\"\n              />\n            ))}\n          </div>\n        </div>\n      )}\n\n      <div className=\"divide-y divide-gray-200\">\n        {visibleReviews.map((review) => (\n          <article key={review.id} className=\"py-7 first:pt-8\">\n            <div className=\"flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between\">\n              <div>\n                <div className=\"flex flex-wrap items-center gap-x-3 gap-y-1\">\n                  <h3 className=\"font-medium text-gray-900\">{review.author}</h3>\n                  {review.verified && (\n                    <span className=\"text-xs font-medium text-green-700\">Verified purchase</span>\n                  )}\n                </div>\n                <div className=\"mt-2 flex items-center gap-3\">\n                  <StarRating rating={review.rating} />\n                  {review.date && <time className=\"text-sm text-gray-500\">{review.date}</time>}\n                </div>\n              </div>\n            </div>\n\n            {review.title && <h4 className=\"mt-4 font-medium text-gray-900\">{review.title}</h4>}\n            <p className=\"mt-2 max-w-3xl text-sm leading-6 text-gray-700\">{review.content}</p>\n\n            {review.photos && review.photos.length > 0 && (\n              <div className=\"mt-4 flex flex-wrap gap-3\">\n                {review.photos.map((photo, index) => (\n                  <img\n                    key={`${review.id}-photo-${index}`}\n                    src={photo}\n                    alt={`Photo shared by ${review.author}`}\n                    className=\"h-24 w-24 rounded-lg object-cover\"\n                    loading=\"lazy\"\n                  />\n                ))}\n              </div>\n            )}\n          </article>\n        ))}\n      </div>\n\n      {reviews.length === 0 && (\n        <p className=\"py-10 text-center text-sm text-gray-600\">No reviews yet.</p>\n      )}\n\n      {reviews.length > REVIEWS_PER_PAGE && (\n        <nav className=\"flex items-center justify-center gap-2 border-t border-gray-200 pt-7\" aria-label=\"Reviews pagination\">\n          <button\n            type=\"button\"\n            onClick={() => setCurrentPage((value) => Math.max(1, value - 1))}\n            disabled={page === 1}\n            className=\"rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40\"\n          >\n            Previous\n          </button>\n          <div className=\"flex items-center gap-1\" aria-label={`Page ${page} of ${totalPages}`}>\n            {Array.from({ length: totalPages }, (_, index) => {\n              const pageNumber = index + 1;\n              return (\n                <button\n                  key={pageNumber}\n                  type=\"button\"\n                  onClick={() => setCurrentPage(pageNumber)}\n                  aria-current={pageNumber === page ? \"page\" : undefined}\n                  className={`h-9 min-w-9 rounded-md px-2 text-sm font-medium ${\n                    pageNumber === page\n                      ? \"bg-gray-900 text-white\"\n                      : \"text-gray-700 hover:bg-gray-100\"\n                  }`}\n                >\n                  {pageNumber}\n                </button>\n              );\n            })}\n          </div>\n          <button\n            type=\"button\"\n            onClick={() => setCurrentPage((value) => Math.min(totalPages, value + 1))}\n            disabled={page === totalPages}\n            className=\"rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40\"\n          >\n            Next\n          </button>\n        </nav>\n      )}\n    </section>\n  );\n}",
+      "source": "llm",
+      "model": "gpt-5.6-luna",
+      "createdAt": "2026-08-08T19:53:17.792Z",
+      "modulePath": null
+    },
+    "Footer:d4ced8c561945c902f1bf351": {
+      "configurationHash": "d4ced8c561945c902f1bf351",
+      "componentName": "Footer",
+      "adaptiveName": "AdaptiveFooter",
+      "variantId": "vibrant_bold",
+      "relativePath": "generated_components/AdaptiveFooter/AdaptiveFooter_d4ced8c561945c902f1bf351.tsx",
+      "code": "type FooterLink = {\n  label: string;\n  href: string;\n};\n\ntype VibrantBoldFooterProps = {\n  brandName?: string;\n  links?: FooterLink[];\n  copyright?: string;\n};\n\nexport function VibrantBoldFooter({\n  brandName = \"Your Brand\",\n  links = [],\n  copyright = `© ${new Date().getFullYear()} ${brandName}. All rights reserved.`,\n}: VibrantBoldFooterProps) {\n  return (\n    <footer className=\"relative overflow-hidden bg-gradient-to-br from-fuchsia-600 via-orange-500 to-yellow-400 px-6 py-10 text-white\">\n      <div className=\"absolute -right-20 -top-20 h-56 w-56 rounded-full bg-cyan-300/30 blur-3xl\" />\n      <div className=\"absolute -bottom-24 left-1/4 h-64 w-64 rounded-full bg-violet-600/30 blur-3xl\" />\n\n      <div className=\"relative mx-auto flex w-full max-w-7xl flex-col gap-8 sm:flex-row sm:items-center sm:justify-between\">\n        <div>\n          <a\n            href=\"/\"\n            className=\"text-2xl font-black tracking-tight text-white transition-opacity hover:opacity-80\"\n          >\n            {brandName}\n          </a>\n          <p className=\"mt-2 text-sm font-medium text-white/80\">{copyright}</p>\n        </div>\n\n        {links.length > 0 && (\n          <nav aria-label=\"Footer navigation\">\n            <ul className=\"flex flex-wrap gap-x-6 gap-y-3 sm:justify-end\">\n              {links.map((link) => (\n                <li key={`${link.href}-${link.label}`}>\n                  <a\n                    href={link.href}\n                    className=\"font-semibold text-white transition-colors hover:text-cyan-100\"\n                  >\n                    {link.label}\n                  </a>\n                </li>\n              ))}\n            </ul>\n          </nav>\n        )}\n      </div>\n    </footer>\n  );\n}",
+      "source": "llm",
+      "model": "gpt-5.6-luna",
+      "createdAt": "2026-08-08T19:53:23.731Z",
+      "modulePath": null
+    },
+    "CategorySection:d4ced8c561945c902f1bf351": {
+      "configurationHash": "d4ced8c561945c902f1bf351",
+      "componentName": "CategorySection",
+      "adaptiveName": "AdaptiveCategorySection",
+      "variantId": "mega_menu_with_images",
+      "relativePath": "generated_components/AdaptiveCategorySection/AdaptiveCategorySection_d4ced8c561945c902f1bf351.tsx",
+      "code": "type CategorySubcategory = {\n  name: string;\n  href: string;\n};\n\ntype MegaMenuCategory = {\n  name: string;\n  href: string;\n  image: string;\n  imageAlt?: string;\n  subcategories: CategorySubcategory[];\n};\n\ntype CategorySectionProps = {\n  categories: MegaMenuCategory[];\n};\n\nexport function MegaMenuWithImagesCategorySection({\n  categories,\n}: CategorySectionProps) {\n  return (\n    <section\n      aria-label=\"Categories\"\n      className=\"w-full border-y border-slate-200 bg-white\"\n    >\n      <div className=\"mx-auto max-w-7xl px-6 py-8 lg:px-8\">\n        <div className=\"grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4\">\n          {categories.map((category) => (\n            <div key={category.href} className=\"min-w-0\">\n              <a\n                href={category.href}\n                className=\"group block overflow-hidden rounded-lg\"\n              >\n                <div className=\"aspect-[4/3] overflow-hidden rounded-lg bg-slate-100\">\n                  <img\n                    src={category.image}\n                    alt={category.imageAlt ?? category.name}\n                    className=\"h-full w-full object-cover transition-transform duration-200 group-hover:scale-105\"\n                  />\n                </div>\n                <h2 className=\"mt-4 text-base font-semibold text-slate-900 group-hover:text-slate-600\">\n                  {category.name}\n                </h2>\n              </a>\n\n              {category.subcategories.length > 0 && (\n                <ul className=\"mt-3 space-y-2\">\n                  {category.subcategories.map((subcategory) => (\n                    <li key={subcategory.href}>\n                      <a\n                        href={subcategory.href}\n                        className=\"text-sm text-slate-600 hover:text-slate-950 hover:underline\"\n                      >\n                        {subcategory.name}\n                      </a>\n                    </li>\n                  ))}\n                </ul>\n              )}\n            </div>\n          ))}\n        </div>\n      </div>\n    </section>\n  );\n}",
+      "source": "llm",
+      "model": "gpt-5.6-luna",
+      "createdAt": "2026-08-08T19:53:53.554Z",
+      "modulePath": null
+    },
+    "ProductGrid:d4ced8c561945c902f1bf351": {
+      "configurationHash": "d4ced8c561945c902f1bf351",
+      "componentName": "ProductGrid",
+      "adaptiveName": "AdaptiveProductGrid",
+      "variantId": "4_columns",
+      "relativePath": "generated_components/AdaptiveProductGrid/AdaptiveProductGrid_d4ced8c561945c902f1bf351.tsx",
+      "code": "type Product = {\n  id: string | number;\n  name: string;\n  price: string | number;\n  image?: string;\n};\n\ntype ProductGridProps = {\n  products: Product[];\n};\n\nexport function 4ColumnsProductGrid({ products }: ProductGridProps) {\n  return (\n    <div className=\"grid grid-cols-4 gap-3\">\n      {products.map((product) => (\n        <article\n          key={product.id}\n          className=\"min-w-0 overflow-hidden rounded-md border border-gray-200 bg-white\"\n        >\n          <div className=\"aspect-square overflow-hidden bg-gray-100\">\n            {product.image ? (\n              <img\n                src={product.image}\n                alt={product.name}\n                className=\"h-full w-full object-cover\"\n              />\n            ) : (\n              <div className=\"h-full w-full\" aria-hidden=\"true\" />\n            )}\n          </div>\n\n          <div className=\"space-y-1 p-2\">\n            <h3 className=\"truncate text-sm font-medium text-gray-900\">\n              {product.name}\n            </h3>\n            <p className=\"text-sm text-gray-600\">\n              {typeof product.price === \"number\"\n                ? `$${product.price.toFixed(2)}`\n                : product.price}\n            </p>\n          </div>\n        </article>\n      ))}\n    </div>\n  );\n}",
+      "source": "llm",
+      "model": "gpt-5.6-luna",
+      "createdAt": "2026-08-08T19:56:54.077Z",
+      "modulePath": null
     }
   }
 }

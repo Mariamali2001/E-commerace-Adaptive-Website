@@ -22,27 +22,67 @@ export type ExperimentQuestion = {
     | { type: "note" };
 };
 
-/** Survey persona labels (stored as answered). */
-export type SurveyPersona =
-  | "Deal Hunter"
-  | "Researcher"
-  | "Need-based"
-  | "Entertainment"
-  | "Gift Buying"
-  | "Minimalist";
-
 /**
- * Map survey personas → guideline JSON personas (existing lookup keys).
- * Need-based / Entertainment / Gift Buying are bridged until guideline files include them.
+ * Exact `primary_persona` values from the dataset (E-Commerce.csv).
+ * Questionnaire options = these strings so elicitation matches guideline keys.
  */
+export const DATASET_PRIMARY_PERSONAS = [
+  "The Deal Hunter (I'm motivated by sales, discounts, and getting the best value. I wait for promotions)",
+  "The Researcher (I thoroughly research products, read reviews, compare options, and take my time making informed decisions)",
+  "The Browser (I enjoy browsing and discovering products, often without immediate purchase intent)",
+  "The Impulsive Buyer (I make quick decisions based on intuition and emotion. If I like it, I buy it)",
+  "The Loyal Customer (I stick with brands and stores I trust. I value consistency and reliability)",
+  "The Minimalist (I want simple, efficient shopping. Show me what I need with minimal fuss)",
+] as const;
+
+export type SurveyPersona = (typeof DATASET_PRIMARY_PERSONAS)[number];
+
+/** Map dataset / questionnaire persona → short guideline PersonaId. */
 export const SURVEY_PERSONA_TO_GUIDELINE: Record<SurveyPersona, PersonaId> = {
+  "The Deal Hunter (I'm motivated by sales, discounts, and getting the best value. I wait for promotions)":
+    "Deal Hunter",
+  "The Researcher (I thoroughly research products, read reviews, compare options, and take my time making informed decisions)":
+    "Researcher",
+  "The Browser (I enjoy browsing and discovering products, often without immediate purchase intent)":
+    "Browser",
+  "The Impulsive Buyer (I make quick decisions based on intuition and emotion. If I like it, I buy it)":
+    "Impulsive Buyer",
+  "The Loyal Customer (I stick with brands and stores I trust. I value consistency and reliability)":
+    "Loyal Customer",
+  "The Minimalist (I want simple, efficient shopping. Show me what I need with minimal fuss)":
+    "Minimalist",
+};
+
+/** Older website labels → same guideline personas (backward compatible). */
+const LEGACY_SURVEY_PERSONA_TO_GUIDELINE: Record<string, PersonaId> = {
   "Deal Hunter": "Deal Hunter",
   Researcher: "Researcher",
   Minimalist: "Minimalist",
+  Browser: "Browser",
+  "Impulsive Buyer": "Impulsive Buyer",
+  "Loyal Customer": "Loyal Customer",
   "Need-based": "Browser",
   Entertainment: "Impulsive Buyer",
   "Gift Buying": "Loyal Customer",
 };
+
+function resolveSurveyPersona(raw: string | undefined): {
+  surveyPersona: SurveyPersona | string | null;
+  persona: PersonaId | null;
+} {
+  if (!raw?.trim()) return { surveyPersona: null, persona: null };
+  const value = raw.trim();
+  if (value in SURVEY_PERSONA_TO_GUIDELINE) {
+    const surveyPersona = value as SurveyPersona;
+    return {
+      surveyPersona,
+      persona: SURVEY_PERSONA_TO_GUIDELINE[surveyPersona],
+    };
+  }
+  const legacy = LEGACY_SURVEY_PERSONA_TO_GUIDELINE[value];
+  if (legacy) return { surveyPersona: value, persona: legacy };
+  return { surveyPersona: value, persona: null };
+}
 
 export const LIKERT_5: QuestionOption[] = [
   { label: "1 — Disagree strongly", value: "1" },
@@ -136,14 +176,10 @@ export const EXPERIMENT_QUESTIONS: ExperimentQuestion[] = [
     text: "Primary Persona: Which of the following best describes you?",
     kind: "choice",
     mapsTo: { type: "persona" },
-    options: [
-      { label: "Deal Hunter", value: "Deal Hunter" },
-      { label: "Researcher", value: "Researcher" },
-      { label: "Need-based", value: "Need-based" },
-      { label: "Entertainment", value: "Entertainment" },
-      { label: "Gift Buying", value: "Gift Buying" },
-      { label: "Minimalist", value: "Minimalist" },
-    ],
+    options: DATASET_PRIMARY_PERSONAS.map((persona) => ({
+      label: persona,
+      value: persona,
+    })),
   },
   {
     id: "self_mood",
@@ -177,7 +213,7 @@ function levelFromScore(score: number): TraitLevel {
 }
 
 export type DerivedProfile = {
-  surveyPersona: SurveyPersona | null;
+  surveyPersona: SurveyPersona | string | null;
   persona: PersonaId | null;
   traits: Partial<Record<TraitName, TraitLevel>>;
   traitScores: Partial<Record<TraitName, number>>;
@@ -222,14 +258,9 @@ export function deriveProfileFromAnswers(
     traits.Openness = levelFromScore(traitScores.Openness);
   }
 
-  const surveyRaw = answers.persona as SurveyPersona | undefined;
-  const surveyPersona =
-    surveyRaw && surveyRaw in SURVEY_PERSONA_TO_GUIDELINE
-      ? (surveyRaw as SurveyPersona)
-      : null;
-  const persona = surveyPersona
-    ? SURVEY_PERSONA_TO_GUIDELINE[surveyPersona]
-    : null;
+  const { surveyPersona, persona } = resolveSurveyPersona(
+    typeof answers.persona === "string" ? answers.persona : undefined
+  );
 
   const selfMoodRaw = answers.self_mood;
   const selfReportedMood =

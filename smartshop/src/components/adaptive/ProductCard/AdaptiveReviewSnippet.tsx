@@ -1,10 +1,12 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { RatingStars } from "@/components/shared/RatingStars";
 
 /**
  * Compact social proof on product cards.
  * Driven by `social_proof_display` (not PDP `review_display` layout).
+ * Intensity is scaled by html[data-social-proof-influence] CSS.
  */
 export function AdaptiveReviewSnippet({
   rating,
@@ -21,9 +23,15 @@ export function AdaptiveReviewSnippet({
     return null;
   }
 
+  const wrap = (node: ReactNode) => (
+    <div className="adaptive-social-proof" data-social-proof={mode}>
+      {node}
+    </div>
+  );
+
   // Bestseller Badges
   if (id.includes("badge") || id.includes("bestseller") || id.includes("popular")) {
-    return (
+    return wrap(
       <div className="flex flex-wrap items-center gap-1.5">
         {rating >= 4.2 ? (
           <span
@@ -51,7 +59,7 @@ export function AdaptiveReviewSnippet({
 
   // User Photos — cue that customer photos are available
   if (id.includes("photo") || id.includes("image") || id.includes("user_photo")) {
-    return (
+    return wrap(
       <div className="flex items-center gap-1.5">
         <RatingStars rating={rating} small={compact} />
         <span
@@ -71,12 +79,12 @@ export function AdaptiveReviewSnippet({
     id.includes("ratings_only") ||
     (id.includes("rating") && !id.includes("review") && !id.includes("customer"))
   ) {
-    return <RatingStars rating={rating} small={compact} />;
+    return wrap(<RatingStars rating={rating} small={compact} />);
   }
 
   // Customer Reviews (default) — stars + approximate review count
   const approx = Math.max(3, Math.round(rating * 17));
-  return (
+  return wrap(
     <div className="flex items-center gap-1.5">
       <RatingStars rating={rating} small={compact} />
       <span

@@ -59,6 +59,8 @@ const TOKEN_ALIASES: Record<string, string> = {
   font_style_pref: "font_style",
   font_size_pref: "font_size",
   whitespace_pref: "whitespace",
+  desktop_whitespace: "whitespace",
+  mobile_whitespace: "whitespace",
   urgency_pref: "urgency",
   checkout_style: "checkout",
   form_field_style: "form_fields",

@@ -12,6 +12,7 @@ function stripAdaptiveDomOnly() {
     "data-adaptive",
     "data-theme",
     "data-background",
+    "data-surface",
     "data-accent",
     "data-grid",
     "data-urgency",
@@ -86,6 +87,16 @@ export function AdaptiveThemeProvider({
     // Guideline theme/background drive surfaces (not invented mood palettes)
     root.setAttribute("data-theme", v.colorTheme);
     root.setAttribute("data-background", v.background);
+
+    // Surface flag for contrast CSS (filters/labels stay readable on dark)
+    const themeId = String(v.colorTheme ?? "").toLowerCase();
+    const bgId = String(v.background ?? "").toLowerCase();
+    const lightThemeOverride =
+      /warm_earthy|cool_blues|vibrant_bold|pastel_soft/.test(themeId);
+    const isDarkSurface =
+      themeId.includes("dark") || (bgId.includes("dark") && !lightThemeOverride);
+    root.setAttribute("data-surface", isDarkSurface ? "dark" : "light");
+
     root.setAttribute("data-accent", v.accentColor);
     root.setAttribute("data-grid", v.grid);
     root.setAttribute("data-urgency", v.urgency);
@@ -111,6 +122,10 @@ export function AdaptiveThemeProvider({
     root.setAttribute("data-quick-view", v.quickView);
     root.setAttribute("data-categories", v.categories);
     root.setAttribute("data-persistent-filters", v.persistentFilters);
+    root.setAttribute(
+      "data-social-proof-influence",
+      v.socialProofInfluence
+    );
     root.setAttribute("data-mood", mood);
     root.style.setProperty(
       "--adaptive-density",

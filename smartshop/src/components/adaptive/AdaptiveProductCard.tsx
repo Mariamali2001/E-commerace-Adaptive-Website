@@ -10,6 +10,7 @@ import { ImageHeavyCard } from "./ProductCard/ImageHeavyCard";
 import { BadgeHeavyCard } from "./ProductCard/BadgeHeavyCard";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductCardWithQuickView } from "./ProductCardWithQuickView";
+import { AdaptiveUrgencyCue } from "./AdaptiveUrgencyCue";
 
 export function AdaptiveProductCard({ product }: { product: Product }) {
   const { ready, allowed } = useAdaptiveAllowed();
@@ -64,7 +65,14 @@ export function AdaptiveProductCard({ product }: { product: Product }) {
       product={product}
       quickViewVariant={variants.quickView}
     >
-      {body}
+      <div>
+        {body}
+        <AdaptiveUrgencyCue
+          productId={product.id}
+          compact
+          className="mt-1 px-1"
+        />
+      </div>
     </ProductCardWithQuickView>
   );
 }

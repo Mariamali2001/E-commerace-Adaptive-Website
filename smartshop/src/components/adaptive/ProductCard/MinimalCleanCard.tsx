@@ -35,9 +35,8 @@ export function MinimalCleanCard({
         />
         <Price
           price={product.price}
-          compareAt={
-            priceMode.includes("strike") ? product.compareAt : undefined
-          }
+          compareAt={product.compareAt}
+          mode={priceMode}
         />
       </div>
     </Link>

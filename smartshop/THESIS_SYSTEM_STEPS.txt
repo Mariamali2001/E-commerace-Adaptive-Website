@@ -113,9 +113,10 @@ Clarify for the thesis:
      Runtime falls back (usually Neutral) and logs that fact.
 
   3) Survey persona labels vs matrix keys
-     Questionnaire may say “Entertainment”; matrix keys say
-     “The Impulsive Buyer (…)”. Mapping is OK — show the user’s
-     questionnaire label in the UI banner.
+     Questionnaire `primary_persona` options match the dataset
+     exactly (e.g. “The Impulsive Buyer (…)”). Short guideline ids
+     (Impulsive Buyer) are derived for lookup; banner shows the
+     full questionnaire / dataset label.
 
   4) Mood for adaptation = model detection
      Live engine uses DETECTED mood (bridged to guideline labels).

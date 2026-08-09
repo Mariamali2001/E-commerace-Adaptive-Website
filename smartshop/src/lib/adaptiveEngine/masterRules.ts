@@ -51,9 +51,13 @@ const PERSONA_TO_MASTER: Record<string, string> = {
     "The Loyal Customer (I stick with brands and stores I trust. I value consistency and reliability)",
   Browser:
     "The Browser (I enjoy browsing and discovering products, often without immediate purchase intent)",
-  /** Survey label used in experiment questionnaire */
+  /** Legacy questionnaire labels (pre-dataset-aligned wording) */
   "Need-based":
     "The Browser (I enjoy browsing and discovering products, often without immediate purchase intent)",
+  Entertainment:
+    "The Impulsive Buyer (I make quick decisions based on intuition and emotion. If I like it, I buy it)",
+  "Gift Buying":
+    "The Loyal Customer (I stick with brands and stores I trust. I value consistency and reliability)",
   Minimalist:
     "The Minimalist (I want simple, efficient shopping. Show me what I need with minimal fuss)",
   Researcher:

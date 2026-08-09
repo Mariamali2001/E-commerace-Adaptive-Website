@@ -28,7 +28,7 @@ type ExperimentState = {
   browseStartedAt: number | null;
   browseDurationMs: number;
   device: "desktop" | "mobile" | null;
-  surveyPersona: SurveyPersona | null;
+  surveyPersona: SurveyPersona | string | null;
   persona: PersonaId | null;
   traits: Partial<Record<TraitName, TraitLevel>>;
   traitScores: Partial<Record<TraitName, number>>;
@@ -47,7 +47,7 @@ type ExperimentState = {
   setDevice: (device: "desktop" | "mobile") => void;
   setAnswers: (answers: QuestionnaireAnswers) => void;
   setProfileFromQuestionnaire: (payload: {
-    surveyPersona: SurveyPersona | null;
+    surveyPersona: SurveyPersona | string | null;
     persona: PersonaId | null;
     traits: Partial<Record<TraitName, TraitLevel>>;
     traitScores: Partial<Record<TraitName, number>>;

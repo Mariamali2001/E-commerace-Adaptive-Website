@@ -16,104 +16,85 @@ type HeaderProps = {
   compact?: boolean;
 };
 
+const CAT_IMG = {
+  electronics:
+    "https://i.3dmodels.org/uploads/Apple/516_Apple_MacBook_Pro_2021_14_inch_Space_Gray/Apple_MacBook_Pro_2021_14_inch_Space_Gray_1000_0001.jpg",
+  fashion:
+    "https://mediahub.coastfashion.com/bkk18061_beige_xl?qlt=70&w=549&ssz=true&dpr=2",
+  accessories:
+    "https://xcdn.next.co.uk/common/items/default/default/itemimages/3_4Ratio/product/lge/767397s6.jpg?im=Resize,width=750",
+  beauty:
+    "https://i0.wp.com/ordinaryeg.com/wp-content/uploads/2023/09/rdn-ascorbyl-glucoside-solution-12pct-30ml-1.webp?fit=800%2C800&ssl=1",
+  home: "https://www.ikea.com/ca/en/images/products/blidvaeder-table-lamp-off-white-ceramic-beige__1059592_pe849717_s5.jpg?f=s",
+  caps: "https://watchesprime.com/wp-content/uploads/2022/08/baseball-nike-cap-black-cotton-hat-size-heritage86.jpg",
+};
+
 const TOP_BAR_LINKS = [
   { label: "Shop", href: "/shop" },
+  { label: "Electronics", href: "/shop?category=electronics" },
+  { label: "Fashion", href: "/shop?category=fashion" },
   { label: "On Sale", href: "/shop?sale=50" },
-  { label: "New Arrivals", href: "/shop?new=week" },
-  { label: "Brands", href: "/shop?brand=nike" },
   { label: "Mood camera", href: "/shop/mood" },
 ];
 
+/** Only categories that have products in the catalog */
 const shopMenuColumns = [
   {
-    title: "SHOP BY PRODUCT",
+    title: "SHOP BY CATEGORY",
     items: [
       { label: "View all", href: "/shop" },
-      { label: "New in", href: "/shop?filter=new" },
-      { label: "Selling Fast", href: "/shop?filter=trending" },
-      { label: "Hair Accessories", href: "/shop?category=hair" },
-      { label: "Hats", href: "/shop?category=hats" },
-      { label: "Gifts", href: "/shop?category=gifts" },
-      { label: "Belts", href: "/shop?category=belts" },
-      { label: "Caps", href: "/shop?category=caps" },
-      { label: "Gloves", href: "/shop?category=gloves" },
-      { label: "Scarves", href: "/shop?category=scarves" },
-      { label: "Socks & Tights", href: "/shop?category=socks" },
+      { label: "Electronics", href: "/shop?category=electronics", image: CAT_IMG.electronics },
+      { label: "Fashion", href: "/shop?category=fashion", image: CAT_IMG.fashion },
+      { label: "Accessories", href: "/shop?category=accessories", image: CAT_IMG.accessories },
+      { label: "Beauty", href: "/shop?category=beauty", image: CAT_IMG.beauty },
+      { label: "Home", href: "/shop?category=home", image: CAT_IMG.home },
+      { label: "Caps", href: "/shop?category=caps", image: CAT_IMG.caps },
     ],
   },
   {
-    title: "SHOP BY BAGS",
+    title: "MORE",
     items: [
-      { label: "View all", href: "/shop?category=bags", image: "/images/prod2.jpg" },
-      { label: "Cross Body Bags", href: "/shop?category=crossbody", image: "/images/prod3.jpg" },
-      { label: "Tote Bags", href: "/shop?category=tote", image: "/images/prod4.jpg" },
-      { label: "Travel Bags", href: "/shop?category=travel", image: "/images/prod5.jpg" },
-      { label: "Shoulder Bags", href: "/shop?category=shoulder", image: "/images/prod6.jpg" },
-      { label: "Clutches", href: "/shop?category=clutches", image: "/images/prod7.jpg" },
-    ],
-  },
-  {
-    title: "SHOP BY JEWELLERY",
-    items: [
-      { label: "View all", href: "/shop?category=jewellery", image: "/images/prod1.jpg" },
-      { label: "Earrings", href: "/shop?category=earrings", image: "/images/prod2.jpg" },
-      { label: "Necklaces", href: "/shop?category=necklaces", image: "/images/prod3.jpg" },
-      { label: "Rings", href: "/shop?category=rings", image: "/images/prod4.jpg" },
-      { label: "Bracelets", href: "/shop?category=bracelets", image: "/images/prod5.jpg" },
-      { label: "Plated & Sterling Jewellery", href: "/shop?category=sterling", image: "/images/prod6.jpg" },
+      { label: "On sale", href: "/shop?sale=50" },
+      { label: "New arrivals", href: "/shop?new=week" },
+      { label: "Highest rated", href: "/shop?sort=rating" },
     ],
   },
   {
     title: "Featured",
     items: [],
     featured: {
-      title: "WINTER ACCESSORIES",
-      image: "/images/prod7.jpg",
-      href: "/shop?collection=winter",
+      title: "SHOP ELECTRONICS",
+      image: CAT_IMG.electronics,
+      href: "/shop?category=electronics",
     },
   },
 ];
 
 const brandsMenuColumns = [
   {
-    title: "TOP BRANDS",
+    title: "TECH",
+    items: [
+      { label: "Apple", href: "/shop?brand=apple" },
+      { label: "Philips", href: "/shop?brand=philips" },
+    ],
+  },
+  {
+    title: "FASHION",
     items: [
       { label: "Nike", href: "/shop?brand=nike" },
       { label: "Adidas", href: "/shop?brand=adidas" },
-      { label: "Puma", href: "/shop?brand=puma" },
-      { label: "Reebok", href: "/shop?brand=reebok" },
-      { label: "Under Armour", href: "/shop?brand=underarmour" },
-      { label: "New Balance", href: "/shop?brand=newbalance" },
-    ],
-  },
-  {
-    title: "LUXURY BRANDS",
-    items: [
-      { label: "Gucci", href: "/shop?brand=gucci" },
-      { label: "Prada", href: "/shop?brand=prada" },
-      { label: "Louis Vuitton", href: "/shop?brand=lv" },
-      { label: "Chanel", href: "/shop?brand=chanel" },
-      { label: "Dior", href: "/shop?brand=dior" },
-    ],
-  },
-  {
-    title: "STREETWEAR",
-    items: [
-      { label: "Supreme", href: "/shop?brand=supreme" },
-      { label: "Off-White", href: "/shop?brand=offwhite" },
-      { label: "Stussy", href: "/shop?brand=stussy" },
-      { label: "Palace", href: "/shop?brand=palace" },
-      { label: "BAPE", href: "/shop?brand=bape" },
-    ],
-  },
-  {
-    title: "AFFORDABLE",
-    items: [
-      { label: "H&M", href: "/shop?brand=hm" },
       { label: "Zara", href: "/shop?brand=zara" },
-      { label: "Uniqlo", href: "/shop?brand=uniqlo" },
-      { label: "Gap", href: "/shop?brand=gap" },
-      { label: "Old Navy", href: "/shop?brand=oldnavy" },
+    ],
+  },
+  {
+    title: "BEAUTY & HOME",
+    items: [
+      { label: "Chanel", href: "/shop?brand=chanel" },
+      { label: "MAC", href: "/shop?brand=mac" },
+      { label: "CeraVe", href: "/shop?brand=cerave" },
+      { label: "The Ordinary", href: "/shop?brand=ordinary" },
+      { label: "IKEA", href: "/shop?brand=ikea" },
+      { label: "H&M Home", href: "/shop?brand=h%26m" },
     ],
   },
 ];
@@ -122,57 +103,57 @@ const saleMenuColumns = [
   {
     title: "DISCOUNTS",
     items: [
-      { label: "Up to 50% Off", href: "/shop?sale=50" },
-      { label: "Up to 70% Off", href: "/shop?sale=70" },
-      { label: "Clearance", href: "/shop?sale=clearance" },
-      { label: "Flash Deals", href: "/shop?sale=flash" },
+      { label: "On sale", href: "/shop?sale=50" },
+      { label: "View all deals", href: "/shop?sale=50" },
     ],
   },
   {
     title: "CATEGORIES ON SALE",
     items: [
-      { label: "Women's Sale", href: "/shop?sale=women" },
-      { label: "Men's Sale", href: "/shop?sale=men" },
-      { label: "Kids Sale", href: "/shop?sale=kids" },
-      { label: "Accessories Sale", href: "/shop?sale=accessories" },
+      { label: "Electronics", href: "/shop?category=electronics&sale=50" },
+      { label: "Fashion", href: "/shop?category=fashion&sale=50" },
+      { label: "Accessories", href: "/shop?category=accessories&sale=50" },
+      { label: "Beauty", href: "/shop?category=beauty&sale=50" },
+      { label: "Home", href: "/shop?category=home&sale=50" },
+      { label: "Caps", href: "/shop?category=caps&sale=50" },
     ],
   },
   {
     title: "Featured",
     items: [],
     featured: {
-      title: "SEASONAL SALE",
-      image: "/images/prod1.jpg",
-      href: "/shop?sale=seasonal",
+      title: "DEALS THIS WEEK",
+      image: CAT_IMG.fashion,
+      href: "/shop?sale=50",
     },
   },
 ];
 
 const newArrivalsMenuColumns = [
   {
-    title: "NEW THIS WEEK",
+    title: "BROWSE",
     items: [
-      { label: "View All New", href: "/shop?new=week" },
-      { label: "Women's New", href: "/shop?new=women" },
-      { label: "Men's New", href: "/shop?new=men" },
-      { label: "Kids New", href: "/shop?new=kids" },
+      { label: "View all", href: "/shop?new=week" },
+      { label: "Electronics", href: "/shop?category=electronics" },
+      { label: "Fashion", href: "/shop?category=fashion" },
+      { label: "Accessories", href: "/shop?category=accessories" },
     ],
   },
   {
-    title: "TRENDING NOW",
+    title: "MORE",
     items: [
-      { label: "Trending Products", href: "/shop?trending=products" },
-      { label: "Popular Styles", href: "/shop?trending=styles" },
-      { label: "Best Sellers", href: "/shop?trending=bestsellers" },
+      { label: "Beauty", href: "/shop?category=beauty" },
+      { label: "Home", href: "/shop?category=home" },
+      { label: "Caps", href: "/shop?category=caps" },
     ],
   },
   {
     title: "Featured",
     items: [],
     featured: {
-      title: "NEW COLLECTION",
-      image: "/images/prod2.jpg",
-      href: "/shop?collection=new",
+      title: "NEW IN BEAUTY",
+      image: CAT_IMG.beauty,
+      href: "/shop?category=beauty",
     },
   },
 ];

@@ -19,57 +19,63 @@ function resolveCategoryMode(variant: string | undefined): CategoryMode {
 
 const CATEGORIES = [
   {
-    label: "Shop all",
-    href: "/shop",
-    image: "/images/prod1.jpg",
+    label: "Electronics",
+    href: "/shop?category=electronics",
+    image:
+      "https://i.3dmodels.org/uploads/Apple/516_Apple_MacBook_Pro_2021_14_inch_Space_Gray/Apple_MacBook_Pro_2021_14_inch_Space_Gray_1000_0001.jpg",
     subs: [
-      { label: "New in", href: "/shop?new=week" },
-      { label: "Trending", href: "/shop?filter=trending" },
+      { label: "Laptops", href: "/shop?category=electronics&search=macbook" },
+      { label: "Phones", href: "/shop?category=electronics&search=iphone" },
     ],
   },
   {
-    label: "On Sale",
-    href: "/shop?sale=50",
-    image: "/images/prod2.jpg",
+    label: "Fashion",
+    href: "/shop?category=fashion",
+    image:
+      "https://mediahub.coastfashion.com/bkk18061_beige_xl?qlt=70&w=549&ssz=true&dpr=2",
     subs: [
-      { label: "Up to 50% off", href: "/shop?sale=50" },
-      { label: "Clearance", href: "/shop?sale=clearance" },
-    ],
-  },
-  {
-    label: "Bags",
-    href: "/shop?category=bags",
-    image: "/images/prod3.jpg",
-    subs: [
-      { label: "Tote", href: "/shop?category=tote" },
-      { label: "Crossbody", href: "/shop?category=crossbody" },
-    ],
-  },
-  {
-    label: "Jewellery",
-    href: "/shop?category=jewellery",
-    image: "/images/prod4.jpg",
-    subs: [
-      { label: "Earrings", href: "/shop?category=earrings" },
-      { label: "Necklaces", href: "/shop?category=necklaces" },
+      { label: "Blazers", href: "/shop?category=fashion&search=blazer" },
+      { label: "Sneakers", href: "/shop?category=fashion&search=sneakers" },
     ],
   },
   {
     label: "Accessories",
     href: "/shop?category=accessories",
-    image: "/images/prod5.jpg",
+    image:
+      "https://xcdn.next.co.uk/common/items/default/default/itemimages/3_4Ratio/product/lge/767397s6.jpg?im=Resize,width=750",
     subs: [
-      { label: "Hats", href: "/shop?category=hats" },
-      { label: "Belts", href: "/shop?category=belts" },
+      { label: "Bags", href: "/shop?category=accessories&search=bag" },
+      { label: "Jewellery", href: "/shop?category=accessories&search=necklace" },
     ],
   },
   {
-    label: "Brands",
-    href: "/shop?brand=nike",
-    image: "/images/prod6.jpg",
+    label: "Beauty",
+    href: "/shop?category=beauty",
+    image:
+      "https://i0.wp.com/ordinaryeg.com/wp-content/uploads/2023/09/rdn-ascorbyl-glucoside-solution-12pct-30ml-1.webp?fit=800%2C800&ssl=1",
     subs: [
-      { label: "Nike", href: "/shop?brand=nike" },
-      { label: "Adidas", href: "/shop?brand=adidas" },
+      { label: "Fragrance", href: "/shop?category=beauty&search=chanel" },
+      { label: "Skincare", href: "/shop?category=beauty&search=serum" },
+    ],
+  },
+  {
+    label: "Home",
+    href: "/shop?category=home",
+    image:
+      "https://www.ikea.com/ca/en/images/products/blidvaeder-table-lamp-off-white-ceramic-beige__1059592_pe849717_s5.jpg?f=s",
+    subs: [
+      { label: "Lighting", href: "/shop?category=home&search=lamp" },
+      { label: "Textiles", href: "/shop?category=home&search=blanket" },
+    ],
+  },
+  {
+    label: "Caps",
+    href: "/shop?category=caps",
+    image:
+      "https://watchesprime.com/wp-content/uploads/2022/08/baseball-nike-cap-black-cotton-hat-size-heritage86.jpg",
+    subs: [
+      { label: "Nike cap", href: "/shop?category=caps&search=nike" },
+      { label: "All caps", href: "/shop?category=caps&view=all" },
     ],
   },
 ];
@@ -168,7 +174,7 @@ export function AdaptiveCategoryStrip() {
                 </Link>
                 <ul className="space-y-1 px-3 pb-3 pt-1">
                   {c.subs.map((s) => (
-                    <li key={s.href}>
+                    <li key={`${c.label}-${s.label}-${s.href}`}>
                       <Link
                         href={s.href}
                         className="text-xs text-neutral-600 hover:text-neutral-900"

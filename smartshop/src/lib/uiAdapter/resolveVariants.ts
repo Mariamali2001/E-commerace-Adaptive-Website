@@ -41,6 +41,8 @@ export type VariantSelection = {
   reviewDisplay: string;
   /** Type of social proof (badges / photos / ratings only / customer reviews) */
   socialProofDisplay: string;
+  /** How strongly social proof should influence the UI (high / moderate / low / none) */
+  socialProofInfluence: string;
   /** Soft nudges from traits (never categorical) */
   nudges: {
     information_density: number;
@@ -100,6 +102,9 @@ export function resolveVariants(
     reviewDisplay: toVariantId(d.review_display ?? "summary_only"),
     socialProofDisplay: toVariantId(
       d.social_proof_display ?? "customer_reviews"
+    ),
+    socialProofInfluence: toVariantId(
+      d.social_proof_influence ?? "moderate_influence"
     ),
     nudges: {
       // Prefer numeric nudges from Final UI Config (trait soft layer)

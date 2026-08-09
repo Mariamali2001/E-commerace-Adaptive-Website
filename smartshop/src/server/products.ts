@@ -2,7 +2,10 @@ import "server-only";
 
 import connectDB from "@/lib/mongodb";
 import ProductModel from "@/models/Product";
-import { products as seedProductsData } from "@/data/products";
+import {
+  products as seedProductsData,
+  CATALOG_VERSION,
+} from "@/data/products";
 import { Product } from "@/types/product";
 
 export type ProductInput = Omit<Product, "id" | "slug"> & { id?: string; slug?: string };
@@ -15,7 +18,11 @@ export type ProductFilters = {
   sort?: "price-asc" | "price-desc" | "rating" | "title";
 };
 
-type SeedCache = { done: boolean; promise: Promise<void> | null };
+type SeedCache = {
+  done: boolean;
+  version: string | null;
+  promise: Promise<void> | null;
+};
 
 declare global {
   // eslint-disable-next-line no-var
@@ -24,15 +31,19 @@ declare global {
 
 const seedCache: SeedCache = global.__smartshopProductSeed ?? {
   done: false,
+  version: null,
   promise: null,
 };
 if (!global.__smartshopProductSeed) {
   global.__smartshopProductSeed = seedCache;
 }
 
-/** One-shot catalog sync — no N+1 findOne loop (was a major cold-path cost). */
+/**
+ * Sync catalog from src/data/products.ts into Mongo.
+ * Upserts by slug (title/images/category/etc.) when CATALOG_VERSION changes.
+ */
 async function seedProducts() {
-  if (seedCache.done) return;
+  if (seedCache.done && seedCache.version === CATALOG_VERSION) return;
   if (seedCache.promise) {
     await seedCache.promise;
     return;
@@ -41,29 +52,30 @@ async function seedProducts() {
   seedCache.promise = (async () => {
     await connectDB();
 
-    const count = await ProductModel.countDocuments();
-    if (count === 0) {
-      await ProductModel.insertMany(
-        seedProductsData.map((p: Product) => {
-          const { id, ...rest } = p;
-          return rest;
-        })
-      );
-      console.log(`✅ Seeded ${seedProductsData.length} products`);
-    } else {
-      const existing = await ProductModel.find({}, { slug: 1 }).lean();
-      const have = new Set(
-        existing.map((d) => (d as { slug?: string }).slug).filter(Boolean)
-      );
-      const missing = seedProductsData
-        .filter((p) => p.slug && !have.has(p.slug))
-        .map(({ id, ...rest }) => rest);
-      if (missing.length > 0) {
-        await ProductModel.insertMany(missing);
-        console.log(`✅ Added ${missing.length} new catalog products`);
-      }
+    const slugs = seedProductsData.map((p) => p.slug).filter(Boolean);
+    const ops = seedProductsData.map((p: Product) => {
+      const { id: _id, ...rest } = p;
+      return {
+        updateOne: {
+          filter: { slug: rest.slug },
+          update: { $set: rest },
+          upsert: true,
+        },
+      };
+    });
+
+    if (ops.length) {
+      await ProductModel.bulkWrite(ops, { ordered: false });
     }
+    if (slugs.length) {
+      await ProductModel.deleteMany({ slug: { $nin: slugs } });
+    }
+
+    console.log(
+      `✅ Catalog synced (${CATALOG_VERSION}): ${seedProductsData.length} products`
+    );
     seedCache.done = true;
+    seedCache.version = CATALOG_VERSION;
   })();
 
   try {
@@ -101,12 +113,24 @@ export async function listProducts(filters: ProductFilters = {}) {
   const query: any = {};
 
   if (search && search.trim()) {
-    query.$or = [
-      { title: { $regex: search.trim(), $options: "i" } },
-      { description: { $regex: search.trim(), $options: "i" } },
-      { category: { $regex: search.trim(), $options: "i" } },
-      { brand: { $regex: search.trim(), $options: "i" } },
-    ];
+    // Whole-word match on title/brand/category/slug — not description
+    // (avoids "rings" matching "earrings" / "fitness rings")
+    const terms = search
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    query.$and = terms.map((term) => {
+      const word = new RegExp(`\\b${term}\\b`, "i");
+      return {
+        $or: [
+          { title: word },
+          { brand: word },
+          { category: word },
+          { slug: word },
+        ],
+      };
+    });
   }
 
   if (minPrice !== undefined || maxPrice !== undefined) {

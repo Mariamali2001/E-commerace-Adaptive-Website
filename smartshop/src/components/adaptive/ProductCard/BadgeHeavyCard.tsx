@@ -83,14 +83,8 @@ export function BadgeHeavyCard({
         <AdaptiveReviewSnippet rating={product.rating} mode={reviewMode} />
         <Price
           price={product.price}
-          compareAt={
-            priceMode.includes("strike") ||
-            priceMode.includes("bold") ||
-            priceMode.includes("comparison") ||
-            onSale
-              ? product.compareAt
-              : undefined
-          }
+          compareAt={product.compareAt}
+          mode={priceMode}
         />
       </Link>
     </div>

@@ -25,12 +25,6 @@ export function InfoRichCard({
     setIsInWishlist(wishlist.some((item) => item.id === product.id));
   }, [wishlist, product.id]);
 
-  const showCompare =
-    priceMode.includes("strike") ||
-    priceMode.includes("comparison") ||
-    priceMode.includes("bold") ||
-    (product.compareAt != null && product.compareAt > product.price);
-
   return (
     <div className="group relative block rounded-xl border border-neutral-100 bg-white p-2">
       <Link href={`/shop/product/${product.slug}`}>
@@ -75,14 +69,11 @@ export function InfoRichCard({
           {product.title}
         </h3>
         <AdaptiveReviewSnippet rating={product.rating} mode={reviewMode} />
-        <div
-          className={
-            priceMode.includes("bold") ? "text-base font-bold" : "text-sm"
-          }
-        >
+        <div className="text-sm">
           <Price
             price={product.price}
-            compareAt={showCompare ? product.compareAt : undefined}
+            compareAt={product.compareAt}
+            mode={priceMode}
           />
         </div>
       </Link>

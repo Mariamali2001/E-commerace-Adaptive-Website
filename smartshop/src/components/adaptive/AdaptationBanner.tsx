@@ -90,6 +90,13 @@ export function AdaptationBanner() {
             Social proof:{" "}
             <strong>{v.socialProofDisplay.replace(/_/g, " ")}</strong>
             {" · "}
+            Proof influence:{" "}
+            <strong>{v.socialProofInfluence.replace(/_/g, " ")}</strong>
+            {" · "}
+            Whitespace: <strong>{v.whitespace.replace(/_/g, " ")}</strong>
+            {" · "}
+            Price: <strong>{v.priceDisplay.replace(/_/g, " ")}</strong>
+            {" · "}
             Forms: <strong>{formLabel}</strong>
             {" · "}
             Checkout: <strong>{checkoutLabel}</strong>

@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import type { Product } from "@/types/product";
 import { Price } from "@/components/shared/Price";
+import { AdaptiveUrgencyCue } from "@/components/adaptive/AdaptiveUrgencyCue";
 import { useCart } from "@/store/cart";
 import { cn } from "@/lib/utils";
 
@@ -76,6 +78,7 @@ function QuickViewBody({
           <div className="mt-2">
             <Price price={product.price} compareAt={product.compareAt} />
           </div>
+          <AdaptiveUrgencyCue productId={product.id} className="mt-1" />
         </div>
         <p className="line-clamp-4 text-sm text-neutral-600">
           {product.description}
@@ -122,7 +125,9 @@ export function AdaptiveQuickViewOverlay({
     };
   }, [onClose]);
 
-  return (
+  // Portal to <body> so position:fixed is never trapped by transformed card ancestors
+  // (adaptive image-text / social-proof CSS can apply transform and break in-grid overlays).
+  const overlay = (
     <div
       className="fixed inset-0 z-[60]"
       data-quick-view={mode}
@@ -138,7 +143,7 @@ export function AdaptiveQuickViewOverlay({
       />
       <div
         className={cn(
-          "absolute z-10 overflow-y-auto bg-white shadow-2xl",
+          "absolute z-10 flex max-h-[100dvh] flex-col overflow-hidden bg-white shadow-2xl",
           mode === "modal" &&
             "left-1/2 top-1/2 max-h-[90vh] w-[min(92vw,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl",
           mode === "sidebar" &&
@@ -158,8 +163,13 @@ export function AdaptiveQuickViewOverlay({
             ✕
           </button>
         </div>
-        <QuickViewBody product={product} onClose={onClose} />
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <QuickViewBody product={product} onClose={onClose} />
+        </div>
       </div>
     </div>
   );
+
+  if (typeof document === "undefined") return null;
+  return createPortal(overlay, document.body);
 }

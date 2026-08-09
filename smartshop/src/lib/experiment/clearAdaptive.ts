@@ -18,6 +18,7 @@ function stripAdaptiveDom() {
     "data-adaptive",
     "data-theme",
     "data-background",
+    "data-surface",
     "data-accent",
     "data-grid",
     "data-urgency",
@@ -44,6 +45,7 @@ function stripAdaptiveDom() {
     "data-quick-view",
     "data-categories",
     "data-persistent-filters",
+    "data-social-proof-influence",
   ].forEach((attr) => root.removeAttribute(attr));
   root.style.removeProperty("--adaptive-density");
   root.style.removeProperty("--adaptive-visual-richness");

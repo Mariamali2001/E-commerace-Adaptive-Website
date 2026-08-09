@@ -218,6 +218,83 @@ html[data-background*="dark"] body.adaptive-active {
   color: #f3f4f6;
 }
 
+/*
+ * Dark adaptive contrast fix (data-surface set by AdaptiveThemeProvider)
+ * Tailwind text-neutral-* / bg-white are light-theme defaults and become
+ * unreadable when the engine applies a dark surface.
+ */
+html[data-surface="dark"] body.adaptive-active {
+  color: #e2e8f0;
+}
+
+html[data-surface="dark"] body.adaptive-active .bg-white,
+html[data-surface="dark"] body.adaptive-active .bg-neutral-50 {
+  background-color: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+html[data-surface="dark"] body.adaptive-active .border-neutral-100,
+html[data-surface="dark"] body.adaptive-active .border-neutral-200,
+html[data-surface="dark"] body.adaptive-active .border-neutral-300 {
+  border-color: #334155 !important;
+}
+
+html[data-surface="dark"] body.adaptive-active .text-neutral-900,
+html[data-surface="dark"] body.adaptive-active .text-neutral-800,
+html[data-surface="dark"] body.adaptive-active .text-neutral-700,
+html[data-surface="dark"] body.adaptive-active .text-neutral-600 {
+  color: #e2e8f0 !important;
+}
+
+html[data-surface="dark"] body.adaptive-active .text-neutral-500,
+html[data-surface="dark"] body.adaptive-active .text-neutral-400 {
+  color: #94a3b8 !important;
+}
+
+/* Selected chips — light fill on dark for clear affordance */
+html[data-surface="dark"] body.adaptive-active .bg-neutral-900 {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+  border-color: #f8fafc !important;
+}
+
+html[data-surface="dark"] body.adaptive-active [data-filters-ui] {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html[data-surface="dark"] body.adaptive-active [data-filters-ui] select,
+html[data-surface="dark"] body.adaptive-active [data-filters-ui] input[type="number"],
+html[data-surface="dark"] body.adaptive-active [data-filters-ui] input[type="text"] {
+  background-color: #0f172a !important;
+  border-color: #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+html[data-surface="dark"] body.adaptive-active [data-filters-ui] select option {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+html[data-surface="dark"] body.adaptive-active main h1,
+html[data-surface="dark"] body.adaptive-active main h2,
+html[data-surface="dark"] body.adaptive-active main h3 {
+  color: #f8fafc;
+}
+
+html[data-surface="dark"] body.adaptive-active header a,
+html[data-surface="dark"] body.adaptive-active header button,
+html[data-surface="dark"] body.adaptive-active header span {
+  color: #e2e8f0;
+}
+
+html[data-surface="dark"] body.adaptive-active header input {
+  background-color: #0f172a !important;
+  border-color: #475569 !important;
+  color: #e2e8f0 !important;
+}
+
 /* Theme wins over background for distinctive palettes */
 html[data-theme*="vibrant_bold"] body.adaptive-active {
   background: #fff1f2 !important;
@@ -309,55 +386,40 @@ html[data-accent*="purple"] body.adaptive-active a.btn {
   color: #fff !important;
 }
 
-/* Urgency strip — presence from urgency token; colors follow theme (survey look) */
-html[data-urgency*="stock"] body.adaptive-active main::before,
-html[data-urgency*="countdown"] body.adaptive-active main::before,
-html[data-urgency*="both"] body.adaptive-active main::before {
-  content: "Limited stock · Fast checkout recommended";
-  display: block;
-  text-align: center;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  padding: 0.55rem 1rem;
+/* Urgency banner theme (real React strip in AdaptiveUrgencyBanner) */
+body.adaptive-active .adaptive-urgency-banner {
   background: #f5f5f5;
   color: #171717;
-  border-bottom: 1px solid #e5e5e5;
 }
-
-html[data-urgency*="countdown"] body.adaptive-active main::before {
-  content: "Sale ends soon · Countdown offers active";
+html[data-theme*="minimalist"] body.adaptive-active .adaptive-urgency-banner {
+  background: #111;
+  color: #fff;
+  border-bottom-color: #111;
 }
-
-html[data-theme*="minimalist"] body.adaptive-active main::before {
-  background: #111 !important;
-  color: #fff !important;
-  border-bottom-color: #111 !important;
+html[data-theme*="warm_earthy"] body.adaptive-active .adaptive-urgency-banner {
+  background: #f3ebe1;
+  color: #7c4a2d;
+  border-bottom-color: #d6c2a8;
 }
-html[data-theme*="warm_earthy"] body.adaptive-active main::before {
-  background: #f3ebe1 !important;
-  color: #7c4a2d !important;
-  border-bottom-color: #d6c2a8 !important;
+html[data-theme*="cool_blues"] body.adaptive-active .adaptive-urgency-banner {
+  background: #dbeafe;
+  color: #1e3a5f;
+  border-bottom-color: #93c5fd;
 }
-html[data-theme*="cool_blues"] body.adaptive-active main::before {
-  background: #dbeafe !important;
-  color: #1e3a5f !important;
-  border-bottom-color: #93c5fd !important;
-}
-html[data-theme*="vibrant_bold"] body.adaptive-active main::before {
+html[data-theme*="vibrant_bold"] body.adaptive-active .adaptive-urgency-banner {
   background: #fdf2f8 !important;
   color: #9d174d !important;
   border-bottom-color: #f9a8d4 !important;
 }
-html[data-theme*="pastel_soft"] body.adaptive-active main::before {
-  background: #f5f3ff !important;
-  color: #5b21b6 !important;
-  border-bottom-color: #ddd6fe !important;
+html[data-theme*="pastel_soft"] body.adaptive-active .adaptive-urgency-banner {
+  background: #f5f3ff;
+  color: #5b21b6;
+  border-bottom-color: #ddd6fe;
 }
-html[data-theme*="dark_mode"] body.adaptive-active main::before {
-  background: #020617 !important;
-  color: #e2e8f0 !important;
-  border-bottom-color: #334155 !important;
+html[data-theme*="dark_mode"] body.adaptive-active .adaptive-urgency-banner {
+  background: #020617;
+  color: #e2e8f0;
+  border-bottom-color: #334155;
 }
 
 /* Hero follows theme / background (survey mockups) */
@@ -455,8 +517,8 @@ html[data-nudge-visual="low"] body.adaptive-active main img {
 html[data-nudge-social="high"] body.adaptive-active main [data-social-proof],
 html[data-nudge-social="high"] body.adaptive-active main [data-review-display] {
   opacity: 1;
-  transform: scale(1.01);
-  transform-origin: top left;
+  /* No transform — keeps fixed quick-view overlays viewport-relative */
+  font-weight: 600;
 }
 html[data-nudge-social="low"] body.adaptive-active main [data-social-proof],
 html[data-nudge-social="low"] body.adaptive-active main [data-review-display] {
@@ -577,20 +639,53 @@ html[data-theme*="dark_mode"][data-form-fields="filled_background"] body.adaptiv
   border: none;
 }
 
-/* Whitespace */
-html[data-whitespace*="compact"] body.adaptive-active main .container {
+/* Whitespace (whitespace_pref + desktop/mobile_whitespace aliases) */
+html[data-whitespace*="compact"] body.adaptive-active main .container,
+html[data-whitespace*="tight"] body.adaptive-active main .container {
   --adaptive-gap: 0.75rem;
 }
 html[data-whitespace*="compact"] body.adaptive-active main .space-y-4 > :not([hidden]) ~ :not([hidden]),
-html[data-whitespace*="compact"] body.adaptive-active main .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+html[data-whitespace*="compact"] body.adaptive-active main .space-y-6 > :not([hidden]) ~ :not([hidden]),
+html[data-whitespace*="tight"] body.adaptive-active main .space-y-4 > :not([hidden]) ~ :not([hidden]),
+html[data-whitespace*="tight"] body.adaptive-active main .space-y-6 > :not([hidden]) ~ :not([hidden]) {
   margin-top: 0.75rem;
 }
-html[data-whitespace*="spacious"] body.adaptive-active main .container {
+html[data-whitespace*="spacious"] body.adaptive-active main .container,
+html[data-whitespace*="generous"] body.adaptive-active main .container,
+html[data-whitespace*="airy"] body.adaptive-active main .container {
   --adaptive-gap: 2.75rem;
 }
-html[data-whitespace*="spacious"] body.adaptive-active main .py-10 {
+html[data-whitespace*="spacious"] body.adaptive-active main .py-10,
+html[data-whitespace*="generous"] body.adaptive-active main .py-10,
+html[data-whitespace*="airy"] body.adaptive-active main .py-10 {
   padding-top: 3.5rem;
   padding-bottom: 3.5rem;
+}
+
+/* Social proof influence (categorical guideline; complements trait nudge) */
+html[data-social-proof-influence*="high"] body.adaptive-active main .adaptive-social-proof,
+html[data-social-proof-influence*="strong"] body.adaptive-active main .adaptive-social-proof,
+html[data-social-proof-influence*="high"] body.adaptive-active main [data-social-proof],
+html[data-social-proof-influence*="strong"] body.adaptive-active main [data-social-proof] {
+  opacity: 1;
+  font-weight: 600;
+}
+html[data-social-proof-influence*="moderate"] body.adaptive-active main .adaptive-social-proof,
+html[data-social-proof-influence*="moderate"] body.adaptive-active main [data-social-proof] {
+  opacity: 1;
+}
+html[data-social-proof-influence*="low"] body.adaptive-active main .adaptive-social-proof,
+html[data-social-proof-influence*="little"] body.adaptive-active main .adaptive-social-proof,
+html[data-social-proof-influence*="weak"] body.adaptive-active main .adaptive-social-proof,
+html[data-social-proof-influence*="low"] body.adaptive-active main [data-social-proof],
+html[data-social-proof-influence*="little"] body.adaptive-active main [data-social-proof],
+html[data-social-proof-influence*="weak"] body.adaptive-active main [data-social-proof] {
+  opacity: 0.55;
+}
+html[data-social-proof-influence*="none"] body.adaptive-active main .adaptive-social-proof,
+html[data-social-proof-influence*="ignore"] body.adaptive-active main .adaptive-social-proof,
+html[data-social-proof-influence*="not"] body.adaptive-active main .adaptive-social-proof {
+  display: none;
 }
 
 /* Font style / size from survey tokens */
@@ -682,16 +777,26 @@ html[data-touch*="large"] body.adaptive-active header button {
   padding-right: 1.1rem;
 }
 
-/* Image vs text emphasis on product cards */
-html[data-image-text*="image"] body.adaptive-active main .group img {
-  transform: scale(1.02);
+/* Image vs text emphasis on product cards
+   Avoid transform on card ancestors — it breaks position:fixed quick-view overlays. */
+html[data-image-text*="image"] body.adaptive-active main .group .aspect-\[3\/4\] img,
+html[data-image-text*="image"] body.adaptive-active main .group .aspect-\[4\/5\] img,
+html[data-image-text*="image"] body.adaptive-active main .group .aspect-square img {
+  object-fit: cover;
+  object-position: center;
 }
 html[data-image-text*="image"] body.adaptive-active main .group .text-sm,
 html[data-image-text*="image"] body.adaptive-active main .group p {
   font-size: 0.78rem;
 }
-html[data-image-text*="text"] body.adaptive-active main .group img {
+html[data-image-text*="text"] body.adaptive-active main .group .aspect-\[3\/4\],
+html[data-image-text*="text"] body.adaptive-active main .group .aspect-\[4\/5\],
+html[data-image-text*="text"] body.adaptive-active main .group .aspect-square {
   max-height: 11rem;
+}
+html[data-image-text*="text"] body.adaptive-active main .group .aspect-\[3\/4\] img,
+html[data-image-text*="text"] body.adaptive-active main .group .aspect-\[4\/5\] img,
+html[data-image-text*="text"] body.adaptive-active main .group .aspect-square img {
   object-fit: cover;
 }
 html[data-image-text*="text"] body.adaptive-active main .group .text-sm,

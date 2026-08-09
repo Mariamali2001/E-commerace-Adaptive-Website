@@ -11,6 +11,10 @@ import { QtyStepper } from "./QtyStepper";
 import { Price } from "../shared/Price";
 import { RatingStars } from "../shared/RatingStars";
 import { AdaptiveProductDesc } from "@/components/adaptive/AdaptiveProductDesc";
+import { AdaptiveUrgencyCue } from "@/components/adaptive/AdaptiveUrgencyCue";
+import { useExperimentStore } from "@/store/experiment";
+import { resolveVariants } from "@/lib/uiAdapter";
+import { useAdaptiveAllowed } from "@/lib/experiment/useAdaptiveAllowed";
 
 type Props = {
   product: Product;
@@ -24,6 +28,12 @@ export function ProductPurchasePanel({ product, onColorChange }: Props) {
   const [color, setColor] = useState(product.colors[0] ?? "");
   const [qty, setQty] = useState(1);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const { ready, allowed } = useAdaptiveAllowed();
+  const uiConfig = useExperimentStore((s) => s.uiConfig);
+  const priceMode =
+    ready && allowed && uiConfig
+      ? resolveVariants(uiConfig).priceDisplay
+      : undefined;
 
   const colorIndex = Math.max(0, product.colors.indexOf(color));
   const selectedImage =
@@ -73,8 +83,10 @@ export function ProductPurchasePanel({ product, onColorChange }: Props) {
       <Price
         price={product.price}
         compareAt={product.compareAt}
+        mode={priceMode}
         className="text-2xl"
       />
+      <AdaptiveUrgencyCue productId={product.id} />
       <AdaptiveProductDesc text={product.description} />
 
       {product.colors.length > 0 && (

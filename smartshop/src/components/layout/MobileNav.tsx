@@ -9,10 +9,14 @@ import { useAuthSession } from "@/lib/experiment/AdaptiveAuthProvider";
 type NavLink = { label: string; href: string };
 
 const PRIMARY_LINKS: NavLink[] = [
-  { label: "Shop", href: "/shop" },
+  { label: "Shop all", href: "/shop" },
+  { label: "Electronics", href: "/shop?category=electronics" },
+  { label: "Fashion", href: "/shop?category=fashion" },
+  { label: "Accessories", href: "/shop?category=accessories" },
+  { label: "Beauty", href: "/shop?category=beauty" },
+  { label: "Home", href: "/shop?category=home" },
+  { label: "Caps", href: "/shop?category=caps" },
   { label: "On Sale", href: "/shop?sale=50" },
-  { label: "New Arrivals", href: "/shop?new=week" },
-  { label: "Brands", href: "/shop?brand=nike" },
   { label: "Mood camera", href: "/shop/mood" },
   { label: "Wishlist", href: "/shop/wishlist" },
   { label: "Cart", href: "/shop/cart" },
