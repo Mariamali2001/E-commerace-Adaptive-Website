@@ -5,7 +5,7 @@ export interface IUserInteraction extends Document {
   userId?: string;
   sessionId?: string;
   eventType: string;
-  eventData: Record<string, any>;
+  eventData: Record<string, unknown>;
   timestamp: Date;
 }
 

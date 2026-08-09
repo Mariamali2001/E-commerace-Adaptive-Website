@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { createProduct, listProducts } from "@/server/products";
+import { createProduct, listProducts, type ProductFilters } from "@/server/products";
 import { productInputSchema } from "@/server/validation";
+
+const SORT_OPTIONS = new Set<NonNullable<ProductFilters["sort"]>>([
+  "price-asc",
+  "price-desc",
+  "rating",
+  "title",
+]);
 
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
@@ -10,10 +17,14 @@ export async function GET(request: NextRequest) {
   const minPrice = params.get("minPrice");
   const maxPrice = params.get("maxPrice");
   const sortParam = params.get("sort");
+  const sort =
+    sortParam && SORT_OPTIONS.has(sortParam as NonNullable<ProductFilters["sort"]>)
+      ? (sortParam as NonNullable<ProductFilters["sort"]>)
+      : undefined;
 
   const data = await listProducts({
     search,
-    sort: sortParam as any,
+    sort,
     limit: limit ? Number(limit) : undefined,
     minPrice: minPrice ? Number(minPrice) : undefined,
     maxPrice: maxPrice ? Number(maxPrice) : undefined,

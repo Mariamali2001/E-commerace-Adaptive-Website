@@ -13,7 +13,7 @@ type Props = {
 
 // Free Lottie animations - these are CDN URLs to popular animations
 // You can replace these with your own downloaded JSON files
-const animations: Record<AnimationState, any> = {
+const animations: Record<AnimationState, object | null> = {
   idle: null, // Will use a default state
   typing: null, // Avatar looking/watching
   password: null, // Avatar covering eyes

@@ -39,7 +39,6 @@ function mapReview(r: {
 // Seed reviews once per process (survives hot reload via global)
 type SeedCache = { done: boolean; promise: Promise<void> | null };
 declare global {
-  // eslint-disable-next-line no-var
   var __smartshopReviewSeed: SeedCache | undefined;
 }
 const seedCache: SeedCache = global.__smartshopReviewSeed ?? {

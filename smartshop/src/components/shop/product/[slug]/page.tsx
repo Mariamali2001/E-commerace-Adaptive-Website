@@ -1,7 +1,7 @@
-// app/product/[slug]/page.tsx
+"use client";
+
 import { notFound } from "next/navigation";
 import { products } from "@/data/products";
-import { Product } from "@/types/product";
 import { Gallery } from "@/components/product/Gallery";
 import { ColorSwatch } from "@/components/product/ColorSwatch";
 import { SizePill } from "@/components/product/SizePill";
@@ -14,21 +14,16 @@ import { reviews } from "@/data/reviews";
 import { useState } from "react";
 import { useCart } from "@/store/cart";
 
-export async function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
-}
-
 export default function ProductPage({ params }: { params: { slug: string } }) {
-  const product = products.find((p) => p.slug === params.slug) as Product | undefined;
+  const product = products.find((p) => p.slug === params.slug);
+  const add = useCart((s) => s.add);
+  const [size, setSize] = useState(product?.sizes[0] ?? "");
+  const [color, setColor] = useState(product?.colors[0] ?? "");
+  const [qty, setQty] = useState(1);
+
   if (!product) return notFound();
 
   const productReviews = reviews.filter((r) => r.productId === product.id);
-
-  // 👇 cart + UI state
-  const add = useCart((s) => s.add);
-  const [size, setSize] = useState(product.sizes[0]);
-  const [color, setColor] = useState(product.colors[0]);
-  const [qty, setQty] = useState(1);
 
   return (
     <div className="container mt-6">
@@ -74,7 +69,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                 qty,
               })
             }
-            className="btn bg-neutral-900 text-white hover:opacity-90 w-full md:w-auto"
+            className="btn w-full bg-neutral-900 text-white hover:opacity-90 md:w-auto"
           >
             Add to Cart
           </button>

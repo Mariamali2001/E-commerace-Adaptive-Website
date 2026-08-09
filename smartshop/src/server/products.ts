@@ -6,6 +6,7 @@ import {
   products as seedProductsData,
   CATALOG_VERSION,
 } from "@/data/products";
+import type { FilterQuery, SortOrder } from "mongoose";
 import { Product } from "@/types/product";
 
 export type ProductInput = Omit<Product, "id" | "slug"> & { id?: string; slug?: string };
@@ -18,6 +19,23 @@ export type ProductFilters = {
   sort?: "price-asc" | "price-desc" | "rating" | "title";
 };
 
+type ProductDoc = {
+  _id?: { toString(): string } | string;
+  id?: string;
+  slug: string;
+  title: string;
+  price: number;
+  compareAt?: number;
+  rating: number;
+  images: string[];
+  colors: string[];
+  sizes: string[];
+  description: string;
+  details?: string;
+  category?: string;
+  brand?: string;
+};
+
 type SeedCache = {
   done: boolean;
   version: string | null;
@@ -25,7 +43,6 @@ type SeedCache = {
 };
 
 declare global {
-  // eslint-disable-next-line no-var
   var __smartshopProductSeed: SeedCache | undefined;
 }
 
@@ -54,7 +71,8 @@ async function seedProducts() {
 
     const slugs = seedProductsData.map((p) => p.slug).filter(Boolean);
     const ops = seedProductsData.map((p: Product) => {
-      const { id: _id, ...rest } = p;
+      const { id: _unusedId, ...rest } = p;
+      void _unusedId;
       return {
         updateOne: {
           filter: { slug: rest.slug },
@@ -86,9 +104,13 @@ async function seedProducts() {
   }
 }
 
-function convertToProduct(doc: any): Product {
+function convertToProduct(doc: ProductDoc): Product {
+  const id =
+    typeof doc._id === "string"
+      ? doc._id
+      : doc._id?.toString() || doc.id || "";
   return {
-    id: doc._id?.toString() || doc.id,
+    id,
     slug: doc.slug,
     title: doc.title,
     price: doc.price,
@@ -110,7 +132,7 @@ export async function listProducts(filters: ProductFilters = {}) {
 
   const { search, limit, minPrice, maxPrice, sort } = filters;
 
-  const query: any = {};
+  const query: FilterQuery<ProductDoc> = {};
 
   if (search && search.trim()) {
     // Whole-word match on title/brand/category/slug — not description
@@ -139,7 +161,7 @@ export async function listProducts(filters: ProductFilters = {}) {
     if (maxPrice !== undefined) query.price.$lte = maxPrice;
   }
 
-  let sortOption: any = {};
+  let sortOption: Record<string, SortOrder> = {};
   switch (sort) {
     case "price-asc":
       sortOption = { price: 1 };
@@ -160,7 +182,7 @@ export async function listProducts(filters: ProductFilters = {}) {
   const products = await ProductModel.find(query)
     .sort(sortOption)
     .limit(limit || 0)
-    .lean();
+    .lean<ProductDoc[]>();
 
   return products.map(convertToProduct);
 }
@@ -169,7 +191,7 @@ export async function getProductBySlug(slug: string) {
   await connectDB();
   await seedProducts();
 
-  const product = await ProductModel.findOne({ slug }).lean();
+  const product = await ProductModel.findOne({ slug }).lean<ProductDoc | null>();
   return product ? convertToProduct(product) : null;
 }
 
@@ -177,7 +199,7 @@ export async function getProductById(id: string) {
   await connectDB();
   await seedProducts();
 
-  const product = await ProductModel.findById(id).lean();
+  const product = await ProductModel.findById(id).lean<ProductDoc | null>();
   return product ? convertToProduct(product) : null;
 }
 

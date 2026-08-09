@@ -31,14 +31,27 @@ function hashPassword(password: string, salt = randomBytes(16).toString("hex")) 
   return { hash, salt };
 }
 
-function toPublicUser(user: any): PublicUser {
+type UserDoc = {
+  _id: { toString(): string };
+  email: string;
+  name: string;
+  age?: number | null;
+  gender?: string | null;
+  createdAt?: Date | string;
+};
+
+function toPublicUser(user: UserDoc): PublicUser {
+  const createdAt =
+    typeof user.createdAt === "string"
+      ? user.createdAt
+      : user.createdAt?.toISOString() || new Date().toISOString();
   return {
     id: user._id.toString(),
     email: user.email,
     name: user.name,
     age: user.age ?? null,
     gender: user.gender ?? null,
-    createdAt: user.createdAt?.toISOString() || new Date().toISOString(),
+    createdAt,
   };
 }
 

@@ -18,7 +18,7 @@ export async function getSessionId() {
   return cookieStore.get(AUTH_COOKIE)?.value ?? null;
 }
 
-export async function getSession(request?: Request): Promise<{ userId?: string; sessionId: string | null } | null> {
+export async function getSession(): Promise<{ userId?: string; sessionId: string | null } | null> {
   const sessionId = await getSessionId();
   if (!sessionId) {
     return { sessionId: null };

@@ -129,8 +129,8 @@ export default function OrderDetailPage({
           <div className="text-6xl mb-4">📦</div>
           <h1 className="text-2xl font-bold mb-2">Order Not Found</h1>
           <p className="text-neutral-600 mb-6">
-            We couldn't find this order. It may have been deleted or you don't have permission to view
-            it.
+            We couldn&apos;t find this order. It may have been deleted or you don&apos;t have
+            permission to view it.
           </p>
           <div className="flex gap-4 justify-center">
             <Link

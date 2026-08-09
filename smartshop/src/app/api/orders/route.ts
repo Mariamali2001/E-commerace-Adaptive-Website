@@ -61,7 +61,9 @@ export async function POST(request: NextRequest) {
     await connectDB();
 
     // Calculate totals
-    const subtotal = items.reduce((sum: number, item: any) => sum + item.price * item.qty, 0);
+    const subtotal = (
+      items as Array<{ price: number; qty: number }>
+    ).reduce((sum, item) => sum + item.price * item.qty, 0);
     const shipping = subtotal > 100 ? 0 : 15; // Free shipping over $100
     const tax = subtotal * 0.02; // 2% tax
     const total = subtotal + shipping + tax;

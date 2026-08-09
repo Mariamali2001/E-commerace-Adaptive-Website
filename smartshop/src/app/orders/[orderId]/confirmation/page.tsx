@@ -3,12 +3,22 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+type OrderItem = {
+  title?: string;
+  name?: string;
+  qty: number;
+  price: number;
+  image?: string;
+  size?: string;
+  color?: string;
+};
+
 type Order = {
   id: string;
   orderNumber: string;
   date: string;
   status: string;
-  items: any[];
+  items: OrderItem[];
   subtotal: number;
   shipping: number;
   tax: number;
@@ -261,11 +271,11 @@ export default function OrderConfirmationPage({
           <ul className="space-y-2 text-sm text-neutral-700">
             <li className="flex gap-2">
               <span>1️⃣</span>
-              <span>We'll process your order and prepare it for shipping</span>
+              <span>We&apos;ll process your order and prepare it for shipping</span>
             </li>
             <li className="flex gap-2">
               <span>2️⃣</span>
-              <span>You'll receive a shipping confirmation email with tracking details</span>
+              <span>You&apos;ll receive a shipping confirmation email with tracking details</span>
             </li>
             <li className="flex gap-2">
               <span>3️⃣</span>

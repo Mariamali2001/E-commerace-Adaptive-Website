@@ -23,7 +23,7 @@ type CartState = {
   clear: () => void;
 };
 
-export const useCart = create<CartState>((set, get) => ({
+export const useCart = create<CartState>((set) => ({
   list: [],
 
   add: (line) =>

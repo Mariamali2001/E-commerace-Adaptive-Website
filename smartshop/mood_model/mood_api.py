@@ -33,10 +33,17 @@ DEFAULT_MODEL = Path(
         str(ROOT / "artifacts" / "models" / "best_model_egypt_ft.h5"),
     )
 )
-MODEL_URL = os.environ.get("MODEL_URL", "").strip()
-
 _model = None
 _cascade: cv2.CascadeClassifier | None = None
+
+
+def get_model_url() -> str:
+    # Read at call-time so Railway Variables always apply after redeploy.
+    return (
+        os.environ.get("MODEL_URL")
+        or os.environ.get("MODEL_DOWNLOAD_URL")
+        or ""
+    ).strip()
 
 
 def download_model(url: str, dest: Path) -> None:
@@ -44,7 +51,7 @@ def download_model(url: str, dest: Path) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     tmp = dest.with_suffix(dest.suffix + ".download")
     print(f"Downloading mood model from MODEL_URL → {dest}")
-    with requests.get(url, stream=True, timeout=120, allow_redirects=True) as res:
+    with requests.get(url, stream=True, timeout=600, allow_redirects=True) as res:
         res.raise_for_status()
         total = int(res.headers.get("content-length") or 0)
         done = 0
@@ -58,22 +65,34 @@ def download_model(url: str, dest: Path) -> None:
                     pct = done * 100 // total
                     print(f"  downloaded {done // (1024 * 1024)}MB ({pct}%)", end="\r")
         print()
-    tmp.replace(dest)
+    if not dest.exists() and tmp.exists():
+        tmp.replace(dest)
+    elif tmp.exists():
+        tmp.replace(dest)
 
 
 def ensure_model_file() -> Path:
     """Use local weights, or download once from MODEL_URL when missing."""
-    path = DEFAULT_MODEL
+    path = Path(
+        os.environ.get(
+            "MODEL_PATH",
+            str(ROOT / "artifacts" / "models" / "best_model_egypt_ft.h5"),
+        )
+    )
     if path.exists() and path.stat().st_size > 1_000_000:
         return path
 
-    if not MODEL_URL:
+    model_url = get_model_url()
+    if not model_url:
         raise FileNotFoundError(
             f"Model not found at {path}. "
-            "Place the .h5 file there, or set MODEL_URL to download it."
+            "In Railway → Variables, set MODEL_URL to your Hugging Face resolve link, then Redeploy. "
+            "Example: https://huggingface.co/MariamBashandy/smartshop-mood-egypt/resolve/main/best_model_egypt_ft.h5"
         )
 
-    download_model(MODEL_URL, path)
+    download_model(model_url, path)
+    if not path.exists() or path.stat().st_size < 1_000_000:
+        raise FileNotFoundError(f"Download finished but model missing/invalid at {path}")
     return path
 
 

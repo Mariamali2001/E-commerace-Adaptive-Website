@@ -170,7 +170,28 @@ function shortUiValue(value: unknown): string {
  * C=(thorough+rev(lazy))/2, N=(nervous+rev(relaxed))/2,
  * O=(imagination+rev(few_artistic))/2
  */
-export function experimentResultsToRows(results: any[]) {
+type ExperimentRowSource = {
+  userId?: string;
+  email?: string;
+  name?: string;
+  age?: number | string | null;
+  gender?: string | null;
+  device?: string | null;
+  surveyPersona?: string | null;
+  guidelinePersona?: string | null;
+  uiElements?: Record<string, string> | null;
+  answers?: Record<string, string> | null;
+  traitScores?: Record<string, number> | null;
+  traitLevels?: Record<string, string> | null;
+  selfReportedMood?: string | null;
+  detectedMood?: string | null;
+  detectedConfidence?: number | string | null;
+  guidelineMood?: string | null;
+  guidelinesPipeline?: string[] | null;
+  createdAt?: Date | string | null;
+};
+
+export function experimentResultsToRows(results: ExperimentRowSource[]) {
   // Include any extra token keys present in saved results (forward-compatible)
   const extraUiKeys = new Set<string>();
   for (const r of results) {

@@ -46,7 +46,7 @@ async function getOrCreateCart(cartId: string) {
 
 export async function getCart(cartId: string) {
   const cart = await getOrCreateCart(cartId);
-  const list = cart.lines.map((line: any) => ({
+  const list = (cart.lines as CartLine[]).map((line) => ({
     key: line.key,
     productId: line.productId,
     slug: line.slug,
@@ -69,7 +69,7 @@ export async function addToCart(cartId: string, input: CartLineInput) {
   const qty = clampQty(input.qty ?? 1);
   const key = buildKey(input);
   
-  const idx = cart.lines.findIndex((line: any) => line.key === key);
+  const idx = (cart.lines as CartLine[]).findIndex((line) => line.key === key);
   
   if (idx >= 0) {
     const existing = cart.lines[idx];
@@ -97,7 +97,7 @@ export async function addToCart(cartId: string, input: CartLineInput) {
 export async function setCartQuantity(cartId: string, key: string, qty: number) {
   const cart = await getOrCreateCart(cartId);
   
-  cart.lines = cart.lines.map((line: any) =>
+  cart.lines = (cart.lines as CartLine[]).map((line) =>
     line.key === key ? { ...line, qty: clampQty(qty) } : line
   );
   
@@ -110,7 +110,7 @@ export async function setCartQuantity(cartId: string, key: string, qty: number) 
 export async function removeFromCart(cartId: string, key: string) {
   const cart = await getOrCreateCart(cartId);
   
-  cart.lines = cart.lines.filter((line: any) => line.key !== key);
+  cart.lines = (cart.lines as CartLine[]).filter((line) => line.key !== key);
   
   cart.updatedAt = new Date();
   await cart.save();

@@ -57,8 +57,9 @@ export function NewsletterForm({
             detail: { email, location: buttonClassName?.includes("bg-white") ? "hero" : "footer" },
           })
         );
-        if (window.dataLayer) {
-          window.dataLayer.push({
+        const w = window as Window & { dataLayer?: Record<string, unknown>[] };
+        if (w.dataLayer) {
+          w.dataLayer.push({
             event: "newsletter_subscribed",
             location: buttonClassName?.includes("bg-white") ? "hero" : "footer",
             email,

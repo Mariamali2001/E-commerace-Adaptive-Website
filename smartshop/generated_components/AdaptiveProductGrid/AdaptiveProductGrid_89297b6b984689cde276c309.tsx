@@ -10,7 +10,7 @@ type ProductGridProps = {
   products: ProductGridProduct[];
 };
 
-export function 4ColumnsProductGrid({ products }: ProductGridProps) {
+export function Columns4ProductGrid({ products }: ProductGridProps) {
   return (
     <div className="grid grid-cols-4 gap-3">
       {products.map((product) => (

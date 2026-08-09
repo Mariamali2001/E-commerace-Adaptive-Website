@@ -3,16 +3,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { deleteProduct, getProductBySlug, updateProduct } from "@/server/products";
 import { productInputSchema } from "@/server/validation";
 
-export async function GET(_: NextRequest, { params }: { params: { slug: string } }) {
-  const product = await getProductBySlug(params.slug);
+export async function GET(
+  _: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
   if (!product) {
     return NextResponse.json({ error: "Product not found" }, { status: 404 });
   }
   return NextResponse.json({ data: product });
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { slug: string } }) {
-  const existing = await getProductBySlug(params.slug);
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params;
+  const existing = await getProductBySlug(slug);
   if (!existing) {
     return NextResponse.json({ error: "Product not found" }, { status: 404 });
   }
@@ -30,12 +38,15 @@ export async function PATCH(request: NextRequest, { params }: { params: { slug: 
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { slug: string } }) {
-  const existing = await getProductBySlug(params.slug);
+export async function DELETE(
+  _: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params;
+  const existing = await getProductBySlug(slug);
   if (!existing) {
     return NextResponse.json({ error: "Product not found" }, { status: 404 });
   }
   await deleteProduct(existing.id);
   return NextResponse.json({ success: true });
 }
-

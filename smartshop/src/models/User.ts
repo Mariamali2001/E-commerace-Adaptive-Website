@@ -12,8 +12,8 @@ export interface IUser extends Document {
   bio?: string;
   createdAt: Date;
   lastLogin?: Date;
-  preferences?: Record<string, any>;
-  behavioralData?: Record<string, any>;
+  preferences?: Record<string, unknown>;
+  behavioralData?: Record<string, unknown>;
 }
 
 const UserSchema = new Schema<IUser>(

@@ -7,15 +7,11 @@ import { getProductBySlug } from "@/server/products";
 import { createReview, listReviews } from "@/server/reviews";
 import { reviewInputSchema } from "@/server/validation";
 
-async function resolveSlug(params: { slug: string } | Promise<{ slug: string }>) {
-  return (await params).slug;
-}
-
 export async function GET(
   _: NextRequest,
-  { params }: { params: Promise<{ slug: string }> | { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const slug = await resolveSlug(params);
+  const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) {
     return NextResponse.json({ error: "Product not found" }, { status: 404 });
@@ -52,9 +48,9 @@ async function saveReviewImages(files: File[]): Promise<string[]> {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> | { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const slug = await resolveSlug(params);
+  const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) {
     return NextResponse.json({ error: "Product not found" }, { status: 404 });

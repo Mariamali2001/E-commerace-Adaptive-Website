@@ -6,7 +6,7 @@ export interface FilterPanelProps {
 
 export function TopBarFilterPanel({
   children,
-}: FilterPanelProps): JSX.Element {
+}: FilterPanelProps) {
   return (
     <div
       role="region"

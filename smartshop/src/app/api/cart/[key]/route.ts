@@ -9,15 +9,19 @@ async function getCartId() {
   return ensureCookieId({ cookieName: CART_COOKIE });
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { key: string } }) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ key: string }> }
+) {
   try {
+    const { key } = await params;
     const body = await request.json();
     const qty = Number(body.qty);
     if (!Number.isInteger(qty)) {
       return NextResponse.json({ error: "Quantity must be an integer" }, { status: 400 });
     }
     const cartId = await getCartId();
-    const data = await setCartQuantity(cartId, decodeURIComponent(params.key), qty);
+    const data = await setCartQuantity(cartId, decodeURIComponent(key), qty);
     return NextResponse.json({ data });
   } catch (error) {
     return NextResponse.json(
@@ -27,9 +31,12 @@ export async function PATCH(request: NextRequest, { params }: { params: { key: s
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { key: string } }) {
+export async function DELETE(
+  _: NextRequest,
+  { params }: { params: Promise<{ key: string }> }
+) {
+  const { key } = await params;
   const cartId = await getCartId();
-  const data = await removeFromCart(cartId, decodeURIComponent(params.key));
+  const data = await removeFromCart(cartId, decodeURIComponent(key));
   return NextResponse.json({ data });
 }
-
