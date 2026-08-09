@@ -160,8 +160,20 @@ export const useExperimentStore = create<ExperimentState>()(
         }),
     }),
     {
-      name: "smartshop-experiment-v7",
-      storage: createJSONStorage(() => sessionStorage),
+      // localStorage so Quick View "new tab" keeps login adaptation (sessionStorage is per-tab)
+      name: "smartshop-experiment-v8",
+      storage: createJSONStorage(() => {
+        if (typeof window === "undefined") return localStorage;
+        try {
+          const legacy = sessionStorage.getItem("smartshop-experiment-v7");
+          if (legacy && !localStorage.getItem("smartshop-experiment-v8")) {
+            localStorage.setItem("smartshop-experiment-v8", legacy);
+          }
+        } catch {
+          /* ignore */
+        }
+        return localStorage;
+      }),
       partialize: (state) => ({
         phase: state.phase,
         browseStartedAt: state.browseStartedAt,

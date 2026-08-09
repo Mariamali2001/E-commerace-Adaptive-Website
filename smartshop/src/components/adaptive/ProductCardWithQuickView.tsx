@@ -32,7 +32,8 @@ export function ProductCardWithQuickView({
       : null;
 
   const openNewTab = () => {
-    window.open(`/shop/product/${product.slug}`, "_blank", "noopener,noreferrer");
+    // Same-origin tab keeps auth cookies; adaptation uses localStorage (not sessionStorage).
+    window.open(`/shop/product/${product.slug}`, "_blank");
   };
 
   return (

@@ -1,6 +1,6 @@
 import { useExperimentStore } from "@/store/experiment";
 
-export const EXPERIMENT_STORAGE_KEY = "smartshop-experiment-v7";
+export const EXPERIMENT_STORAGE_KEY = "smartshop-experiment-v8";
 
 /** Older keys that must not resurrect adaptive UI after logout */
 const LEGACY_KEYS = [
@@ -9,6 +9,7 @@ const LEGACY_KEYS = [
   "smartshop-experiment-v5",
   "smartshop-experiment-v6",
   "smartshop-experiment-v7",
+  "smartshop-experiment-v8",
 ];
 
 function stripAdaptiveDom() {

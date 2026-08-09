@@ -23,12 +23,30 @@ export async function GET(
 async function saveReviewImages(files: File[]): Promise<string[]> {
   if (!files.length) return [];
 
+  // Vercel has no persistent disk — store small images inline in Mongo as data URLs.
+  // Locally we still write under public/uploads/reviews for easier debugging.
+  const useInline =
+    process.env.VERCEL === "1" || process.env.REVIEW_IMAGES_INLINE === "1";
+
   const uploadDir = path.join(process.cwd(), "public", "uploads", "reviews");
-  await fs.mkdir(uploadDir, { recursive: true });
+  if (!useInline) {
+    await fs.mkdir(uploadDir, { recursive: true });
+  }
 
   const urls: string[] = [];
   for (const file of files.slice(0, 3)) {
     if (!file.type.startsWith("image/")) continue;
+    const buffer = Buffer.from(await file.arrayBuffer());
+    // Cap uploads (tighter for data URLs in Mongo)
+    const maxBytes = useInline ? 1.5 * 1024 * 1024 : 4 * 1024 * 1024;
+    if (buffer.length > maxBytes) continue;
+
+    if (useInline) {
+      const mime = file.type || "image/jpeg";
+      urls.push(`data:${mime};base64,${buffer.toString("base64")}`);
+      continue;
+    }
+
     const ext =
       file.type === "image/png"
         ? "png"
@@ -37,9 +55,6 @@ async function saveReviewImages(files: File[]): Promise<string[]> {
           : "jpg";
     const name = `${Date.now()}-${randomUUID().slice(0, 8)}.${ext}`;
     const abs = path.join(uploadDir, name);
-    const buffer = Buffer.from(await file.arrayBuffer());
-    // Cap ~4MB raw upload
-    if (buffer.length > 4 * 1024 * 1024) continue;
     await fs.writeFile(abs, buffer);
     urls.push(`/uploads/reviews/${name}`);
   }
@@ -77,14 +92,14 @@ export async function POST(
       author = String(payload.author ?? "");
       rating = Number(payload.rating);
       comment = String(payload.comment ?? "");
-      // Ignore huge data-URL payloads — use file upload instead
+      // Accept stored paths or compact data URLs from the client
       if (Array.isArray(payload.images)) {
-        images = payload.images.filter(
-          (img: unknown) =>
-            typeof img === "string" &&
-            img.startsWith("/uploads/") &&
-            img.length < 500
-        );
+        images = payload.images.filter((img: unknown) => {
+          if (typeof img !== "string") return false;
+          if (img.startsWith("/uploads/") && img.length < 500) return true;
+          if (img.startsWith("data:image/") && img.length < 2_000_000) return true;
+          return false;
+        });
       }
     }
 

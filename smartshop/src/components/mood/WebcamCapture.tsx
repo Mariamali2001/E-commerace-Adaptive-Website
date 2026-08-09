@@ -276,8 +276,10 @@ export function WebcamCapture({ onMoodDetected }: WebcamCaptureProps = {}) {
         )}
         {apiReady === false && (
           <span className="font-medium text-amber-700">
-            Offline — run <code className="text-xs">python mood_api.py</code> in{" "}
-            <code className="text-xs">smartshop/mood_model</code>
+            Offline — locally run <code className="text-xs">npm run mood-api</code>.
+            On Vercel set <code className="text-xs">MOOD_API_URL</code> to{" "}
+            <code className="text-xs">https://your-service.up.railway.app</code>{" "}
+            (include https://), then wait for Railway cold start.
           </span>
         )}
       </div>
