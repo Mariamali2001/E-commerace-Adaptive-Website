@@ -227,10 +227,7 @@ export function Header({
             <SearchBar />
           </div>
 
-          {/* Auth stays in the drawer on compact mobile to avoid a cramped top bar */}
-          <div className={compact ? "hidden md:block" : undefined}>
-            <UserMenu />
-          </div>
+          <UserMenu />
 
           <Link
             href="/shop/cart"

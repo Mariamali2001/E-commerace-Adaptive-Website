@@ -75,11 +75,11 @@ export function ExperimentBrowseBanner() {
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-neutral-900">
-            Experiment — free browse
+            Free browse time
           </p>
           <p className="mt-1 text-xs text-neutral-600">
-            Explore the shop naturally. When the timer ends, a short questionnaire
-            starts.
+            Explore the shop naturally. When the timer ends, a few preference
+            questions will follow.
           </p>
         </div>
         <div className="shrink-0 rounded-full bg-neutral-900 px-3 py-1 font-mono text-sm text-white">
@@ -98,7 +98,7 @@ export function ExperimentBrowseBanner() {
           onClick={() => setPhase("questionnaire")}
           className="text-xs font-medium text-neutral-700 underline underline-offset-2"
         >
-          Skip to questionnaire
+          Skip ahead
         </Link>
       </div>
     </div>

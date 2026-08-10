@@ -173,7 +173,7 @@ export const EXPERIMENT_QUESTIONS: ExperimentQuestion[] = [
   },
   {
     id: "persona",
-    text: "Primary Persona: Which of the following best describes you?",
+    text: "Which of the following best describes how you usually shop?",
     kind: "choice",
     mapsTo: { type: "persona" },
     options: DATASET_PRIMARY_PERSONAS.map((persona) => ({

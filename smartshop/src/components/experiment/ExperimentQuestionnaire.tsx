@@ -54,6 +54,8 @@ export function ExperimentQuestionnaire() {
   );
   const savedAnswers = useExperimentStore((s) => s.answers);
 
+  const [consented, setConsented] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>(savedAnswers);
   const [entering, setEntering] = useState(true);
@@ -116,20 +118,83 @@ export function ExperimentQuestionnaire() {
     }, AUTO_ADVANCE_MS);
   };
 
+  if (!consented) {
+    return (
+      <div className="mx-auto max-w-xl">
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8">
+          <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+            Before you continue
+          </p>
+          <h1 className="mt-2 text-2xl font-bold text-neutral-900">
+            Consent to participate
+          </h1>
+          <div className="mt-4 space-y-3 text-sm leading-relaxed text-neutral-600">
+            <p>
+              You are invited to take part in a short shopping study. Your
+              answers help us understand shopping preferences and personalize
+              the store experience.
+            </p>
+            <ul className="list-disc space-y-2 pl-5">
+              <li>
+                You will answer a few preference questions, then optionally use
+                your camera for a brief mood check.
+              </li>
+              <li>
+                Responses and session data may be stored for research analysis.
+                Camera frames are processed for mood detection and are not kept
+                as a photo gallery.
+              </li>
+              <li>
+                Participation is voluntary. You can stop at any time and continue
+                shopping without the study flow.
+              </li>
+            </ul>
+          </div>
+
+          <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+            <input
+              type="checkbox"
+              checked={consentChecked}
+              onChange={(e) => setConsentChecked(e.target.checked)}
+              className="mt-1 h-4 w-4 shrink-0 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+            />
+            <span className="text-sm text-neutral-800">
+              I understand the information above and agree to participate.
+            </span>
+          </label>
+
+          <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <button
+              type="button"
+              onClick={() => router.push("/shop")}
+              className="rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm font-medium text-neutral-800"
+            >
+              No thanks — just shop
+            </button>
+            <Button
+              type="button"
+              disabled={!consentChecked}
+              onClick={() => setConsented(true)}
+            >
+              I agree — continue
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-xl">
       <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8">
         <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-          Experiment questionnaire
+          Quick preferences
         </p>
         <h1 className="mt-2 text-2xl font-bold text-neutral-900">{title}</h1>
         <p className="mt-2 text-sm text-neutral-600">
           {question.kind === "likert5"
             ? "Tap a number (1–5) — we’ll move to the next question automatically."
             : "Tap an option — we’ll move to the next question automatically."}
-        </p>
-        <p className="mt-1 text-xs text-neutral-500">
-          Age and gender are taken from your signup profile.
         </p>
 
         <div
@@ -179,7 +244,7 @@ export function ExperimentQuestionnaire() {
                     type="button"
                     onClick={() => selectAndAdvance(opt.value)}
                     className={[
-                      "w-full rounded-xl border px-4 py-3 text-left text-sm transition",
+                      "w-full rounded-xl border px-4 py-3 text-left text-sm leading-snug transition",
                       active
                         ? "border-neutral-900 bg-neutral-900 text-white"
                         : "border-neutral-200 bg-white text-neutral-800 hover:border-neutral-400",
@@ -211,10 +276,12 @@ export function ExperimentQuestionnaire() {
               disabled={!canNext}
               onClick={() => finishWith(answers)}
             >
-              Continue to mood camera
+              Continue
             </Button>
           ) : (
-            <p className="text-xs text-neutral-500">Auto-advances after you answer</p>
+            <p className="text-xs text-neutral-500">
+              Auto-advances after you answer
+            </p>
           )}
         </div>
 

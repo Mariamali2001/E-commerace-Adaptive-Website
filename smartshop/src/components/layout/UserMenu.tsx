@@ -39,24 +39,25 @@ export function UserMenu() {
 
   if (!ready) {
     return (
-      <div className="flex items-center gap-3">
-        <div className="h-8 w-20 animate-pulse rounded bg-neutral-200" />
+      <div className="hidden items-center gap-3 md:flex">
+        <div className="h-9 w-28 animate-pulse rounded-xl bg-neutral-200" />
       </div>
     );
   }
 
   if (!user) {
+    // Desktop only — mobile uses the menu drawer so the top bar stays clean
     return (
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="hidden items-center gap-2 md:flex">
         <Link
           href="/auth/login"
-          className="text-sm font-medium text-neutral-800 transition-colors hover:text-neutral-600"
+          className="inline-flex h-9 items-center justify-center rounded-xl border border-neutral-200 bg-white px-3.5 text-sm font-medium text-neutral-900 transition hover:bg-neutral-50"
         >
           Log in
         </Link>
         <Link
           href="/auth/signup"
-          className="rounded-full bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-neutral-800 sm:text-sm"
+          className="inline-flex h-9 items-center justify-center rounded-xl bg-neutral-900 px-3.5 text-sm font-semibold text-white transition hover:bg-neutral-800"
         >
           Sign up
         </Link>

@@ -4,18 +4,24 @@ import Link from "next/link";
 import { useExperimentStore } from "@/store/experiment";
 import { resolveVariants } from "@/lib/uiAdapter";
 import { useAdaptiveAllowed } from "@/lib/experiment/useAdaptiveAllowed";
+import { useAuthSession } from "@/lib/experiment/AdaptiveAuthProvider";
+import { isAdminEmailClient } from "@/lib/admin-email";
 
 /**
- * Shows active Adaptive Engine decisions for the session.
- * Helpful for demos / thesis walkthrough; always on during adapted experiment.
+ * Shows Adaptive Engine decisions — admin / thesis walkthrough only.
+ * Hidden from regular participants so adaptation stays invisible.
  */
 export function AdaptationBanner() {
+  const { ready: authReady, user } = useAuthSession();
   const { ready, allowed } = useAdaptiveAllowed();
   const uiConfig = useExperimentStore((s) => s.uiConfig);
   const surveyPersona = useExperimentStore((s) => s.surveyPersona);
   const detectedMood = useExperimentStore((s) => s.detectedMood);
 
-  if (!ready || !allowed || !uiConfig) return null;
+  const isAdmin =
+    authReady && user != null && isAdminEmailClient(user.email);
+
+  if (!isAdmin || !ready || !allowed || !uiConfig) return null;
 
   const v = resolveVariants(uiConfig);
   const moodLabel = detectedMood ?? uiConfig.detectedMood ?? "—";

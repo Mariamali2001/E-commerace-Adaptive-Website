@@ -117,14 +117,14 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
                 <Link
                   href="/auth/login"
                   onClick={onClose}
-                  className="block rounded-xl px-4 py-3.5 text-base font-medium text-neutral-900 hover:bg-neutral-50"
+                  className="flex h-12 items-center justify-center rounded-xl border border-neutral-200 bg-white px-4 text-base font-medium text-neutral-900 hover:bg-neutral-50"
                 >
                   Log in
                 </Link>
                 <Link
                   href="/auth/signup"
                   onClick={onClose}
-                  className="mt-1 block rounded-xl bg-neutral-900 px-4 py-3.5 text-center text-base font-semibold text-white"
+                  className="mt-2 flex h-12 items-center justify-center rounded-xl bg-neutral-900 px-4 text-base font-semibold text-white"
                 >
                   Sign up
                 </Link>
