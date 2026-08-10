@@ -222,33 +222,51 @@ export function Header({
           </nav>
         )}
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           <div className="hidden md:block">
             <SearchBar />
           </div>
 
-          <UserMenu />
+          {/* Auth stays in the drawer on compact mobile to avoid a cramped top bar */}
+          <div className={compact ? "hidden md:block" : undefined}>
+            <UserMenu />
+          </div>
+
           <Link
             href="/shop/cart"
             aria-label="Cart"
-            className="rounded-full border border-current/20 p-2 transition hover:bg-black/5"
+            className={[
+              "h-10 w-10 items-center justify-center rounded-xl border border-neutral-200 transition hover:bg-neutral-50",
+              // Bottom nav already has Cart on small screens
+              compact ? "hidden md:inline-flex" : "inline-flex",
+            ].join(" ")}
           >
-            🛒
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path
+                d="M3.5 5.5h1.7l1.4 10.2a1.5 1.5 0 0 0 1.5 1.3h9.3a1.5 1.5 0 0 0 1.5-1.25L20.5 8H7"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <circle cx="9.5" cy="19.5" r="1.25" fill="currentColor" />
+              <circle cx="16.5" cy="19.5" r="1.25" fill="currentColor" />
+            </svg>
           </Link>
 
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 md:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-900 text-white shadow-sm transition hover:bg-neutral-800 md:hidden"
             aria-label="Open menu"
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen(true)}
           >
             <span className="sr-only">Menu</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
               <path
-                d="M4 7h16M4 12h16M4 17h16"
+                d="M5 7h14M5 12h14M5 17h10"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="2.25"
                 strokeLinecap="round"
               />
             </svg>

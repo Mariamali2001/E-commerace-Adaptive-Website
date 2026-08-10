@@ -1,5 +1,6 @@
 // components/home/Hero.tsx
 import Link from "next/link";
+import { HeroStats } from "./HeroStats";
 
 export function Hero() {
   return (
@@ -17,11 +18,7 @@ export function Hero() {
           Shop Now
         </Link>
 
-        <div className="mt-8 grid grid-cols-3 gap-6 text-sm">
-          <div><p className="text-2xl font-extrabold">200+</p><p className="text-neutral-500">International Brands</p></div>
-          <div><p className="text-2xl font-extrabold">2,000+</p><p className="text-neutral-500">High-Quality Products</p></div>
-          <div><p className="text-2xl font-extrabold">30,000+</p><p className="text-neutral-500">Happy Customers</p></div>
-        </div>
+        <HeroStats />
       </div>
 
       <div className="relative">

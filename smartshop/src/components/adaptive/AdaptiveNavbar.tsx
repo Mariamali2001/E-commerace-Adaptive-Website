@@ -43,7 +43,7 @@ export function AdaptiveNavbar() {
       <>
         <Header variant="top_bar" compact />
         <BottomNavBar />
-        <div className="h-16 md:hidden" aria-hidden />
+        <div className="h-[4.25rem] md:hidden" aria-hidden />
       </>
     );
   }
