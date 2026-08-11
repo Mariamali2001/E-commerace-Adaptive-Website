@@ -16,7 +16,7 @@ function formatMs(ms: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-/** Floating banner during the 3-minute free-browse phase after login. */
+/** Floating banner during the 5-minute free-browse phase after login. */
 export function ExperimentBrowseBanner() {
   const router = useRouter();
   const pathname = usePathname();

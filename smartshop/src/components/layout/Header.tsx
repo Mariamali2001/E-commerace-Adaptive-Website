@@ -6,6 +6,7 @@ import { MegaMenuTrigger } from "./MegaMenu";
 import { SearchBar } from "./SearchBar";
 import { UserMenu } from "./UserMenu";
 import { MobileNav } from "./MobileNav";
+import { useCart, cartSelectors } from "@/store/cart";
 
 export type HeaderVariant = "mega_menu" | "top_bar" | "fullscreen";
 
@@ -162,6 +163,7 @@ export function Header({
   compact = false,
 }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const cartCount = useCart(cartSelectors.itemCount);
   const barH = compact ? "h-14" : "h-16";
 
   return (
@@ -224,9 +226,11 @@ export function Header({
 
           <Link
             href="/shop/cart"
-            aria-label="Cart"
+            aria-label={
+              cartCount > 0 ? `Cart, ${cartCount} items` : "Cart"
+            }
             className={[
-              "h-10 w-10 items-center justify-center rounded-xl border border-neutral-200 transition hover:bg-neutral-50",
+              "relative h-10 w-10 items-center justify-center rounded-xl border border-neutral-200 transition hover:bg-neutral-50",
               // Bottom nav already has Cart on small screens
               compact ? "hidden md:inline-flex" : "inline-flex",
             ].join(" ")}
@@ -242,6 +246,11 @@ export function Header({
               <circle cx="9.5" cy="19.5" r="1.25" fill="currentColor" />
               <circle cx="16.5" cy="19.5" r="1.25" fill="currentColor" />
             </svg>
+            {cartCount > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-neutral-900 px-1 text-[10px] font-semibold leading-none text-white">
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            )}
           </Link>
 
           <button

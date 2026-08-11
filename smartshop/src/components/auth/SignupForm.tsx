@@ -6,7 +6,7 @@ import { AnimatedAvatar } from "./AnimatedAvatar";
 type Status = { type: "idle" } | { type: "error"; message: string } | { type: "success" };
 type AvatarState = "idle" | "typing" | "password" | "error" | "success";
 
-const GENDERS = ["Female", "Male", "Non-binary", "Prefer not to say", "Other"] as const;
+const GENDERS = ["Female", "Male"] as const;
 
 export function SignupForm() {
   const [name, setName] = useState("");

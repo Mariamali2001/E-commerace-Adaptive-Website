@@ -4,8 +4,14 @@ import { useCallback, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { WebcamCapture } from "@/components/mood/WebcamCapture";
+import { MoodConfirmStep } from "@/components/mood/MoodConfirmStep";
 import { useExperimentStore } from "@/store/experiment";
 import { detectDeviceClient } from "@/lib/guidelines/device";
+import { bridgeMoodToGuideline } from "@/lib/guidelines/moodBridge";
+import {
+  GUIDELINE_MOODS,
+  type GuidelineMood,
+} from "@/lib/guidelines/types";
 import { buildContext } from "@/lib/context/buildContext";
 import type { ContextObject } from "@/lib/context/types";
 import type { FinalUIConfiguration } from "@/lib/adaptiveEngine/types";
@@ -26,6 +32,13 @@ const ENSURE_COMPONENTS = [
   "SearchBar",
   "CategorySection",
 ] as const;
+
+type PendingDetection = {
+  rawMood: string;
+  predictedGuideline: GuidelineMood;
+  confidence: number | null;
+  imageBase64: string | null;
+};
 
 export function ExperimentMoodFlow() {
   const searchParams = useSearchParams();
@@ -48,24 +61,73 @@ export function ExperimentMoodFlow() {
   );
   const generatedUiStatus = useExperimentStore((s) => s.generatedUiStatus);
   const generatedUiError = useExperimentStore((s) => s.generatedUiError);
-  const generatedBundle = useExperimentStore((s) => s.generatedBundle);
   const guidelines = useExperimentStore((s) => s.guidelines);
   const uiConfig = useExperimentStore((s) => s.uiConfig);
-  const context = useExperimentStore((s) => s.context);
   const detectedMood = useExperimentStore((s) => s.detectedMood);
 
   const [resolving, setResolving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState<PendingDetection | null>(null);
+  const [correcting, setCorrecting] = useState(false);
+
+  const saveMoodFeedback = useCallback(
+    async (payload: {
+      predictedRaw: string | null;
+      predictedGuideline: string;
+      confirmedGuideline: string;
+      wasCorrect: boolean;
+      confidence: number | null;
+      imageBase64: string | null;
+    }) => {
+      if (!payload.imageBase64) return;
+      try {
+        await fetch("/api/mood/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        });
+      } catch {
+        /* non-blocking — adaptation still proceeds */
+      }
+    },
+    []
+  );
 
   const resolve = useCallback(
-    async (mood: string, confidence: number | null) => {
+    async (opts: {
+      /** Raw model FER label when camera was used */
+      detectedRaw: string | null;
+      /** Bridged prediction shown before confirm (camera) */
+      predictedGuideline: string | null;
+      /** Mood that drives adaptation */
+      confirmedMood: string;
+      confidence: number | null;
+      moodWasCorrect: boolean | null;
+      moodSource: "camera" | "manual";
+      imageBase64?: string | null;
+    }) => {
       if (!inExperiment) return;
-      setMood(mood, confidence);
+      setMood(opts.detectedRaw ?? opts.confirmedMood, opts.confidence);
       setResolving(true);
       setSaved(false);
       setError(null);
+      setPending(null);
+      setCorrecting(false);
+
       try {
+        if (opts.moodSource === "camera" && opts.predictedGuideline) {
+          await saveMoodFeedback({
+            predictedRaw: opts.detectedRaw,
+            predictedGuideline: opts.predictedGuideline,
+            confirmedGuideline: opts.confirmedMood,
+            wasCorrect: Boolean(opts.moodWasCorrect),
+            confidence: opts.confidence,
+            imageBase64: opts.imageBase64 ?? null,
+          });
+        }
+
         const device = detectDeviceClient();
         setDevice(device);
 
@@ -95,7 +157,7 @@ export function ExperimentMoodFlow() {
             ? auth.gender.trim()
             : null;
 
-        // 1) Context Builder
+        // 1) Context Builder — adaptation uses confirmed guideline mood
         const ctx: ContextObject = buildContext({
           userId: auth?.id ?? null,
           participantId: auth?.id ?? null,
@@ -103,8 +165,9 @@ export function ExperimentMoodFlow() {
           persona,
           surveyPersona,
           selfReportedMood,
-          detectedMood: mood,
-          detectedConfidence: confidence,
+          detectedMood: opts.detectedRaw,
+          guidelineMood: opts.confirmedMood,
+          detectedConfidence: opts.confidence,
           traits,
           traitScores,
           age,
@@ -187,8 +250,12 @@ export function ExperimentMoodFlow() {
             traitScores,
             traitLevels: traits,
             selfReportedMood: ctx.mood.selfReported,
-            detectedMood: ctx.mood.detected,
-            detectedConfidence: ctx.mood.confidence,
+            detectedMood: opts.detectedRaw,
+            detectedConfidence: opts.confidence,
+            predictedGuidelineMood: opts.predictedGuideline,
+            confirmedMood: opts.confirmedMood,
+            moodWasCorrect: opts.moodWasCorrect,
+            moodSource: opts.moodSource,
             guidelineMood: configuration.mood,
             uiElements,
             guidelinesPipeline: configuration.pipeline,
@@ -211,6 +278,7 @@ export function ExperimentMoodFlow() {
       answers,
       inExperiment,
       persona,
+      saveMoodFeedback,
       selfReportedMood,
       setContext,
       setDevice,
@@ -225,46 +293,109 @@ export function ExperimentMoodFlow() {
     ]
   );
 
+  const onCameraMood = useCallback(
+    ({
+      mood,
+      confidence,
+      imageBase64,
+    }: {
+      mood: string;
+      confidence: number | null;
+      imageBase64: string | null;
+    }) => {
+      if (!inExperiment || resolving || pending) return;
+      const bridged = bridgeMoodToGuideline(mood);
+      if (!bridged) {
+        setError(
+          `Could not map detected mood "${mood}" to a guideline mood. Please pick a mood manually.`
+        );
+        return;
+      }
+      setError(null);
+      setCorrecting(false);
+      setPending({
+        rawMood: mood,
+        predictedGuideline: bridged,
+        confidence,
+        imageBase64,
+      });
+    },
+    [inExperiment, pending, resolving]
+  );
+
   return (
     <div className="space-y-6">
       {inExperiment && (
         <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
-          Step: look at the camera (or pick a mood below if the camera is
-          unavailable). We will prepare your personalized shop next.
+          Step: look at the camera and detect your mood. We will ask you to
+          confirm it before personalizing the shop. Use the buttons below only
+          if the camera is unavailable.
         </div>
       )}
 
       <WebcamCapture
-        onMoodDetected={({ mood, confidence }) => {
-          if (inExperiment) void resolve(mood, confidence);
-        }}
+        detectionLocked={Boolean(pending) || resolving}
+        onMoodDetected={onCameraMood}
       />
 
-      {inExperiment && (
+      {inExperiment && pending && (
+        <MoodConfirmStep
+          predictedGuideline={pending.predictedGuideline}
+          confidence={pending.confidence}
+          correcting={correcting}
+          busy={resolving}
+          onConfirmYes={() =>
+            void resolve({
+              detectedRaw: pending.rawMood,
+              predictedGuideline: pending.predictedGuideline,
+              confirmedMood: pending.predictedGuideline,
+              confidence: pending.confidence,
+              moodWasCorrect: true,
+              moodSource: "camera",
+              imageBase64: pending.imageBase64,
+            })
+          }
+          onConfirmNo={() => setCorrecting(true)}
+          onCancelCorrection={() => setCorrecting(false)}
+          onSelectCorrection={(mood) =>
+            void resolve({
+              detectedRaw: pending.rawMood,
+              predictedGuideline: pending.predictedGuideline,
+              confirmedMood: mood,
+              confidence: pending.confidence,
+              moodWasCorrect: false,
+              moodSource: "camera",
+              imageBase64: pending.imageBase64,
+            })
+          }
+        />
+      )}
+
+      {inExperiment && !pending && !guidelines && (
         <div className="rounded-2xl border border-neutral-200 bg-white p-4">
           <p className="text-sm font-semibold text-neutral-900">
             Camera not working?
           </p>
           <p className="mt-1 text-xs text-neutral-600">
             Choose how you feel right now — this is only a backup if the camera
-            cannot run.
+            cannot run. Your choice is used directly (no model prediction).
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {[
-              "Happy",
-              "Neutral",
-              "Sad",
-              "Stressed",
-              "Excited",
-              "Bored",
-              "Relaxed",
-              "Frustrated",
-            ].map((mood) => (
+            {GUIDELINE_MOODS.map((mood) => (
               <button
                 key={mood}
                 type="button"
                 disabled={resolving}
-                onClick={() => void resolve(mood, null)}
+                onClick={() =>
+                  void resolve({
+                    detectedRaw: null,
+                    predictedGuideline: null,
+                    confirmedMood: mood,
+                    confidence: null,
+                    moodWasCorrect: null,
+                    moodSource: "manual",
+                  })
+                }
                 className="rounded-full border border-neutral-300 bg-neutral-50 px-3 py-1.5 text-xs font-medium text-neutral-900 hover:bg-neutral-100 disabled:opacity-50"
               >
                 {mood}
@@ -275,9 +406,7 @@ export function ExperimentMoodFlow() {
       )}
 
       {resolving && (
-        <p className="text-sm text-neutral-600">
-          Personalizing your shop…
-        </p>
+        <p className="text-sm text-neutral-600">Personalizing your shop…</p>
       )}
       {error && (
         <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -316,7 +445,6 @@ export function ExperimentMoodFlow() {
             </Link>
           </div>
 
-          {/* Researcher/debug only — collapsed, not shown open to participants */}
           {searchParams.get("debugAdaptive") === "1" && (
             <details className="mt-6 text-left">
               <summary className="cursor-pointer text-xs font-medium text-neutral-500">

@@ -67,7 +67,7 @@ type ExperimentState = {
   reset: () => void;
 };
 
-const BROWSE_MS = 3 * 60 * 1000;
+const BROWSE_MS = 5 * 60 * 1000;
 
 const emptyGenerated = {
   generatedBundle: null as GeneratedComponentBundle | null,

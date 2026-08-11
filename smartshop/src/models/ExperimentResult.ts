@@ -25,8 +25,17 @@ export interface IExperimentResult extends Document {
   /** Raw questionnaire answers (includes tipi_* 1–5 items) */
   answers?: Record<string, string>;
   selfReportedMood?: string | null;
+  /** Raw FER label from the face model when camera was used */
   detectedMood?: string | null;
   detectedConfidence?: number | null;
+  /** Bridged guideline mood predicted before user confirmation */
+  predictedGuidelineMood?: string | null;
+  /** Mood the participant confirmed / chose (drives adaptation intent) */
+  confirmedMood?: string | null;
+  /** true/false after camera validation; null for manual backup */
+  moodWasCorrect?: boolean | null;
+  moodSource?: "camera" | "manual" | null;
+  /** Mood used in the adaptive engine output cell */
   guidelineMood?: string | null;
   /** Snapshot of resolved UI tokens (key → value); filled more after adaptation */
   uiElements?: Record<string, string>;
@@ -50,6 +59,10 @@ const ExperimentResultSchema = new Schema<IExperimentResult>(
     selfReportedMood: { type: String, default: null },
     detectedMood: { type: String, default: null },
     detectedConfidence: { type: Number, default: null },
+    predictedGuidelineMood: { type: String, default: null },
+    confirmedMood: { type: String, default: null },
+    moodWasCorrect: { type: Boolean, default: null },
+    moodSource: { type: String, default: null },
     guidelineMood: { type: String, default: null },
     uiElements: { type: Schema.Types.Mixed, default: {} },
     guidelinesPipeline: { type: [String], default: [] },

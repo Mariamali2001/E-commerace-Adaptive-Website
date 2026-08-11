@@ -28,7 +28,7 @@ export const signupSchema = z.object({
   name: z.string().min(1),
   password: z.string().min(6),
   age: z.coerce.number().int().min(13).max(120),
-  gender: z.enum(["Female", "Male", "Non-binary", "Prefer not to say", "Other"]),
+  gender: z.enum(["Female", "Male"]),
 });
 
 export const loginSchema = z.object({

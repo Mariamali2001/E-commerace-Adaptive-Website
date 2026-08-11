@@ -4,6 +4,11 @@ import connectDB from "@/lib/mongodb";
 import ExperimentResultModel from "@/models/ExperimentResult";
 import UserModel from "@/models/User";
 import { deriveProfileFromAnswers } from "@/lib/experiment/questions";
+import {
+  hasExactMasterCombination,
+  listMasterCombinations,
+} from "@/lib/adaptiveEngine/masterRules";
+import type { DeviceKind } from "@/lib/guidelines/types";
 
 export type SaveExperimentInput = {
   userId: string;
@@ -16,6 +21,10 @@ export type SaveExperimentInput = {
   selfReportedMood?: string | null;
   detectedMood?: string | null;
   detectedConfidence?: number | null;
+  predictedGuidelineMood?: string | null;
+  confirmedMood?: string | null;
+  moodWasCorrect?: boolean | null;
+  moodSource?: "camera" | "manual" | null;
   guidelineMood?: string | null;
   uiElements?: Record<string, string>;
   guidelinesPipeline?: string[];
@@ -78,6 +87,13 @@ export async function saveExperimentResult(input: SaveExperimentInput) {
         input.selfReportedMood ?? derived.selfReportedMood ?? null,
       detectedMood: input.detectedMood ?? null,
       detectedConfidence: input.detectedConfidence ?? null,
+      predictedGuidelineMood: input.predictedGuidelineMood ?? null,
+      confirmedMood: input.confirmedMood ?? null,
+      moodWasCorrect:
+        typeof input.moodWasCorrect === "boolean"
+          ? input.moodWasCorrect
+          : null,
+      moodSource: input.moodSource ?? null,
       guidelineMood: input.guidelineMood ?? null,
       uiElements,
       guidelinesPipeline: input.guidelinesPipeline ?? [],
@@ -186,9 +202,15 @@ type ExperimentRowSource = {
   selfReportedMood?: string | null;
   detectedMood?: string | null;
   detectedConfidence?: number | string | null;
+  predictedGuidelineMood?: string | null;
+  confirmedMood?: string | null;
+  moodWasCorrect?: boolean | null;
+  moodSource?: string | null;
   guidelineMood?: string | null;
   guidelinesPipeline?: string[] | null;
   createdAt?: Date | string | null;
+  completedAt?: Date | string | null;
+  updatedAt?: Date | string | null;
 };
 
 export function experimentResultsToRows(results: ExperimentRowSource[]) {
@@ -264,6 +286,7 @@ export function experimentResultsToRows(results: ExperimentRowSource[]) {
       age: r.age ?? "",
       gender: r.gender ?? "",
       device: r.device ?? "",
+      study_chapter: isNewChapterResult(r) ? "new" : "legacy",
       survey_persona: r.surveyPersona ?? "",
       guideline_persona: r.guidelinePersona ?? "",
       // TIPI item raw (1–5)
@@ -291,7 +314,25 @@ export function experimentResultsToRows(results: ExperimentRowSource[]) {
       self_reported_mood: r.selfReportedMood ?? a.self_mood ?? "",
       model_detected_mood: r.detectedMood ?? "",
       model_confidence: r.detectedConfidence ?? "",
+      predicted_guideline_mood: r.predictedGuidelineMood ?? "",
+      confirmed_mood: r.confirmedMood ?? "",
+      mood_was_correct:
+        typeof r.moodWasCorrect === "boolean"
+          ? r.moodWasCorrect
+            ? "yes"
+            : "no"
+          : "",
+      mood_source: r.moodSource ?? "",
       guideline_mood: r.guidelineMood ?? "",
+      in_master_rules: (() => {
+        const persona = normalizePersonaLabel(
+          r.guidelinePersona || r.surveyPersona || ""
+        );
+        const device = normalizeDeviceKind(r.device);
+        const mood = r.confirmedMood || r.guidelineMood || "";
+        if (!persona || !device || !mood) return "";
+        return hasExactMasterCombination(persona, device, mood) ? "yes" : "no";
+      })(),
       guidelines_pipeline: Array.isArray(r.guidelinesPipeline)
         ? r.guidelinesPipeline.join(" → ")
         : "",
@@ -346,4 +387,104 @@ export function rowsToCsv(rows: Record<string, unknown>[]): string {
   ];
   // BOM so Excel opens UTF-8 correctly
   return `\uFEFF${lines.join("\n")}`;
+}
+
+function normalizeDeviceKind(device: string | null | undefined): DeviceKind | null {
+  if (!device) return null;
+  const d = device.trim().toLowerCase();
+  if (d === "mobile" || d === "smartphone") return "mobile";
+  if (d === "desktop" || d === "laptop" || d === "laptop/desktop") return "desktop";
+  return null;
+}
+
+/** Align saved persona labels with master short names (drop leading "The "). */
+function normalizePersonaLabel(persona: string | null | undefined): string {
+  if (!persona?.trim()) return "";
+  let p = persona.trim();
+  // Drop long survey parenthetical if present
+  p = p.split("(")[0]?.trim() ?? p;
+  p = p.replace(/^The\s+/i, "").trim();
+  return p;
+}
+
+function combinationKey(persona: string, device: string, mood: string) {
+  return `${normalizePersonaLabel(persona).toLowerCase()}|${device.trim().toLowerCase()}|${mood.trim().toLowerCase()}`;
+}
+
+/**
+ * New-chapter runs = after mood validation update.
+ * Legacy (e.g. first 32) have no mood_source / confirmed_mood.
+ */
+export function isNewChapterResult(r: ExperimentRowSource): boolean {
+  const source =
+    typeof r.moodSource === "string" ? r.moodSource.trim().toLowerCase() : "";
+  if (source === "camera" || source === "manual") return true;
+  if (typeof r.confirmedMood === "string" && r.confirmedMood.trim()) return true;
+  return false;
+}
+
+export function filterNewChapterResults<T extends ExperimentRowSource>(
+  results: T[]
+): T[] {
+  return results.filter(isNewChapterResult);
+}
+
+/**
+ * Coverage table for the 67 designed master cells + fallback participant counts.
+ */
+export function buildCombinationCoverage(results: ExperimentRowSource[]) {
+  const master = listMasterCombinations();
+  const counts = new Map<string, number>();
+
+  let fallbackParticipants = 0;
+  let exactParticipants = 0;
+
+  for (const r of results) {
+    const persona = normalizePersonaLabel(
+      r.guidelinePersona || r.surveyPersona || ""
+    );
+    const deviceKind = normalizeDeviceKind(r.device);
+    const mood = (r.confirmedMood || r.guidelineMood || "").trim();
+    if (!persona || !deviceKind || !mood) {
+      fallbackParticipants += 1;
+      continue;
+    }
+
+    const exact = hasExactMasterCombination(persona, deviceKind, mood);
+    if (exact) {
+      exactParticipants += 1;
+      const key = combinationKey(persona, deviceKind, mood);
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    } else {
+      fallbackParticipants += 1;
+    }
+  }
+
+  const rows = master.map((c) => {
+    const key = combinationKey(c.persona, c.device, c.mood);
+    const n = counts.get(key) ?? 0;
+    return {
+      persona: c.persona,
+      device: c.device,
+      device_label: c.deviceLabel,
+      mood: c.mood,
+      n,
+      in_master_rules: "yes",
+      has_participants: n > 0 ? "yes" : "no",
+    };
+  });
+
+  const filled = rows.filter((r) => r.n > 0).length;
+
+  return {
+    rows,
+    summary: {
+      master_combinations: master.length,
+      combinations_with_participants: filled,
+      combinations_empty: master.length - filled,
+      participants_exact_match: exactParticipants,
+      participants_fallback_or_incomplete: fallbackParticipants,
+      participants_total: results.length,
+    },
+  };
 }

@@ -38,6 +38,14 @@ export async function POST(request: Request) {
       selfReportedMood: body.selfReportedMood ?? null,
       detectedMood: body.detectedMood ?? null,
       detectedConfidence: body.detectedConfidence ?? null,
+      predictedGuidelineMood: body.predictedGuidelineMood ?? null,
+      confirmedMood: body.confirmedMood ?? null,
+      moodWasCorrect:
+        typeof body.moodWasCorrect === "boolean" ? body.moodWasCorrect : null,
+      moodSource:
+        body.moodSource === "camera" || body.moodSource === "manual"
+          ? body.moodSource
+          : null,
       guidelineMood: body.guidelineMood ?? null,
       uiElements: body.uiElements ?? {},
       guidelinesPipeline: body.guidelinesPipeline ?? [],

@@ -13,7 +13,10 @@ export {
   tokensFromMasterConfig,
   mergeWithGlobalDefaults,
   getGlobalDefaultTokens,
+  listMasterCombinations,
+  hasExactMasterCombination,
 } from "./masterRules";
+export type { MasterCombinationRow } from "./masterRules";
 export { applyTraitNudges, emptyNudges, NUDGE_KEYS } from "./traitNudges";
 export type { NudgeKey, NudgeMap } from "./traitNudges";
 export { toResolvedGuidelines } from "./toResolvedGuidelines";

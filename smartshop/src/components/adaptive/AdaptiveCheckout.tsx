@@ -154,6 +154,7 @@ function ShippingFields({
           className={fieldClass(compact)}
           required
         >
+          <option value="Egypt">Egypt</option>
           <option value="USA">United States</option>
           <option value="Canada">Canada</option>
           <option value="UK">United Kingdom</option>

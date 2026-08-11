@@ -79,4 +79,6 @@ export const useCart = create<CartState>((set) => ({
 export const cartSelectors = {
   list: (s: CartState) => s.list,
   subtotal: (s: CartState) => s.list.reduce((sum, l) => sum + l.price * l.qty, 0),
+  /** Total units in cart (sum of quantities) — for icon badge */
+  itemCount: (s: CartState) => s.list.reduce((sum, l) => sum + l.qty, 0),
 };

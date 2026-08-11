@@ -345,3 +345,40 @@ export function getGlobalDefaults(): GlobalDefaultsFile {
 export function clearMasterRulesCache() {
   personaKeyCache = null;
 }
+
+export type MasterCombinationRow = {
+  persona: string;
+  device: DeviceKind;
+  deviceLabel: string;
+  mood: string;
+};
+
+/** The 67 designed persona × device × mood cells in master_adaptive_ui_rules.json */
+export function listMasterCombinations(): MasterCombinationRow[] {
+  const rows: MasterCombinationRow[] = [];
+  for (const [personaKey, byDevice] of Object.entries(rulesFile.rules)) {
+    const persona = shortPersonaLabel(personaKey).replace(/^The\s+/i, "");
+    for (const [deviceLabel, byMood] of Object.entries(byDevice)) {
+      const device: DeviceKind =
+        deviceLabel === "Smartphone" ? "mobile" : "desktop";
+      for (const mood of Object.keys(byMood)) {
+        rows.push({ persona, device, deviceLabel, mood });
+      }
+    }
+  }
+  return rows;
+}
+
+/** True when an exact master cell exists (no factor fallback needed for that triple). */
+export function hasExactMasterCombination(
+  persona: string | null | undefined,
+  device: DeviceKind,
+  mood: string | null | undefined
+): boolean {
+  const personaKey = resolveMasterPersonaKey(persona);
+  if (!personaKey || !mood?.trim()) return false;
+  const deviceKey = resolveMasterDeviceKey(device);
+  const byDevice = rulesFile.rules[personaKey]?.[deviceKey];
+  if (!byDevice) return false;
+  return normalizeMoodKey(byDevice, mood.trim()) != null;
+}

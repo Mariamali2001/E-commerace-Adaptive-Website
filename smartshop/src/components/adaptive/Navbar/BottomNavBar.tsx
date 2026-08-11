@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { useCart, cartSelectors } from "@/store/cart";
 
 type NavItem = {
   label: string;
@@ -142,6 +143,7 @@ const ITEMS: NavItem[] = [
 /** Mobile-style bottom navigation (guideline: Bottom Nav). */
 export function BottomNavBar() {
   const pathname = usePathname();
+  const cartCount = useCart(cartSelectors.itemCount);
 
   return (
     <nav
@@ -155,11 +157,15 @@ export function BottomNavBar() {
             item.href === "/"
               ? pathname === "/"
               : pathname === pathOnly || pathname.startsWith(`${pathOnly}/`);
+          const showCartBadge = item.label === "Cart" && cartCount > 0;
 
           return (
             <li key={item.href} className="flex-1">
               <Link
                 href={item.href}
+                aria-label={
+                  showCartBadge ? `Cart, ${cartCount} items` : undefined
+                }
                 className={[
                   "relative flex flex-col items-center gap-1 px-1 pb-2 pt-2.5 text-[11px] tracking-wide transition-colors",
                   active
@@ -175,11 +181,18 @@ export function BottomNavBar() {
                 )}
                 <span
                   className={[
-                    "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
-                    active ? "bg-neutral-100 text-neutral-900" : "text-neutral-500",
+                    "relative flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
+                    active
+                      ? "bg-neutral-100 text-neutral-900"
+                      : "text-neutral-500",
                   ].join(" ")}
                 >
                   {item.icon(active)}
+                  {showCartBadge && (
+                    <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-neutral-900 px-0.5 text-[9px] font-semibold leading-none text-white">
+                      {cartCount > 99 ? "99+" : cartCount}
+                    </span>
+                  )}
                 </span>
                 {item.label}
               </Link>

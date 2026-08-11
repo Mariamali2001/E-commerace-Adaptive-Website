@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { SearchBar } from "./SearchBar";
 import { useAuthSession } from "@/lib/experiment/AdaptiveAuthProvider";
+import { useCart, cartSelectors } from "@/store/cart";
 
 type NavLink = { label: string; href: string };
 
@@ -29,6 +30,7 @@ type MobileNavProps = {
 export function MobileNav({ open, onClose }: MobileNavProps) {
   const [mounted, setMounted] = useState(false);
   const { user } = useAuthSession();
+  const cartCount = useCart(cartSelectors.itemCount);
 
   useEffect(() => {
     setMounted(true);
@@ -90,7 +92,9 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
               onClick={onClose}
               className="block rounded-xl px-4 py-3.5 text-base font-medium text-neutral-900 hover:bg-neutral-50 active:bg-neutral-100"
             >
-              {link.label}
+              {link.label === "Cart" && cartCount > 0
+                ? `Cart (${cartCount})`
+                : link.label}
             </Link>
           ))}
 

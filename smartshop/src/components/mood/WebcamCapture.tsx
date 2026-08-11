@@ -19,10 +19,17 @@ type WebcamCaptureProps = {
   onMoodDetected?: (payload: {
     mood: string;
     confidence: number | null;
+    /** JPEG base64 without data: prefix — for validation feedback / fine-tune */
+    imageBase64: string | null;
   }) => void;
+  /** When true, skip new predictions (e.g. while user confirms mood). */
+  detectionLocked?: boolean;
 };
 
-export function WebcamCapture({ onMoodDetected }: WebcamCaptureProps = {}) {
+export function WebcamCapture({
+  onMoodDetected,
+  detectionLocked = false,
+}: WebcamCaptureProps = {}) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -146,8 +153,18 @@ export function WebcamCapture({ onMoodDetected }: WebcamCaptureProps = {}) {
     });
   }, []);
 
+  const blobToBase64 = useCallback(async (blob: Blob): Promise<string> => {
+    const buffer = await blob.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+    for (let i = 0; i < bytes.length; i += 1) {
+      binary += String.fromCharCode(bytes[i]!);
+    }
+    return btoa(binary);
+  }, []);
+
   const detectMood = useCallback(async () => {
-    if (status !== "active" || predicting) return;
+    if (status !== "active" || predicting || detectionLocked) return;
 
     setPredicting(true);
     setErrorMessage(null);
@@ -177,9 +194,17 @@ export function WebcamCapture({ onMoodDetected }: WebcamCaptureProps = {}) {
       setApiReady(true);
       setPrediction(data);
       if (data.face_detected && data.mood) {
+        setAutoDetect(false);
+        let imageBase64: string | null = null;
+        try {
+          imageBase64 = await blobToBase64(blob);
+        } catch {
+          imageBase64 = null;
+        }
         onMoodDetected?.({
           mood: data.mood,
           confidence: data.confidence,
+          imageBase64,
         });
       }
     } catch (err) {
@@ -190,7 +215,14 @@ export function WebcamCapture({ onMoodDetected }: WebcamCaptureProps = {}) {
     } finally {
       setPredicting(false);
     }
-  }, [captureBlob, predicting, status, onMoodDetected]);
+  }, [
+    blobToBase64,
+    captureBlob,
+    detectionLocked,
+    predicting,
+    status,
+    onMoodDetected,
+  ]);
 
   useEffect(() => {
     let cancelled = false;
@@ -208,12 +240,12 @@ export function WebcamCapture({ onMoodDetected }: WebcamCaptureProps = {}) {
   }, []);
 
   useEffect(() => {
-    if (!autoDetect || status !== "active") return;
+    if (!autoDetect || status !== "active" || detectionLocked) return;
     const id = window.setInterval(() => {
       void detectMood();
     }, 2000);
     return () => window.clearInterval(id);
-  }, [autoDetect, detectMood, status]);
+  }, [autoDetect, detectMood, detectionLocked, status]);
 
   useEffect(() => {
     return () => {
@@ -309,7 +341,7 @@ export function WebcamCapture({ onMoodDetected }: WebcamCaptureProps = {}) {
         <Button
           type="button"
           onClick={() => void detectMood()}
-          disabled={status !== "active" || predicting}
+          disabled={status !== "active" || predicting || detectionLocked}
           className="bg-emerald-700 hover:opacity-90"
         >
           {predicting ? "Detecting…" : "Detect mood"}
@@ -317,7 +349,7 @@ export function WebcamCapture({ onMoodDetected }: WebcamCaptureProps = {}) {
         <button
           type="button"
           onClick={() => setAutoDetect((v) => !v)}
-          disabled={status !== "active"}
+          disabled={status !== "active" || detectionLocked}
           className="btn rounded-xl border border-neutral-300 bg-white px-5 py-3 text-sm font-medium text-neutral-800 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {autoDetect ? "Auto: ON" : "Auto: OFF"}

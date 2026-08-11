@@ -10,6 +10,18 @@ export type GuidelineMood =
   | "Sad"
   | "Stressed";
 
+/** Canonical mood set for validation UI + adaptation (not raw FER labels). */
+export const GUIDELINE_MOODS: readonly GuidelineMood[] = [
+  "Bored",
+  "Excited",
+  "Frustrated",
+  "Happy",
+  "Neutral",
+  "Relaxed",
+  "Sad",
+  "Stressed",
+] as const;
+
 export type PersonaId =
   | "Browser"
   | "Deal Hunter"
