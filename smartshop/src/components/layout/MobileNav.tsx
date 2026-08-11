@@ -17,7 +17,6 @@ const PRIMARY_LINKS: NavLink[] = [
   { label: "Home", href: "/shop?category=home" },
   { label: "Caps", href: "/shop?category=caps" },
   { label: "On Sale", href: "/shop?sale=50" },
-  { label: "Mood camera", href: "/shop/mood" },
   { label: "Wishlist", href: "/shop/wishlist" },
   { label: "Cart", href: "/shop/cart" },
 ];

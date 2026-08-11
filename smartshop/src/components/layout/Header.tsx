@@ -34,7 +34,6 @@ const TOP_BAR_LINKS = [
   { label: "Electronics", href: "/shop?category=electronics" },
   { label: "Fashion", href: "/shop?category=fashion" },
   { label: "On Sale", href: "/shop?sale=50" },
-  { label: "Mood camera", href: "/shop/mood" },
 ];
 
 /** Only categories that have products in the catalog */
@@ -213,12 +212,6 @@ export function Header({
               columns={newArrivalsMenuColumns}
             />
             <MegaMenuTrigger label="Brands" columns={brandsMenuColumns} />
-            <Link
-              href="/shop/mood"
-              className="font-medium text-current opacity-90 hover:opacity-100"
-            >
-              Mood camera
-            </Link>
           </nav>
         )}
 
