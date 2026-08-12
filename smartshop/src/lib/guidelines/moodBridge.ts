@@ -9,6 +9,7 @@ const FER_TO_GUIDELINE: Record<string, GuidelineMood> = {
   sad: "Sad",
   neutral: "Neutral",
   angry: "Frustrated",
+  anger: "Frustrated", // ViT label
   fear: "Stressed",
   surprise: "Excited",
   disgust: "Frustrated",

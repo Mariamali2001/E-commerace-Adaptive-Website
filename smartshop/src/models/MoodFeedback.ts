@@ -15,6 +15,8 @@ export interface IMoodFeedback extends Document {
   confirmedGuideline: string;
   wasCorrect: boolean;
   confidence?: number | null;
+  /** Which detector produced the prediction */
+  moodBackend?: "efficientnet" | "vit" | null;
   /** JPEG as base64 (no data: prefix) */
   imageBase64: string;
   mimeType?: string;
@@ -30,6 +32,7 @@ const MoodFeedbackSchema = new Schema<IMoodFeedback>(
     confirmedGuideline: { type: String, required: true, index: true },
     wasCorrect: { type: Boolean, required: true, index: true },
     confidence: { type: Number, default: null },
+    moodBackend: { type: String, default: null, index: true },
     imageBase64: { type: String, required: true },
     mimeType: { type: String, default: "image/jpeg" },
   },

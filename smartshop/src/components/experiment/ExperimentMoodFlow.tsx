@@ -38,6 +38,7 @@ type PendingDetection = {
   predictedGuideline: GuidelineMood;
   confidence: number | null;
   imageBase64: string | null;
+  moodBackend: "efficientnet" | "vit";
 };
 
 export function ExperimentMoodFlow() {
@@ -79,6 +80,7 @@ export function ExperimentMoodFlow() {
       wasCorrect: boolean;
       confidence: number | null;
       imageBase64: string | null;
+      moodBackend?: "efficientnet" | "vit" | null;
     }) => {
       if (!payload.imageBase64) return;
       try {
@@ -107,6 +109,7 @@ export function ExperimentMoodFlow() {
       moodWasCorrect: boolean | null;
       moodSource: "camera" | "manual";
       imageBase64?: string | null;
+      moodBackend?: "efficientnet" | "vit" | null;
     }) => {
       if (!inExperiment) return;
       setMood(opts.detectedRaw ?? opts.confirmedMood, opts.confidence);
@@ -125,6 +128,7 @@ export function ExperimentMoodFlow() {
             wasCorrect: Boolean(opts.moodWasCorrect),
             confidence: opts.confidence,
             imageBase64: opts.imageBase64 ?? null,
+            moodBackend: opts.moodBackend ?? null,
           });
         }
 
@@ -256,6 +260,7 @@ export function ExperimentMoodFlow() {
             confirmedMood: opts.confirmedMood,
             moodWasCorrect: opts.moodWasCorrect,
             moodSource: opts.moodSource,
+            moodBackend: opts.moodBackend ?? null,
             guidelineMood: configuration.mood,
             uiElements,
             guidelinesPipeline: configuration.pipeline,
@@ -298,10 +303,12 @@ export function ExperimentMoodFlow() {
       mood,
       confidence,
       imageBase64,
+      moodBackend,
     }: {
       mood: string;
       confidence: number | null;
       imageBase64: string | null;
+      moodBackend: "efficientnet" | "vit";
     }) => {
       if (!inExperiment || resolving || pending) return;
       const bridged = bridgeMoodToGuideline(mood);
@@ -318,6 +325,7 @@ export function ExperimentMoodFlow() {
         predictedGuideline: bridged,
         confidence,
         imageBase64,
+        moodBackend,
       });
     },
     [inExperiment, pending, resolving]
@@ -353,6 +361,7 @@ export function ExperimentMoodFlow() {
               moodWasCorrect: true,
               moodSource: "camera",
               imageBase64: pending.imageBase64,
+              moodBackend: pending.moodBackend,
             })
           }
           onConfirmNo={() => setCorrecting(true)}
@@ -366,6 +375,7 @@ export function ExperimentMoodFlow() {
               moodWasCorrect: false,
               moodSource: "camera",
               imageBase64: pending.imageBase64,
+              moodBackend: pending.moodBackend,
             })
           }
         />

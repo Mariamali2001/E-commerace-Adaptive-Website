@@ -46,6 +46,10 @@ export async function POST(request: Request) {
         body.moodSource === "camera" || body.moodSource === "manual"
           ? body.moodSource
           : null,
+      moodBackend:
+        body.moodBackend === "vit" || body.moodBackend === "efficientnet"
+          ? body.moodBackend
+          : null,
       guidelineMood: body.guidelineMood ?? null,
       uiElements: body.uiElements ?? {},
       guidelinesPipeline: body.guidelinesPipeline ?? [],

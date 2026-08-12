@@ -117,6 +117,14 @@ smartshop/mood_model
 Health check: `GET https://YOUR-MOOD-API/health`  
 Expect `"model": "best_model_efficientnet_egypt_ft_v4.h5"` (or the downloaded filename under MODEL_PATH).
 
+### Optional: ViT (Modal) second detector
+
+On Vercel, also set:
+
+- `VIT_MOOD_API_URL=https://mariamali2001--vit-egypt-mood-dev-predict.modal.run` (no trailing slash)
+
+The shop mood page has a dropdown: **EfficientNet (Railway)** vs **ViT (Modal)**. Same validation + frame save; results store `mood_backend`.
+
 ### 3) Deploy website on Vercel
 
 1. Import this GitHub repo in Vercel

@@ -128,6 +128,7 @@ export function AdminExperimentPanel() {
     "confirmed_mood",
     "mood_was_correct",
     "mood_source",
+    "mood_backend",
     "guideline_mood",
     "in_master_rules",
     "ui_checkout_style",

@@ -68,6 +68,8 @@ type WebcamCaptureProps = {
     confidence: number | null;
     /** JPEG base64 without data: prefix — for validation feedback / fine-tune */
     imageBase64: string | null;
+    /** Which remote model produced this detection */
+    moodBackend: "efficientnet" | "vit";
   }) => void;
   /** When true, skip new predictions (e.g. while user confirms mood). */
   detectionLocked?: boolean;
@@ -86,6 +88,9 @@ export function WebcamCapture({
   const [predicting, setPredicting] = useState(false);
   const [prediction, setPrediction] = useState<MoodPrediction | null>(null);
   const [autoDetect, setAutoDetect] = useState(false);
+  const [moodBackend, setMoodBackend] = useState<"efficientnet" | "vit">(
+    "efficientnet"
+  );
 
   const releaseStream = useCallback(() => {
     if (streamRef.current) {
@@ -228,11 +233,15 @@ export function WebcamCapture({
 
         const form = new FormData();
         form.append("image", blob, `frame_${i}.jpg`);
+        form.append("backend", moodBackend);
 
-        const res = await fetch("/api/mood/predict", {
-          method: "POST",
-          body: form,
-        });
+        const res = await fetch(
+          `/api/mood/predict?backend=${encodeURIComponent(moodBackend)}`,
+          {
+            method: "POST",
+            body: form,
+          }
+        );
         const data = (await res.json()) as MoodPrediction & ApiError;
 
         if (!res.ok) {
@@ -299,6 +308,7 @@ export function WebcamCapture({
         mood,
         confidence,
         imageBase64,
+        moodBackend,
       });
     } catch (err) {
       setErrorMessage(
@@ -312,6 +322,7 @@ export function WebcamCapture({
     blobToBase64,
     captureBlob,
     detectionLocked,
+    moodBackend,
     predicting,
     status,
     onMoodDetected,
@@ -319,9 +330,13 @@ export function WebcamCapture({
 
   useEffect(() => {
     let cancelled = false;
+    setApiReady(null);
     (async () => {
       try {
-        const res = await fetch("/api/mood/predict", { cache: "no-store" });
+        const res = await fetch(
+          `/api/mood/predict?backend=${encodeURIComponent(moodBackend)}`,
+          { cache: "no-store" }
+        );
         if (!cancelled) setApiReady(res.ok);
       } catch {
         if (!cancelled) setApiReady(false);
@@ -330,7 +345,7 @@ export function WebcamCapture({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [moodBackend]);
 
   useEffect(() => {
     if (!autoDetect || status !== "active" || detectionLocked) return;
@@ -394,20 +409,47 @@ export function WebcamCapture({
         )}
       </div>
 
-      <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
-        Mood API:{" "}
-        {apiReady === null && <span className="font-medium">Checking…</span>}
-        {apiReady === true && (
-          <span className="font-medium text-emerald-700">Connected</span>
-        )}
-        {apiReady === false && (
-          <span className="font-medium text-amber-700">
-            Offline — locally run <code className="text-xs">npm run mood-api</code>.
-            On Vercel set <code className="text-xs">MOOD_API_URL</code> to{" "}
-            <code className="text-xs">https://your-service.up.railway.app</code>{" "}
-            (include https://), then wait for Railway cold start.
-          </span>
-        )}
+      <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700 space-y-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <label htmlFor="mood-backend" className="font-medium text-neutral-800">
+            Detection model
+          </label>
+          <select
+            id="mood-backend"
+            value={moodBackend}
+            disabled={predicting || detectionLocked}
+            onChange={(e) => {
+              const v = e.target.value === "vit" ? "vit" : "efficientnet";
+              setMoodBackend(v);
+              setPrediction(null);
+            }}
+            className="rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm text-neutral-900 disabled:opacity-50"
+          >
+            <option value="efficientnet">EfficientNet (Railway)</option>
+            <option value="vit">ViT (Modal)</option>
+          </select>
+        </div>
+        <p>
+          Mood API ({moodBackend === "vit" ? "ViT / Modal" : "EfficientNet / Railway"}
+          ):{" "}
+          {apiReady === null && <span className="font-medium">Checking…</span>}
+          {apiReady === true && (
+            <span className="font-medium text-emerald-700">Connected</span>
+          )}
+          {apiReady === false && moodBackend === "efficientnet" && (
+            <span className="font-medium text-amber-700">
+              Offline — locally run{" "}
+              <code className="text-xs">npm run mood-api</code>. On Vercel set{" "}
+              <code className="text-xs">MOOD_API_URL</code>.
+            </span>
+          )}
+          {apiReady === false && moodBackend === "vit" && (
+            <span className="font-medium text-amber-700">
+              Offline — set <code className="text-xs">VIT_MOOD_API_URL</code> on
+              Vercel to your Modal predict URL, then redeploy.
+            </span>
+          )}
+        </p>
       </div>
 
       {errorMessage && (

@@ -35,6 +35,8 @@ export interface IExperimentResult extends Document {
   /** true/false after camera validation; null for manual backup */
   moodWasCorrect?: boolean | null;
   moodSource?: "camera" | "manual" | null;
+  /** efficientnet (Railway) | vit (Modal) */
+  moodBackend?: "efficientnet" | "vit" | null;
   /** Mood used in the adaptive engine output cell */
   guidelineMood?: string | null;
   /** Snapshot of resolved UI tokens (key → value); filled more after adaptation */
@@ -63,6 +65,7 @@ const ExperimentResultSchema = new Schema<IExperimentResult>(
     confirmedMood: { type: String, default: null },
     moodWasCorrect: { type: Boolean, default: null },
     moodSource: { type: String, default: null },
+    moodBackend: { type: String, default: null },
     guidelineMood: { type: String, default: null },
     uiElements: { type: Schema.Types.Mixed, default: {} },
     guidelinesPipeline: { type: [String], default: [] },

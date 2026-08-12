@@ -56,6 +56,10 @@ export async function POST(request: Request) {
         body.confidence != null && Number.isFinite(Number(body.confidence))
           ? Number(body.confidence)
           : null,
+      moodBackend:
+        body.moodBackend === "vit" || body.moodBackend === "efficientnet"
+          ? body.moodBackend
+          : null,
       imageBase64: bare,
       mimeType: "image/jpeg",
     });

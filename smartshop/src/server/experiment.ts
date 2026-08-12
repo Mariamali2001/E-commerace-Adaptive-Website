@@ -25,6 +25,7 @@ export type SaveExperimentInput = {
   confirmedMood?: string | null;
   moodWasCorrect?: boolean | null;
   moodSource?: "camera" | "manual" | null;
+  moodBackend?: "efficientnet" | "vit" | null;
   guidelineMood?: string | null;
   uiElements?: Record<string, string>;
   guidelinesPipeline?: string[];
@@ -94,6 +95,7 @@ export async function saveExperimentResult(input: SaveExperimentInput) {
           ? input.moodWasCorrect
           : null,
       moodSource: input.moodSource ?? null,
+      moodBackend: input.moodBackend ?? null,
       guidelineMood: input.guidelineMood ?? null,
       uiElements,
       guidelinesPipeline: input.guidelinesPipeline ?? [],
@@ -206,6 +208,7 @@ type ExperimentRowSource = {
   confirmedMood?: string | null;
   moodWasCorrect?: boolean | null;
   moodSource?: string | null;
+  moodBackend?: string | null;
   guidelineMood?: string | null;
   guidelinesPipeline?: string[] | null;
   createdAt?: Date | string | null;
@@ -323,6 +326,7 @@ export function experimentResultsToRows(results: ExperimentRowSource[]) {
             : "no"
           : "",
       mood_source: r.moodSource ?? "",
+      mood_backend: r.moodBackend ?? "",
       guideline_mood: r.guidelineMood ?? "",
       in_master_rules: (() => {
         const persona = normalizePersonaLabel(
