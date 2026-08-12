@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/shared/Button";
+import { canvasToVitJpegBlob } from "@/lib/mood/vitFramePrep";
 
 type CameraStatus = "idle" | "starting" | "active" | "error";
 
@@ -89,6 +90,18 @@ export function WebcamCapture({
   const [prediction, setPrediction] = useState<MoodPrediction | null>(null);
   const [autoDetect, setAutoDetect] = useState(false);
   const [moodBackend, setMoodBackend] = useState<"efficientnet" | "vit">("vit");
+  const vitWarmupStarted = useRef(false);
+
+  const warmupVit = useCallback(() => {
+    if (vitWarmupStarted.current) return;
+    vitWarmupStarted.current = true;
+    void fetch("/api/mood/vit-warmup", {
+      method: "POST",
+      cache: "no-store",
+    }).catch(() => {
+      /* non-blocking */
+    });
+  }, []);
 
   const releaseStream = useCallback(() => {
     if (streamRef.current) {
@@ -156,6 +169,7 @@ export function WebcamCapture({
       }
 
       setStatus("active");
+      if (moodBackend === "vit") warmupVit();
     } catch (err) {
       setStatus("error");
       const message =
@@ -179,29 +193,36 @@ export function WebcamCapture({
         setErrorMessage(`${message} — you can still pick a mood manually below.`);
       }
     }
-  }, [releaseStream]);
+  }, [releaseStream, moodBackend, warmupVit]);
 
-  const captureBlob = useCallback(async (): Promise<Blob | null> => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    if (!video || !canvas || video.videoWidth === 0) return null;
+  const captureBlob = useCallback(
+    async (opts?: { forVit?: boolean }): Promise<Blob | null> => {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      if (!video || !canvas || video.videoWidth === 0) return null;
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return null;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return null;
 
-    // Match CSS mirror + local smoke test (selfie view)
-    ctx.save();
-    ctx.translate(canvas.width, 0);
-    ctx.scale(-1, 1);
-    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-    ctx.restore();
+      // Match CSS mirror + local smoke test (selfie view)
+      ctx.save();
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+      ctx.restore();
 
-    return new Promise((resolve) => {
-      canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.92);
-    });
-  }, []);
+      if (opts?.forVit) {
+        return canvasToVitJpegBlob(canvas);
+      }
+
+      return new Promise((resolve) => {
+        canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.92);
+      });
+    },
+    []
+  );
 
   const blobToBase64 = useCallback(async (blob: Blob): Promise<string> => {
     const buffer = await blob.arrayBuffer();
@@ -223,10 +244,10 @@ export function WebcamCapture({
       const frameBlobs: Blob[] = [];
       const predictions: MoodPrediction[] = [];
 
-      // Capture 2–3 frames a short gap apart, then average probabilities
+      // Capture frame(s); ViT gets a smaller face-centered JPEG
       for (let i = 0; i < DETECT_FRAME_COUNT; i += 1) {
         if (i > 0) await sleep(DETECT_FRAME_GAP_MS);
-        const blob = await captureBlob();
+        const blob = await captureBlob({ forVit: moodBackend === "vit" });
         if (!blob) continue;
 
         const form = new FormData();
@@ -325,6 +346,13 @@ export function WebcamCapture({
     status,
     onMoodDetected,
   ]);
+
+  useEffect(() => {
+    if (moodBackend === "vit") {
+      vitWarmupStarted.current = false;
+      warmupVit();
+    }
+  }, [moodBackend, warmupVit]);
 
   useEffect(() => {
     let cancelled = false;
@@ -467,6 +495,11 @@ export function WebcamCapture({
             <span className="font-medium text-amber-700">
               Offline — set <code className="text-xs">VIT_MOOD_API_URL</code> on
               Vercel to your Modal predict URL, then redeploy.
+            </span>
+          )}
+          {apiReady === true && moodBackend === "vit" && (
+            <span className="block text-xs text-neutral-500">
+              Warming Modal in the background; first Detect may still be slower.
             </span>
           )}
         </p>
