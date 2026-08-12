@@ -1,12 +1,12 @@
-"""Smoke-test best_model.h5 on the MacBook webcam.
+"""Smoke-test Egypt EfficientNet mood model on the MacBook webcam.
 
 Pipeline:
-  OpenCV webcam → Haar face crop → resize 96x96 → Keras EfficientNet-B0 → emotion + confidence
+  OpenCV webcam → Haar face crop → resize 96x96 → Keras model → emotion + confidence
 
 Usage (from smartshop/mood_model):
   python webcam_test_h5.py
-#   python webcam_test_h5.py --model artifacts/models/best_model.h5
-python webcam_test_h5.py --model artifacts/models/best_model_egypt_ft.h5
+  python webcam_test_h5.py --model artifacts/models/best_model_efficientnet_egypt_ft_v4.h5
+
 Keys:
   q / Esc — quit
   s — print current prediction to terminal
@@ -28,7 +28,7 @@ IMAGE_SIZE = 96
 
 ROOT = Path(__file__).resolve().parent
 # DEFAULT_MODEL = ROOT / "artifacts" / "models" / "best_model.h5"
-DEFAULT_MODEL_EGYPT = ROOT / "artifacts" / "models" / "best_model_egypt_ft.h5"
+DEFAULT_MODEL_EGYPT = ROOT / "artifacts" / "models" / "best_model_efficientnet_egypt_ft_v4.h5"
 
 
 def load_model(model_path: Path):
