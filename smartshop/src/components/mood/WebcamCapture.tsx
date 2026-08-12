@@ -18,7 +18,7 @@ type MoodPrediction = {
 type ApiError = { error?: string };
 
 /** Capture this many frames and average probabilities before choosing mood. */
-const DETECT_FRAME_COUNT = 2;
+const DETECT_FRAME_COUNT = 1;
 const DETECT_FRAME_GAP_MS = 280;
 
 function sleep(ms: number) {
@@ -397,7 +397,29 @@ export function WebcamCapture({
           </div>
         )}
 
-        {status === "active" && prediction?.face_detected && prediction.mood && (
+        {status === "active" && predicting && (
+          <div
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-black/45 backdrop-blur-[1px]"
+            role="status"
+            aria-live="polite"
+          >
+            <div
+              className="h-11 w-11 animate-spin rounded-full border-[3px] border-white/30 border-t-white"
+              aria-hidden
+            />
+            <p className="px-4 text-center text-sm font-medium text-white">
+              Detecting your mood…
+            </p>
+            <p className="max-w-[16rem] px-4 text-center text-xs text-white/80">
+              Please look at the camera and wait — this can take a few seconds.
+            </p>
+          </div>
+        )}
+
+        {status === "active" &&
+          !predicting &&
+          prediction?.face_detected &&
+          prediction.mood && (
           <div className="absolute bottom-3 left-3 rounded-xl bg-black/70 px-3 py-2 text-sm text-white">
             <span className="font-semibold capitalize">{prediction.mood}</span>
             {prediction.confidence != null && (
@@ -480,7 +502,7 @@ export function WebcamCapture({
           disabled={status !== "active" || predicting || detectionLocked}
           className="bg-emerald-700 hover:opacity-90"
         >
-          {predicting ? "Detecting (2 frames)…" : "Detect mood"}
+          {predicting ? "Detecting…" : "Detect mood"}
         </Button>
         <button
           type="button"
