@@ -11,9 +11,56 @@ type MoodPrediction = {
   confidence: number | null;
   probabilities: Record<string, number> | null;
   model?: string;
+  /** How many frames were averaged (multi-frame detect) */
+  frames_used?: number;
 };
 
 type ApiError = { error?: string };
+
+/** Capture this many frames and average probabilities before choosing mood. */
+const DETECT_FRAME_COUNT = 3;
+const DETECT_FRAME_GAP_MS = 280;
+
+function sleep(ms: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+function averageProbabilities(
+  preds: MoodPrediction[]
+): Record<string, number> | null {
+  const withFace = preds.filter(
+    (p) => p.face_detected && p.probabilities && Object.keys(p.probabilities).length
+  );
+  if (!withFace.length) return null;
+
+  const sums: Record<string, number> = {};
+  for (const p of withFace) {
+    for (const [name, value] of Object.entries(p.probabilities!)) {
+      sums[name] = (sums[name] ?? 0) + Number(value);
+    }
+  }
+  const n = withFace.length;
+  const avg: Record<string, number> = {};
+  for (const [name, sum] of Object.entries(sums)) {
+    avg[name] = sum / n;
+  }
+  return avg;
+}
+
+function pickTopMood(probabilities: Record<string, number>): {
+  mood: string;
+  confidence: number;
+} {
+  let mood = "";
+  let confidence = -1;
+  for (const [name, value] of Object.entries(probabilities)) {
+    if (value > confidence) {
+      mood = name;
+      confidence = value;
+    }
+  }
+  return { mood, confidence };
+}
 
 type WebcamCaptureProps = {
   onMoodDetected?: (payload: {
@@ -170,43 +217,89 @@ export function WebcamCapture({
     setErrorMessage(null);
 
     try {
-      const blob = await captureBlob();
-      if (!blob) {
-        setErrorMessage("Could not capture a frame from the camera.");
-        return;
+      const frameBlobs: Blob[] = [];
+      const predictions: MoodPrediction[] = [];
+
+      // Capture 2–3 frames a short gap apart, then average probabilities
+      for (let i = 0; i < DETECT_FRAME_COUNT; i += 1) {
+        if (i > 0) await sleep(DETECT_FRAME_GAP_MS);
+        const blob = await captureBlob();
+        if (!blob) continue;
+
+        const form = new FormData();
+        form.append("image", blob, `frame_${i}.jpg`);
+
+        const res = await fetch("/api/mood/predict", {
+          method: "POST",
+          body: form,
+        });
+        const data = (await res.json()) as MoodPrediction & ApiError;
+
+        if (!res.ok) {
+          setErrorMessage(data.error || "Prediction failed.");
+          setApiReady(false);
+          return;
+        }
+
+        frameBlobs.push(blob);
+        predictions.push(data);
       }
 
-      const form = new FormData();
-      form.append("image", blob, "frame.jpg");
-
-      const res = await fetch("/api/mood/predict", {
-        method: "POST",
-        body: form,
-      });
-      const data = (await res.json()) as MoodPrediction & ApiError;
-
-      if (!res.ok) {
-        setErrorMessage(data.error || "Prediction failed.");
-        setApiReady(false);
+      if (!predictions.length) {
+        setErrorMessage("Could not capture frames from the camera.");
         return;
       }
 
       setApiReady(true);
-      setPrediction(data);
-      if (data.face_detected && data.mood) {
-        setAutoDetect(false);
-        let imageBase64: string | null = null;
-        try {
-          imageBase64 = await blobToBase64(blob);
-        } catch {
-          imageBase64 = null;
-        }
-        onMoodDetected?.({
-          mood: data.mood,
-          confidence: data.confidence,
-          imageBase64,
+
+      const avgProbs = averageProbabilities(predictions);
+      const framesWithFace = predictions.filter((p) => p.face_detected && p.mood);
+
+      if (!avgProbs || !framesWithFace.length) {
+        setPrediction({
+          face_detected: false,
+          mood: null,
+          confidence: null,
+          probabilities: null,
+          frames_used: predictions.length,
         });
+        return;
       }
+
+      const { mood, confidence } = pickTopMood(avgProbs);
+      const bestSingle = [...framesWithFace].sort(
+        (a, b) => (b.confidence ?? 0) - (a.confidence ?? 0)
+      )[0]!;
+      const bestIdx = predictions.indexOf(bestSingle);
+      const feedbackBlob =
+        (bestIdx >= 0 ? frameBlobs[bestIdx] : null) ??
+        frameBlobs[Math.floor(frameBlobs.length / 2)] ??
+        frameBlobs[0]!;
+
+      const aggregated: MoodPrediction = {
+        face_detected: true,
+        mood,
+        confidence,
+        probabilities: avgProbs,
+        model: bestSingle.model,
+        frames_used: framesWithFace.length,
+      };
+
+      setPrediction(aggregated);
+      setAutoDetect(false);
+
+      let imageBase64: string | null = null;
+      try {
+        imageBase64 = await blobToBase64(feedbackBlob);
+      } catch {
+        imageBase64 = null;
+      }
+
+      onMoodDetected?.({
+        mood,
+        confidence,
+        imageBase64,
+      });
     } catch (err) {
       setErrorMessage(
         err instanceof Error ? err.message : "Prediction request failed."
@@ -241,9 +334,10 @@ export function WebcamCapture({
 
   useEffect(() => {
     if (!autoDetect || status !== "active" || detectionLocked) return;
+    // Multi-frame detect is slower — avoid overlapping requests
     const id = window.setInterval(() => {
       void detectMood();
-    }, 2000);
+    }, 4500);
     return () => window.clearInterval(id);
   }, [autoDetect, detectMood, detectionLocked, status]);
 
@@ -344,7 +438,7 @@ export function WebcamCapture({
           disabled={status !== "active" || predicting || detectionLocked}
           className="bg-emerald-700 hover:opacity-90"
         >
-          {predicting ? "Detecting…" : "Detect mood"}
+          {predicting ? "Detecting (3 frames)…" : "Detect mood"}
         </Button>
         <button
           type="button"
@@ -378,6 +472,12 @@ export function WebcamCapture({
                   </li>
                 ))}
               </ul>
+              {prediction.frames_used != null && (
+                <p className="text-xs text-neutral-500">
+                  Averaged from {prediction.frames_used} frame
+                  {prediction.frames_used === 1 ? "" : "s"}
+                </p>
+              )}
               {prediction.model && (
                 <p className="text-xs text-neutral-400">
                   Model: {prediction.model}

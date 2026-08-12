@@ -1,6 +1,6 @@
 """Mood inference API for SmartShop.
 
-Loads best_model_egypt_ft.h5 and exposes:
+Loads best_model_efficientnet_egypt_ft_v4.h5 and exposes:
   GET  /health
   POST /predict   (multipart field: image)
 
@@ -30,7 +30,7 @@ ROOT = Path(__file__).resolve().parent
 DEFAULT_MODEL = Path(
     os.environ.get(
         "MODEL_PATH",
-        str(ROOT / "artifacts" / "models" / "best_model_egypt_ft.h5"),
+        str(ROOT / "artifacts" / "models" / "best_model_efficientnet_egypt_ft_v4.h5"),
     )
 )
 _model = None
@@ -76,9 +76,10 @@ def ensure_model_file() -> Path:
     path = Path(
         os.environ.get(
             "MODEL_PATH",
-            str(ROOT / "artifacts" / "models" / "best_model_egypt_ft.h5"),
+            str(ROOT / "artifacts" / "models" / "best_model_efficientnet_egypt_ft_v4.h5"),
         )
     )
+    # v4 is ~35MB; older egypt_ft was ~334MB
     if path.exists() and path.stat().st_size > 1_000_000:
         return path
 
@@ -87,7 +88,7 @@ def ensure_model_file() -> Path:
         raise FileNotFoundError(
             f"Model not found at {path}. "
             "In Railway → Variables, set MODEL_URL to your Hugging Face resolve link, then Redeploy. "
-            "Example: https://huggingface.co/MariamBashandy/smartshop-mood-egypt/resolve/main/best_model_egypt_ft.h5"
+            "Example: https://huggingface.co/MariamBashandy/smartshop-mood-egypt/resolve/main/best_model_efficientnet_egypt_ft_v4.h5"
         )
 
     download_model(model_url, path)

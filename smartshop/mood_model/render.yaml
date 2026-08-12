@@ -12,4 +12,4 @@ services:
       - key: MODEL_URL
         sync: false
       - key: MODEL_PATH
-        value: /app/artifacts/models/best_model_egypt_ft.h5
+        value: /app/artifacts/models/best_model_efficientnet_egypt_ft_v4.h5

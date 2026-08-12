@@ -1,4 +1,4 @@
-# Local/full image that bakes in best_model_egypt_ft.h5 (~334MB).
+# Local/full image that bakes in best_model_efficientnet_egypt_ft_v4.h5 (~35MB).
 # Build from smartshop/mood_model with the weights present:
 #   docker build -f Dockerfile.local -t smartshop-mood-api .
 FROM python:3.11-slim
@@ -14,11 +14,11 @@ COPY requirements-api.txt .
 RUN pip install --no-cache-dir -r requirements-api.txt
 
 COPY mood_api.py .
-COPY artifacts/models/best_model_egypt_ft.h5 ./artifacts/models/best_model_egypt_ft.h5
+COPY artifacts/models/best_model_efficientnet_egypt_ft_v4.h5 ./artifacts/models/best_model_efficientnet_egypt_ft_v4.h5
 
 ENV HOST=0.0.0.0
 ENV PORT=8001
-ENV MODEL_PATH=/app/artifacts/models/best_model_egypt_ft.h5
+ENV MODEL_PATH=/app/artifacts/models/best_model_efficientnet_egypt_ft_v4.h5
 
 EXPOSE 8001
 
