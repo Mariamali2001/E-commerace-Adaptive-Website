@@ -88,9 +88,7 @@ export function WebcamCapture({
   const [predicting, setPredicting] = useState(false);
   const [prediction, setPrediction] = useState<MoodPrediction | null>(null);
   const [autoDetect, setAutoDetect] = useState(false);
-  const [moodBackend, setMoodBackend] = useState<"efficientnet" | "vit">(
-    "efficientnet"
-  );
+  const [moodBackend, setMoodBackend] = useState<"efficientnet" | "vit">("vit");
 
   const releaseStream = useCallback(() => {
     if (streamRef.current) {
