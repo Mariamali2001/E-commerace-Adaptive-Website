@@ -18,7 +18,7 @@ type MoodPrediction = {
 type ApiError = { error?: string };
 
 /** Capture this many frames and average probabilities before choosing mood. */
-const DETECT_FRAME_COUNT = 3;
+const DETECT_FRAME_COUNT = 2;
 const DETECT_FRAME_GAP_MS = 280;
 
 function sleep(ms: number) {
@@ -480,7 +480,7 @@ export function WebcamCapture({
           disabled={status !== "active" || predicting || detectionLocked}
           className="bg-emerald-700 hover:opacity-90"
         >
-          {predicting ? "Detecting (3 frames)…" : "Detect mood"}
+          {predicting ? "Detecting (2 frames)…" : "Detect mood"}
         </Button>
         <button
           type="button"
