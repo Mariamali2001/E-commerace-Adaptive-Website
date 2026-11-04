@@ -1,91 +1,42 @@
-# SmartShop
+# SmartShopping
 
-Master’s experiment: a Next.js e-commerce shop that **adapts UI from persona × device × mood**, with face-mood detection and user confirmation.
+Next.js e-commerce app with MongoDB-backed auth/cart/experiment storage and a **rule-based adaptive UI**.
 
-Offline guideline extraction lives in `adaptive_ui_app/`. Live rules: `public/assets/master_adaptive_ui_rules.json` (**67** designed cells; theoretical space is 6 personas × 2 devices × 8 moods = 96).
+## Adaptive UI (frozen architecture)
 
----
+1. Signup (collects **age/gender**)
+2. Browse timer → questionnaire (**TIPI + persona + self-mood** — not age/gender)
+3. Webcam mood detection (EfficientNet mood API)
+4. **Context Builder** → session context object
+5. **Adaptive Engine** — master JSON lookup (`master_adaptive_ui_rules.json`) → **Final UI Configuration** (only decision maker)
+6. **`toImplementationSpec()`** — strips persona / mood / device / traits; keeps resolved UI decisions only
+7. **LLM Component Generator** (`/api/llm/ensure-components`) — implements React/TSX for unseen configuration hashes; caches under `generated_components/`
+8. Adaptive e-commerce website mounts components from the resolved decisions (catalog modules + generated files)
 
-## What the participant does
+The LLM never decides, recommends, or redesigns UI. Identical configuration hash → cache reuse (no API call).
 
-1. **Signup** — age + gender (**Female / Male** only).
-2. **Browse** the static shop for **5 minutes**.
-3. **Questionnaire** — TIPI traits, shopping persona, self-reported mood.
-4. **Mood page** — camera detect (default **ViT / Modal**; dropdown can switch to **EfficientNet / Railway**).
-5. **Confirm popup** — “Is this your mood?” Yes / No → pick from **8 guideline moods**. Adaptation always uses the **confirmed** mood.
-6. Personalized shop (cart badge, checkout includes **Egypt**).
+Guideline extraction (offline): `adaptive_ui_app/`.
 
-Frames from Yes and No confirms are stored (`MoodFeedback`) for later fine-tune — not live training.
+## Getting Started
 
----
-
-## Mood detection (two backends)
-
-| Choice in dropdown | Where it runs | Env var on Vercel |
-|--------------------|---------------|-------------------|
-| **ViT (Modal)** — default | Modal predict URL | `VIT_MOOD_API_URL` |
-| **EfficientNet (Railway)** | FastAPI + `.h5` | `MOOD_API_URL` |
-
-ViT: client sends a smaller face-centered JPEG; a background call warms Modal. EfficientNet: Railway `mood_api.py` + `best_model_efficientnet_egypt_ft_v4.h5` (Hugging Face `MODEL_URL`).
-
-Labels are bridged to guideline moods (`angry`/`anger` → Frustrated, etc.). Admin stores `mood_backend`.
-
----
-
-## Admin (`/admin`)
-
-- **All participants CSV** — includes legacy rows + `study_chapter`.
-- **New chapter CSV** — only runs after mood confirmation (`mood_source` / `confirmed_mood`).
-- **Combinations CSV (all / new chapter)** — 67 master cells with `n`, plus fallback counts.
-- Mood frame previews (fine-tune dataset).
-
-Do **not** wipe results in admin; split old vs new with the two CSVs.
-
----
-
-## Local run
+First time after clone (installs Node deps + mood API Python venv):
 
 ```bash
 cd smartshop
 npm run setup
-npm run dev          # http://localhost:3000
-npm run mood-api     # EfficientNet local API → http://127.0.0.1:8001
 ```
 
-iPhone camera: `npm run dev:https`. Demo admin: `demo@smartshop.dev` / `demo1234`.
+Then run the website and mood API in two terminals:
 
-LLM: copy env example into `.env.local`. Cached components under `generated_components/` work without calling the API.
-
----
-
-## Deploy (nothing mood-related on Vercel)
-
-```text
-Vercel (Next.js shop)
-  ├─ MOOD_API_URL      → Railway EfficientNet
-  └─ VIT_MOOD_API_URL  → Modal ViT
-MongoDB Atlas ← shop
+```bash
+npm run dev        # website → http://localhost:3000
+npm run mood-api   # mood API → http://127.0.0.1:8001
 ```
 
-**Railway (EfficientNet):** root directory `smartshop/mood_model`, Dockerfile, `MODEL_URL` = Hugging Face resolve link for `best_model_efficientnet_egypt_ft_v4.h5`.
+Open [http://localhost:3000](http://localhost:3000).
 
-**Vercel:** root directory `smartshop`. Set `MONGODB_URI`, `SESSION_SECRET`, `MOOD_API_URL`, `VIT_MOOD_API_URL`. Optional: `NEXT_PUBLIC_EVALUATION_FORM_URL` (link shown after mood confirm).
 
----
 
-## Related folders
 
-| Path | Role |
-|------|------|
-| `src/` | Shop, experiment, adaptive engine, admin |
-| `mood_model/` | EfficientNet API + training notebooks |
-| `mood_model/modal_version_vit/` | ViT Modal deploy / fine-tune scripts |
-| `adaptive_ui_app/` | Streamlit — built the 67-cell master JSON |
-| `study_results/` | Results-chapter notebook + sample CSVs |
-| `public/assets/` | Master rules, global defaults, trait nudges |
 
----
-
-## Retrain mood (later)
-
-Collect labeled frames during the study → fine-tune offline (EfficientNet Colab or ViT Modal script) → replace weights / redeploy Railway or Modal. Do not retrain live per participant.
+Local still uses `http://127.0.0.1:8001` by default when `MOOD_API_URL` is unset.
