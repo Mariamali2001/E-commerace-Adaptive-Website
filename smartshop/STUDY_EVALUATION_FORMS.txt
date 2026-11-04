@@ -16,15 +16,22 @@ Title suggestion: SmartShop — Post-session evaluation
 
 Instructions:
   “Please answer based on the shopping website you just used
-   (after the camera / personalization step).”
+   (after the camera / personalization step). Use the SAME email
+   you used to sign up on SmartShop.”
 
 Join key (required):
-  Participant ID — same ID you assign / they use in SmartShop
-  (join to admin CSV user_id, or keep a participant_id column).
+  Email — same address as SmartShop signup (admin CSV column email).
+  Google Form: Settings → Collect email addresses, OR a required
+  Email question.
+
+  Early responses that only have a Participant ID (27TM, …) are
+  joined via study_results/data/id_map.csv (participant_id → email).
 
 
-SECTION 1 — Participant ID
-  - Participant ID (required text / short answer)
+SECTION 1 — Identity
+  - Email (required) — same as SmartShop signup
+  - Participant ID (optional) — keep if you already used codes; not
+    needed for new respondents once Email is collected
 
 
 SECTION 2 — System Usability Scale (SUS) — official 10 items (Brooke, 1996)
@@ -122,8 +129,8 @@ OPTIONAL (3 open-text items — qualitative; not scored)
 
 Protocol tip:
   After adapted shop (and ideally after a checkout attempt), open this
-  single form. Always use the same Participant ID as in SmartShop so
-  the notebook can join to the admin CSV.
+  single form. Always use the same email as SmartShop signup so
+  analyze.py can join to the admin CSV.
 
 
 --------------------------------------------------------------------------------
@@ -156,7 +163,7 @@ C. MATRIX COVERAGE APPENDIX
 See: study_results/MATRIX_COVERAGE_APPENDIX.txt
 
   - 6 personas × 2 devices × 8 mood labels → 96 possible cells
-  - 65 filled (~67.7%); rest use the engine fallback ladder
+  - 67 filled (69.8%); rest use the engine fallback ladder
 
 
 --------------------------------------------------------------------------------

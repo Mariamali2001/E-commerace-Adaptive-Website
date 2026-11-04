@@ -1,0 +1,68 @@
+persona,device,device_label,mood,n,in_master_rules,has_participants
+Browser,desktop,Laptop/Desktop,Happy,0,yes,no
+Browser,desktop,Laptop/Desktop,Neutral,4,yes,yes
+Browser,desktop,Laptop/Desktop,Relaxed,0,yes,no
+Browser,mobile,Smartphone,Bored,0,yes,no
+Browser,mobile,Smartphone,Excited,0,yes,no
+Browser,mobile,Smartphone,Happy,0,yes,no
+Browser,mobile,Smartphone,Neutral,2,yes,yes
+Browser,mobile,Smartphone,Relaxed,1,yes,yes
+Browser,mobile,Smartphone,Sad,0,yes,no
+Browser,mobile,Smartphone,Stressed,0,yes,no
+Deal Hunter,desktop,Laptop/Desktop,Bored,0,yes,no
+Deal Hunter,desktop,Laptop/Desktop,Happy,4,yes,yes
+Deal Hunter,desktop,Laptop/Desktop,Neutral,3,yes,yes
+Deal Hunter,desktop,Laptop/Desktop,Stressed,0,yes,no
+Deal Hunter,mobile,Smartphone,Bored,0,yes,no
+Deal Hunter,mobile,Smartphone,Excited,0,yes,no
+Deal Hunter,mobile,Smartphone,Happy,2,yes,yes
+Deal Hunter,mobile,Smartphone,Neutral,0,yes,no
+Deal Hunter,mobile,Smartphone,Relaxed,0,yes,no
+Deal Hunter,mobile,Smartphone,Stressed,0,yes,no
+Impulsive Buyer,desktop,Laptop/Desktop,Excited,0,yes,no
+Impulsive Buyer,desktop,Laptop/Desktop,Happy,0,yes,no
+Impulsive Buyer,desktop,Laptop/Desktop,Neutral,2,yes,yes
+Impulsive Buyer,desktop,Laptop/Desktop,Stressed,0,yes,no
+Impulsive Buyer,mobile,Smartphone,Bored,0,yes,no
+Impulsive Buyer,mobile,Smartphone,Excited,0,yes,no
+Impulsive Buyer,mobile,Smartphone,Happy,1,yes,yes
+Impulsive Buyer,mobile,Smartphone,Neutral,0,yes,no
+Impulsive Buyer,mobile,Smartphone,Relaxed,1,yes,yes
+Impulsive Buyer,mobile,Smartphone,Sad,0,yes,no
+Impulsive Buyer,mobile,Smartphone,Stressed,0,yes,no
+Loyal Customer,desktop,Laptop/Desktop,Happy,0,yes,no
+Loyal Customer,desktop,Laptop/Desktop,Neutral,0,yes,no
+Loyal Customer,desktop,Laptop/Desktop,Relaxed,0,yes,no
+Loyal Customer,desktop,Laptop/Desktop,Sad,0,yes,no
+Loyal Customer,desktop,Laptop/Desktop,Stressed,0,yes,no
+Loyal Customer,mobile,Smartphone,Excited,0,yes,no
+Loyal Customer,mobile,Smartphone,Happy,0,yes,no
+Loyal Customer,mobile,Smartphone,Neutral,0,yes,no
+Loyal Customer,mobile,Smartphone,Relaxed,0,yes,no
+Loyal Customer,mobile,Smartphone,Sad,0,yes,no
+Loyal Customer,mobile,Smartphone,Stressed,0,yes,no
+Minimalist,desktop,Laptop/Desktop,Bored,0,yes,no
+Minimalist,desktop,Laptop/Desktop,Happy,0,yes,no
+Minimalist,desktop,Laptop/Desktop,Neutral,0,yes,no
+Minimalist,desktop,Laptop/Desktop,Relaxed,0,yes,no
+Minimalist,desktop,Laptop/Desktop,Stressed,0,yes,no
+Minimalist,mobile,Smartphone,Bored,0,yes,no
+Minimalist,mobile,Smartphone,Frustrated,0,yes,no
+Minimalist,mobile,Smartphone,Happy,0,yes,no
+Minimalist,mobile,Smartphone,Neutral,0,yes,no
+Minimalist,mobile,Smartphone,Relaxed,0,yes,no
+Minimalist,mobile,Smartphone,Stressed,0,yes,no
+Researcher,desktop,Laptop/Desktop,Bored,0,yes,no
+Researcher,desktop,Laptop/Desktop,Excited,1,yes,yes
+Researcher,desktop,Laptop/Desktop,Frustrated,0,yes,no
+Researcher,desktop,Laptop/Desktop,Happy,3,yes,yes
+Researcher,desktop,Laptop/Desktop,Neutral,7,yes,yes
+Researcher,desktop,Laptop/Desktop,Relaxed,0,yes,no
+Researcher,desktop,Laptop/Desktop,Sad,0,yes,no
+Researcher,desktop,Laptop/Desktop,Stressed,0,yes,no
+Researcher,mobile,Smartphone,Bored,0,yes,no
+Researcher,mobile,Smartphone,Excited,0,yes,no
+Researcher,mobile,Smartphone,Frustrated,0,yes,no
+Researcher,mobile,Smartphone,Neutral,1,yes,yes
+Researcher,mobile,Smartphone,Relaxed,0,yes,no
+Researcher,mobile,Smartphone,Stressed,0,yes,no

@@ -1,138 +1,91 @@
-# SmartShopping
+# SmartShop
 
-Next.js e-commerce app with MongoDB-backed auth/cart/experiment storage and a **rule-based adaptive UI**.
+Master’s experiment: a Next.js e-commerce shop that **adapts UI from persona × device × mood**, with face-mood detection and user confirmation.
 
-## Adaptive UI (frozen architecture)
+Offline guideline extraction lives in `adaptive_ui_app/`. Live rules: `public/assets/master_adaptive_ui_rules.json` (**67** designed cells; theoretical space is 6 personas × 2 devices × 8 moods = 96).
 
-1. Signup (collects **age/gender**)
-2. Browse timer → questionnaire (**TIPI + persona + self-mood** — not age/gender)
-3. Webcam mood detection (EfficientNet mood API)
-4. **Context Builder** → session context object
-5. **Adaptive Engine** — master JSON lookup (`master_adaptive_ui_rules.json`) → **Final UI Configuration** (only decision maker)
-6. **`toImplementationSpec()`** — strips persona / mood / device / traits; keeps resolved UI decisions only
-7. **LLM Component Generator** (`/api/llm/ensure-components`) — implements React/TSX for unseen configuration hashes; caches under `generated_components/`
-8. Adaptive e-commerce website mounts components from the resolved decisions (catalog modules + generated files)
+---
 
-The LLM never decides, recommends, or redesigns UI. Identical configuration hash → cache reuse (no API call).
+## What the participant does
 
-Guideline extraction (offline): `adaptive_ui_app/`.
+1. **Signup** — age + gender (**Female / Male** only).
+2. **Browse** the static shop for **5 minutes**.
+3. **Questionnaire** — TIPI traits, shopping persona, self-reported mood.
+4. **Mood page** — camera detect (default **ViT / Modal**; dropdown can switch to **EfficientNet / Railway**).
+5. **Confirm popup** — “Is this your mood?” Yes / No → pick from **8 guideline moods**. Adaptation always uses the **confirmed** mood.
+6. Personalized shop (cart badge, checkout includes **Egypt**).
 
-## Getting Started
+Frames from Yes and No confirms are stored (`MoodFeedback`) for later fine-tune — not live training.
 
-First time after clone (installs Node deps + mood API Python venv):
+---
+
+## Mood detection (two backends)
+
+| Choice in dropdown | Where it runs | Env var on Vercel |
+|--------------------|---------------|-------------------|
+| **ViT (Modal)** — default | Modal predict URL | `VIT_MOOD_API_URL` |
+| **EfficientNet (Railway)** | FastAPI + `.h5` | `MOOD_API_URL` |
+
+ViT: client sends a smaller face-centered JPEG; a background call warms Modal. EfficientNet: Railway `mood_api.py` + `best_model_efficientnet_egypt_ft_v4.h5` (Hugging Face `MODEL_URL`).
+
+Labels are bridged to guideline moods (`angry`/`anger` → Frustrated, etc.). Admin stores `mood_backend`.
+
+---
+
+## Admin (`/admin`)
+
+- **All participants CSV** — includes legacy rows + `study_chapter`.
+- **New chapter CSV** — only runs after mood confirmation (`mood_source` / `confirmed_mood`).
+- **Combinations CSV (all / new chapter)** — 67 master cells with `n`, plus fallback counts.
+- Mood frame previews (fine-tune dataset).
+
+Do **not** wipe results in admin; split old vs new with the two CSVs.
+
+---
+
+## Local run
 
 ```bash
 cd smartshop
 npm run setup
+npm run dev          # http://localhost:3000
+npm run mood-api     # EfficientNet local API → http://127.0.0.1:8001
 ```
 
-Then run the website and mood API in two terminals:
+iPhone camera: `npm run dev:https`. Demo admin: `demo@smartshop.dev` / `demo1234`.
 
-```bash
-npm run dev        # website → http://localhost:3000
-npm run mood-api   # mood API → http://127.0.0.1:8001
-```
+LLM: copy env example into `.env.local`. Cached components under `generated_components/` work without calling the API.
 
-Open [http://localhost:3000](http://localhost:3000).
+---
 
-### iPhone camera (HTTPS)
-
-```bash
-npm run dev:https
-```
-
-On iPhone: `https://YOUR_MAC_IP:3000` (same Wi‑Fi). Or `npm run dev:tunnel` for a public HTTPS URL.
-
-### LLM keys
-
-Copy `env.llm.example` into `.env.local`. Default provider is Gemini; set `LLM_PROVIDER=openai` if needed. Cached/catalog components work without calling the API.
-
-### Demo credentials
-
-- Email: `demo@smartshop.dev`
-- Password: `demo1234`
-
-Admin export: `/admin`.
-
-## Backend overview
-
-| Domain     | Endpoints                                                                                     | Notes                                      |
-| ---------- | --------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| Products   | `GET /api/products`, …                                                                        | Mongo / seeded catalog                     |
-| Auth       | signup / login / logout / me                                                                  | Cookie session                             |
-| Adaptive   | `POST /api/adaptive-engine/generate`                                                          | Master JSON lookup                         |
-| LLM        | `POST /api/llm/ensure-components`, `POST /api/llm/generate-variant`                           | React implementer + cache                  |
-| Experiment | `POST /api/experiment/save`, admin CSV                                                        | Results for thesis                         |
-
-Requires `MONGODB_URI` in `.env.local`.
-
-## Deploy (Vercel website + separate mood API)
-
-The mood model is TensorFlow (v4 ~35MB). **Do not put it on Vercel** — Vercel runs the Next.js shop only. Host the mood API elsewhere and point the shop at it.
+## Deploy (nothing mood-related on Vercel)
 
 ```text
-Vercel (smartshop Next.js)  --MOOD_API_URL-->  Railway/Render/HF Spaces (mood_api)
-MongoDB Atlas               <----------------  same Next.js app
+Vercel (Next.js shop)
+  ├─ MOOD_API_URL      → Railway EfficientNet
+  └─ VIT_MOOD_API_URL  → Modal ViT
+MongoDB Atlas ← shop
 ```
 
-### 1) Host the `.h5` weights (once)
+**Railway (EfficientNet):** root directory `smartshop/mood_model`, Dockerfile, `MODEL_URL` = Hugging Face resolve link for `best_model_efficientnet_egypt_ft_v4.h5`.
 
-Upload `mood_model/artifacts/models/best_model_efficientnet_egypt_ft_v4.h5` to a place with a **direct download URL**, e.g. a [Hugging Face](https://huggingface.co/) model repo.
+**Vercel:** root directory `smartshop`. Set `MONGODB_URI`, `SESSION_SECRET`, `MOOD_API_URL`, `VIT_MOOD_API_URL`. Optional: `NEXT_PUBLIC_EVALUATION_FORM_URL` (link shown after mood confirm).
 
-Example `MODEL_URL`:
+---
 
-`https://huggingface.co/<you>/<repo>/resolve/main/best_model_efficientnet_egypt_ft_v4.h5`
+## Related folders
 
-### 2) Deploy mood API (Docker)
+| Path | Role |
+|------|------|
+| `src/` | Shop, experiment, adaptive engine, admin |
+| `mood_model/` | EfficientNet API + training notebooks |
+| `mood_model/modal_version_vit/` | ViT Modal deploy / fine-tune scripts |
+| `adaptive_ui_app/` | Streamlit — built the 67-cell master JSON |
+| `study_results/` | Results-chapter notebook + sample CSVs |
+| `public/assets/` | Master rules, global defaults, trait nudges |
 
-**Important:** commit + push `smartshop/mood_model/Dockerfile` first.  
-**Root directory is not** `mood_model` — it is:
+---
 
-```text
-smartshop/mood_model
-```
+## Retrain mood (later)
 
-#### Railway
-1. New Project → Deploy from GitHub → this repo  
-2. Service **Settings → Root Directory** = `smartshop/mood_model`  
-3. Builder = Dockerfile (uses `Dockerfile` in that folder)  
-4. Variables:
-   - `MODEL_URL` = `https://huggingface.co/MariamBashandy/smartshop-mood-egypt/resolve/main/best_model_efficientnet_egypt_ft_v4.h5`
-   - `MODEL_PATH` = `/app/artifacts/models/best_model_efficientnet_egypt_ft_v4.h5` (optional; this is the default)
-5. Settings → Networking → Generate domain  
-6. Open `https://YOUR-DOMAIN/health`
-
-#### Render
-1. New → Web Service → this repo  
-2. **Root Directory** = `smartshop/mood_model`  
-3. Runtime = Docker  
-4. Same `MODEL_URL` as above  
-5. Open `https://YOUR-SERVICE.onrender.com/health`
-
-| Variable     | Value |
-|-------------|--------|
-| `MODEL_URL` | Direct URL to `best_model_efficientnet_egypt_ft_v4.h5` |
-| `PORT`      | Set automatically by Railway/Render — do not hardcode |
-
-Health check: `GET https://YOUR-MOOD-API/health`  
-Expect `"model": "best_model_efficientnet_egypt_ft_v4.h5"` (or the downloaded filename under MODEL_PATH).
-
-### Optional: ViT (Modal) second detector
-
-On Vercel, also set:
-
-- `VIT_MOOD_API_URL=https://mariamali2001--vit-egypt-mood-dev-predict.modal.run` (no trailing slash)
-
-The shop mood page has a dropdown: **EfficientNet (Railway)** vs **ViT (Modal)**. Same validation + frame save; results store `mood_backend`.
-
-### 3) Deploy website on Vercel
-
-1. Import this GitHub repo in Vercel
-2. Set **Root Directory** to `smartshop`
-3. Add env vars from `.env.example`, including:
-   - `MONGODB_URI`
-   - `SESSION_SECRET`
-   - `MOOD_API_URL=https://YOUR-MOOD-API` (no trailing slash)
-4. Deploy
-
-Local still uses `http://127.0.0.1:8001` by default when `MOOD_API_URL` is unset.
+Collect labeled frames during the study → fine-tune offline (EfficientNet Colab or ViT Modal script) → replace weights / redeploy Railway or Modal. Do not retrain live per participant.

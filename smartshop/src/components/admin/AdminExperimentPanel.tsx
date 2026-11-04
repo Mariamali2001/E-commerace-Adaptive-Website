@@ -160,7 +160,9 @@ export function AdminExperimentPanel() {
           <p className="mt-1 text-sm text-neutral-600">
             Restricted to <code className="text-xs">{ADMIN_EMAIL}</code>. Legacy
             rows stay for analysis; <strong>new chapter</strong> = runs after
-            mood validation (camera/manual confirm).
+            mood validation (camera/manual confirm). Join the Google Form on{" "}
+            <strong>email</strong> (same as signup). Early form rows without
+            email go in <code className="text-xs">study_results/data/id_map.csv</code>.
           </p>
         </div>
         {allowed && (
@@ -244,12 +246,36 @@ export function AdminExperimentPanel() {
         <div className="rounded-2xl border border-sky-200 bg-sky-50/60 p-5 space-y-4">
           <div>
             <h2 className="text-lg font-semibold text-neutral-900">
-              Mood frame feedback (fine-tune dataset)
+              Mood frame feedback (evaluation export)
             </h2>
             <p className="mt-1 text-sm text-neutral-600">
-              After you detect + confirm mood (Yes or No), a JPEG frame should
-              appear here. Check this before calling the build final.
+              Camera confirm frames (Yes or No). CSV is predicted vs confirmed
+              mood. ZIP has JPEGs in folders by confirmed mood plus{" "}
+              <code className="text-xs">manifest.csv</code>. Does not change the
+              experiment.
             </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button
+                type="button"
+                onClick={() => {
+                  window.location.href = "/api/admin/mood-feedback?format=csv";
+                }}
+                disabled={!moodSummary?.total}
+                className="bg-sky-800 hover:opacity-90"
+              >
+                Download mood feedback CSV
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  window.location.href = "/api/admin/mood-feedback?format=zip";
+                }}
+                disabled={!moodSummary?.withImage}
+                className="bg-sky-800 hover:opacity-90"
+              >
+                Download frames ZIP
+              </Button>
+            </div>
           </div>
           {moodSummary ? (
             <p className="text-sm text-neutral-800">

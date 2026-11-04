@@ -1,14 +1,12 @@
-# Adaptive E-Commerce UI Generator
+# Adaptive UI guideline extractor (offline)
 
-This is a Streamlit application that helps researchers and designers derive data-driven UI guidelines for e-commerce websites.
+Streamlit app used **once** to turn the e-commerce survey into `master_adaptive_ui_rules.json`.
 
-**Website link:** export `master_adaptive_ui_rules.json` (Export Guidelines page) and place it at:
+The live shop does **not** run this. Copy the export to:
 
 `smartshop/public/assets/master_adaptive_ui_rules.json`
 
-The Next.js shop Adaptive Engine does an instant lookup:
-
-`rules[persona][device][mood]` → Final UI Configuration (no ML at browse time).
+Adaptive Engine lookup: `rules[persona][device][mood]` → Final UI Configuration.
 
 ## Prerequisites
 

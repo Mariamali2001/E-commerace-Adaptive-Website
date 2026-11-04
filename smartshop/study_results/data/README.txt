@@ -1,43 +1,62 @@
-Place study data files here.
+DATA FOLDER — study_results/data
+================================================================================
 
-Expected filenames (notebook looks for these first):
+Purpose
+  Holds experiment + survey CSVs for analyze.py / the Results notebook.
 
-  experiment_export.csv   ← Admin CSV from /admin (required for real results)
-  form_survey.csv         ← One Google Form export (4 sections)
-  task_outcomes.csv       ← Optional: participant_id/email, reached_cart, placed_order
-
-Sample / draft files (dry-run):
-
+Files we currently have
   sample_experiment_export.csv
+    Admin-style export of completed SmartShop runs.
+    Includes: demographics, survey persona, TIPI items + Big Five scores/levels,
+    self-reported mood, camera mood (if used), bridged guideline mood,
+    fallback flags, final UI tokens, guidelines_pipeline, timestamps.
+
   sample_form_survey.csv
-  sample_task_outcomes.csv
+    Early Google Form export (Participant ID codes, no Email).
+    Newer exports should include Email (same as SmartShop signup).
+
+  id_map.csv
+    Historical join: participant_id → email.
+    Fill email for old form rows using admin_people.csv.
+    Rows that already have Email on the form do not need a map line.
+
+  admin_people.csv
+    Cheat sheet from the last admin-style export (name, email, user_id).
+    Use this to fill id_map.csv. Replace it when you download a new
+    experiment CSV.
+
+  smartshop_combinations_new_chapter_YYYY-MM-DD.csv
+    Auto-written by analyze.py.
+    Columns: persona, device, device_label, mood, n, in_master_rules, has_participants
+
+Real files (add when ready — preferred over sample_*)
+  experiment_export.csv   ← download from /admin (new chapter)
+  form_survey.csv         ← Google Form → CSV export (62+ rows with Email)
+  id_map.csv              ← fill emails for pre-Email form IDs
+  task_outcomes.csv       ← optional only (participant_id, reached_cart, placed_order)
+                            Not required; omit if unused.
+
+How analyze.py picks files
+  Looks for experiment_export.csv then sample_experiment_export.csv
+  Looks for form_survey.csv then sample_form_survey.csv
 
 Join key
-  participant_id  (form)  ↔  user_id  (admin CSV)
-  Also works if you add the same participant_id column on both sides.
+  1) form Email ↔ admin email (lowercased, trimmed)
+  2) missing form Email filled from id_map.csv via Participant ID
+  3) participant_id on both files (only if you add that column to admin)
 
-Form column naming (after export, rename or use COLUMN_MAP in notebook)
-
-  Section 1:  participant_id
-
-  Section 2 — SUS (1–5):
+Form columns after export
+  analyze.py maps long Google Form headers via SURVEY_COLUMN_MAP.
+  Short names used in scoring:
     sus_1 … sus_10
-
-  Section 3 — UEQ-S (1–7, left→right):
     ueq_1 … ueq_8
-      1 obstructive–supportive
-      2 complicated–easy
-      3 inefficient–efficient
-      4 confusing–clear
-      5 boring–exciting
-      6 not interesting–interesting
-      7 conventional–inventive
-      8 usual–leading edge
-
-  Section 4 — AWEQ (1–5):
     aweq_1 … aweq_7
+    opt_1, opt_2, opt_3
 
-  Optional open text (3):
-    opt_1  What did you like most about the adaptive website?
-    opt_2  What would you improve?
-    opt_3  If you could improve one aspect of the adaptive website, what would it be?
+What this folder is not
+  Not the offline guideline extractor (that is adaptive_ui_app/).
+  Not live Mongo — only CSV snapshots for the Results chapter.
+
+================================================================================
+END
+================================================================================

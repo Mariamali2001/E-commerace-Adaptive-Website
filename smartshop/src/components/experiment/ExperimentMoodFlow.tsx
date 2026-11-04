@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { WebcamCapture } from "@/components/mood/WebcamCapture";
 import { MoodConfirmStep } from "@/components/mood/MoodConfirmStep";
+import { EvaluationFormReminder } from "@/components/experiment/EvaluationFormReminder";
 import { useExperimentStore } from "@/store/experiment";
 import { detectDeviceClient } from "@/lib/guidelines/device";
 import { bridgeMoodToGuideline } from "@/lib/guidelines/moodBridge";
@@ -439,6 +440,7 @@ export function ExperimentMoodFlow() {
               Session saved. Thank you for participating.
             </p>
           )}
+          <EvaluationFormReminder />
 
           <div className="mt-5 flex flex-wrap justify-center gap-2 sm:justify-start">
             <Link

@@ -1,0 +1,2 @@
+n_participants,devices,personas,guideline_moods
+30,"{'desktop': 22, 'mobile': 8}","{'Researcher': 12, 'Deal Hunter': 7, 'Browser': 7, 'Impulsive Buyer': 4}","{'Neutral': 19, 'Happy': 8, 'Relaxed': 2, 'Excited': 1}"

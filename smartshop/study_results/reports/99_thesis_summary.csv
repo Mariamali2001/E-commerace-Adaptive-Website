@@ -1,0 +1,15 @@
+section,metric,value
+Sample,N participants (admin export),30
+Sample,N form responses,62
+Sample,Using sample files,True
+Combinations,Master cells filled,13
+Combinations,Master cells total,67
+Combinations,Coverage %,19.4
+Mood,Self vs model agreement,0.348
+Mood,N with both moods,23
+SUS,Mean (0–100),87.2
+UEQ-S,Pragmatic Quality,2.44
+UEQ-S,Hedonic Quality,1.83
+UEQ-S,Overall,2.14
+AWEQ,Overall mean (1–5),4.45
+Join,Experiment↔survey matched rows,0
