@@ -94,8 +94,8 @@ export default function ProfilePage() {
       return;
     }
 
-    if (newPassword.length < 6) {
-      setMessage({ type: "error", text: "Password must be at least 6 characters" });
+    if (newPassword.length < 8) {
+      setMessage({ type: "error", text: "Password should be at least 8 characters" });
       return;
     }
 
@@ -305,7 +305,7 @@ export default function ProfilePage() {
                   className="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-900"
                   required
                 />
-                <p className="text-sm text-neutral-500 mt-1">Must be at least 6 characters</p>
+                <p className="text-sm text-neutral-500 mt-1">Must be at least 8 characters</p>
               </div>
 
               <div>

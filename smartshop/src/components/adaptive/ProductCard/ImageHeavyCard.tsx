@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Product } from "@/types/product";
 import { Price } from "@/components/shared/Price";
 import { AdaptiveReviewSnippet } from "./AdaptiveReviewSnippet";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 /** Implements product_card ≈ Image Heavy — large photo, minimal text */
 export function ImageHeavyCard({
@@ -21,10 +22,8 @@ export function ImageHeavyCard({
       className="group flex h-full flex-col"
     >
       <div className="relative aspect-[4/5] w-full shrink-0 overflow-hidden rounded-2xl bg-neutral-100">
-        <img
+        <ProductImage
           src={product.images[0]}
-          loading="lazy"
-          decoding="async"
           alt=""
           className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
         />

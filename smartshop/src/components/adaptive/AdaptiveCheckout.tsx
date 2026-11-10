@@ -11,6 +11,7 @@ import {
 } from "./Checkout/useCheckoutOrder";
 import { cn } from "@/lib/utils";
 import { adaptiveFieldClass } from "@/lib/uiAdapter/adaptiveFieldClass";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 type CheckoutMode = "one_page" | "multi_step" | "express";
 
@@ -223,7 +224,7 @@ function OrderSummary({
       <div className="mb-4 max-h-64 space-y-3 overflow-y-auto">
         {list.map((item) => (
           <div key={item.key} className="flex gap-3">
-            <img
+            <ProductImage
               src={item.image}
               alt={item.title}
               className="h-16 w-16 rounded-lg object-cover"

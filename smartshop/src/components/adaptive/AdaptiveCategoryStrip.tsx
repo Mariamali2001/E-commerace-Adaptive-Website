@@ -6,6 +6,7 @@ import { useExperimentStore } from "@/store/experiment";
 import { resolveVariants } from "@/lib/uiAdapter";
 import { useAdaptiveAllowed } from "@/lib/experiment/useAdaptiveAllowed";
 import { cn } from "@/lib/utils";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 type CategoryMode = "visual_grid" | "text_list" | "dropdown" | "mega_menu";
 
@@ -21,8 +22,7 @@ const CATEGORIES = [
   {
     label: "Electronics",
     href: "/shop?category=electronics",
-    image:
-      "https://i.3dmodels.org/uploads/Apple/516_Apple_MacBook_Pro_2021_14_inch_Space_Gray/Apple_MacBook_Pro_2021_14_inch_Space_Gray_1000_0001.jpg",
+    image: "/images/macbook.jpg",
     imageClass: "object-cover",
     subs: [
       { label: "Laptops", href: "/shop?category=electronics&search=macbook" },
@@ -32,8 +32,7 @@ const CATEGORIES = [
   {
     label: "Fashion",
     href: "/shop?category=fashion",
-    image:
-      "https://mediahub.coastfashion.com/bkk18061_beige_xl?qlt=70&w=549&ssz=true&dpr=2",
+    image: "/images/catalog/blazer.jpg",
     imageClass: "object-cover",
     subs: [
       { label: "Blazers", href: "/shop?category=fashion&search=blazer" },
@@ -43,8 +42,7 @@ const CATEGORIES = [
   {
     label: "Accessories",
     href: "/shop?category=accessories",
-    image:
-      "https://xcdn.next.co.uk/common/items/default/default/itemimages/3_4Ratio/product/lge/767397s6.jpg?im=Resize,width=750",
+    image: "/images/catalog/bag.jpg",
     imageClass: "object-cover",
     subs: [
       { label: "Bags", href: "/shop?category=accessories&search=bag" },
@@ -54,8 +52,7 @@ const CATEGORIES = [
   {
     label: "Beauty",
     href: "/shop?category=beauty",
-    image:
-      "https://i0.wp.com/ordinaryeg.com/wp-content/uploads/2023/09/rdn-ascorbyl-glucoside-solution-12pct-30ml-1.webp?fit=800%2C800&ssl=1",
+    image: "/images/catalog/serum.jpg",
     imageClass: "object-cover",
     subs: [
       { label: "Fragrance", href: "/shop?category=beauty&search=chanel" },
@@ -65,8 +62,7 @@ const CATEGORIES = [
   {
     label: "Home",
     href: "/shop?category=home",
-    image:
-      "https://www.ikea.com/ca/en/images/products/blidvaeder-table-lamp-off-white-ceramic-beige__1059592_pe849717_s5.jpg?f=s",
+    image: "/images/catalog/lamp.jpg",
     imageClass: "object-cover",
     subs: [
       { label: "Lighting", href: "/shop?category=home&search=lamp" },
@@ -76,8 +72,7 @@ const CATEGORIES = [
   {
     label: "Caps",
     href: "/shop?category=caps",
-    image:
-      "https://watchesprime.com/wp-content/uploads/2022/08/baseball-nike-cap-black-cotton-hat-size-heritage86.jpg",
+    image: "/images/catalog/cap.jpg",
     imageClass: "object-cover",
     subs: [
       { label: "Nike cap", href: "/shop?category=caps&search=nike" },
@@ -184,7 +179,7 @@ export function AdaptiveCategoryStrip() {
               <div key={c.href} className="overflow-hidden rounded-xl border border-neutral-100">
                 <Link href={c.href} className="block">
                   <div className="aspect-[16/9] overflow-hidden bg-neutral-100">
-                    <img
+                    <ProductImage
                       src={c.image}
                       alt=""
                       className={cn("h-full w-full", c.imageClass)}
@@ -227,7 +222,7 @@ export function AdaptiveCategoryStrip() {
             )}
           >
             <div className="aspect-square overflow-hidden bg-neutral-100">
-              <img
+              <ProductImage
                 src={c.image}
                 alt=""
                 className={cn(

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 type OrderItem = {
   productId: string;
@@ -271,7 +272,7 @@ export default function OrderDetailPage({
             {order.items.map((item, idx) => (
               <div key={idx} className="flex gap-4 pb-4 border-b border-neutral-100 last:border-0">
                 <Link href={`/shop/product/${item.slug}`}>
-                  <img
+                  <ProductImage
                     src={item.image}
                     alt={item.title}
                     className="w-24 h-24 object-cover rounded-lg hover:opacity-80 transition-opacity"

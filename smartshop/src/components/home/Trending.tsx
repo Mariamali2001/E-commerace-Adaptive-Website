@@ -1,6 +1,7 @@
 // components/home/Trending.tsx
 import Link from "next/link";
 import { Product } from "@/types/product";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 type TrendingProps = {
   products: Product[];
@@ -23,7 +24,7 @@ export function Trending({ products }: TrendingProps) {
             className="group block"
           >
             <div className="aspect-[3/4] overflow-hidden rounded-xl bg-neutral-100 mb-3">
-              <img
+              <ProductImage
                 src={product.images[0]}
                 alt={product.title}
                 className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"

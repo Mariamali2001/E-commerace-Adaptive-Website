@@ -18,16 +18,12 @@ type HeaderProps = {
 };
 
 const CAT_IMG = {
-  electronics:
-    "https://i.3dmodels.org/uploads/Apple/516_Apple_MacBook_Pro_2021_14_inch_Space_Gray/Apple_MacBook_Pro_2021_14_inch_Space_Gray_1000_0001.jpg",
-  fashion:
-    "https://mediahub.coastfashion.com/bkk18061_beige_xl?qlt=70&w=549&ssz=true&dpr=2",
-  accessories:
-    "https://xcdn.next.co.uk/common/items/default/default/itemimages/3_4Ratio/product/lge/767397s6.jpg?im=Resize,width=750",
-  beauty:
-    "https://i0.wp.com/ordinaryeg.com/wp-content/uploads/2023/09/rdn-ascorbyl-glucoside-solution-12pct-30ml-1.webp?fit=800%2C800&ssl=1",
-  home: "https://www.ikea.com/ca/en/images/products/blidvaeder-table-lamp-off-white-ceramic-beige__1059592_pe849717_s5.jpg?f=s",
-  caps: "https://watchesprime.com/wp-content/uploads/2022/08/baseball-nike-cap-black-cotton-hat-size-heritage86.jpg",
+  electronics: "/images/macbook.jpg",
+  fashion: "/images/catalog/blazer.jpg",
+  accessories: "/images/catalog/bag.jpg",
+  beauty: "/images/deal-perfume.jpg",
+  home: "/images/catalog/lamp.jpg",
+  caps: "/images/catalog/cap.jpg",
 };
 
 const TOP_BAR_LINKS = [

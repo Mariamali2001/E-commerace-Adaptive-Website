@@ -2,6 +2,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 export function Gallery({
   images,
@@ -35,7 +36,7 @@ export function Gallery({
               i === active ? "border-neutral-900" : "border-neutral-200"
             )}
           >
-            <img
+            <ProductImage
               src={src}
               alt=""
               className="h-full w-full object-contain"
@@ -55,7 +56,7 @@ export function Gallery({
             setOrigin(`${x}% ${y}%`);
           }}
         >
-          <img
+          <ProductImage
             src={images[active]}
             alt=""
             className={cn(

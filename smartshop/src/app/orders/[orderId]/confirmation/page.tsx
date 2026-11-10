@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 type OrderItem = {
   title?: string;
@@ -162,7 +163,7 @@ export default function OrderConfirmationPage({
             <div className="space-y-4">
               {order.items.map((item, idx) => (
                 <div key={idx} className="flex gap-4 pb-4 border-b border-neutral-100 last:border-0">
-                  <img
+                  <ProductImage
                     src={item.image}
                     alt={item.title}
                     className="w-20 h-20 object-cover rounded-lg"

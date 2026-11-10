@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ZodError } from "zod";
 
 import { createSession, getSessionCookieOptions, SESSION_COOKIE_NAME, getClientInfo } from "@/server/session";
 import { createUser } from "@/server/users";
@@ -24,6 +25,11 @@ export async function POST(request: NextRequest) {
     response.cookies.set(SESSION_COOKIE_NAME, sessionId, getSessionCookieOptions(maxAge));
     return response;
   } catch (error) {
+    if (error instanceof ZodError) {
+      const message =
+        error.issues[0]?.message ?? "Please fill in all required fields";
+      return NextResponse.json({ error: message }, { status: 400 });
+    }
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Unable to sign up" },
       { status: 400 }

@@ -1,6 +1,7 @@
 // app/cart/page.tsx
 "use client";
 import { useCart, cartSelectors } from "@/store/cart";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 export default function CartPage() {
   const list = useCart(cartSelectors.list);
@@ -19,7 +20,7 @@ export default function CartPage() {
           <div className="space-y-4">
             {list.map((it) => (
               <div key={it.key} className="flex gap-4 rounded-2xl border p-4">
-                <img
+                <ProductImage
                   src={it.image}
                   alt=""
                   className="h-24 w-24 rounded-xl object-cover"

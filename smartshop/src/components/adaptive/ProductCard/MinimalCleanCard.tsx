@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Product } from "@/types/product";
 import { Price } from "@/components/shared/Price";
 import { AdaptiveReviewSnippet } from "./AdaptiveReviewSnippet";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 /** Implements product_card = Minimal Clean */
 export function MinimalCleanCard({
@@ -21,10 +22,8 @@ export function MinimalCleanCard({
       className="group flex h-full flex-col"
     >
       <div className="aspect-square w-full shrink-0 overflow-hidden rounded-lg bg-neutral-100">
-        <img
+        <ProductImage
           src={product.images[0]}
-          loading="lazy"
-          decoding="async"
           alt=""
           className="h-full w-full object-cover transition group-hover:opacity-90"
         />

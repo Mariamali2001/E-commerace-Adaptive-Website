@@ -55,7 +55,18 @@ export async function POST(request: NextRequest) {
     }
 
     if (!shippingAddress) {
-      return NextResponse.json({ error: "Shipping address is required" }, { status: 400 });
+      return NextResponse.json({ error: "Please fill in all required fields" }, { status: 400 });
+    }
+
+    const requiredAddress = ["name", "street", "city", "state", "zip", "country"] as const;
+    const missingAddress = requiredAddress.some(
+      (key) => !String(shippingAddress[key] ?? "").trim()
+    );
+    if (missingAddress) {
+      return NextResponse.json(
+        { error: "Please fill in all required fields" },
+        { status: 400 }
+      );
     }
 
     await connectDB();
@@ -99,8 +110,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Order creation error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to create order" },
-      { status: 500 }
+      { error: "Please fill in all required fields" },
+      { status: 400 }
     );
   }
 }

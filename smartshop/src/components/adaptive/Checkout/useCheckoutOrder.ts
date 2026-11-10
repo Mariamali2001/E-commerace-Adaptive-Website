@@ -56,6 +56,19 @@ export function useCheckoutOrder() {
 
   const placeOrder = async (e?: FormEvent) => {
     e?.preventDefault();
+
+    const missing = (
+      ["fullName", "email", "phone", "street", "city", "state", "zip"] as const
+    ).some((key) => !shippingAddress[key].trim());
+    if (missing) {
+      setError("Please fill in all required fields");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(shippingAddress.email.trim())) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
 

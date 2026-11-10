@@ -6,6 +6,7 @@ import type { Product } from "@/types/product";
 import { Price } from "@/components/shared/Price";
 import { useWishlist, wishlistSelectors } from "@/store/wishlist";
 import { AdaptiveReviewSnippet } from "./AdaptiveReviewSnippet";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 /** Implements product_card = Info Rich */
 export function InfoRichCard({
@@ -29,10 +30,8 @@ export function InfoRichCard({
     <div className="group relative flex h-full flex-col rounded-xl border border-neutral-100 bg-white p-2">
       <Link href={`/shop/product/${product.slug}`} className="block shrink-0">
         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-neutral-100">
-          <img
+          <ProductImage
             src={product.images[0]}
-            loading="lazy"
-            decoding="async"
             alt=""
             className="h-full w-full object-cover transition group-hover:scale-105"
           />

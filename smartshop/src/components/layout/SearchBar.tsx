@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useExperimentStore } from "@/store/experiment";
 import { resolveVariants } from "@/lib/uiAdapter";
 import { useAdaptiveAllowed } from "@/lib/experiment/useAdaptiveAllowed";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 type SearchResult = {
   id: string;
@@ -183,7 +184,7 @@ export function SearchBar() {
                       className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-neutral-50"
                     >
                       <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100">
-                        <img
+                        <ProductImage
                           src={result.image}
                           alt={result.title}
                           className="h-full w-full object-cover"

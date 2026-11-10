@@ -27,6 +27,15 @@ export function SignupForm() {
       setTimeout(() => setAvatarState("idle"), 1000);
       return;
     }
+    if (password.length < 8) {
+      setStatus({
+        type: "error",
+        message: "Password should be at least 8 characters",
+      });
+      setAvatarState("error");
+      setTimeout(() => setAvatarState("idle"), 1000);
+      return;
+    }
     setSubmitting(true);
     setStatus({ type: "idle" });
     setAvatarState("idle");
@@ -140,6 +149,7 @@ export function SignupForm() {
           onChange={(event) => setPassword(event.target.value)}
           onFocus={() => setAvatarState("password")}
           onBlur={() => setAvatarState("idle")}
+          minLength={8}
           required
         />
       </label>

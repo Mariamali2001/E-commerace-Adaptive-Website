@@ -6,6 +6,7 @@ import { Product } from "@/types/product";
 import { Price } from "../shared/Price";
 import { RatingStars } from "../shared/RatingStars";
 import { useWishlist, wishlistSelectors } from "@/store/wishlist";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 export function ProductCard({ product }: { product: Product }) {
   const wishlist = useWishlist(wishlistSelectors.list);
@@ -33,11 +34,9 @@ export function ProductCard({ product }: { product: Product }) {
     <div className="group block relative">
       <Link href={`/shop/product/${product.slug}`}>
         <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-neutral-100">
-          <img
+          <ProductImage
             src={product.images[0]}
             alt=""
-            loading="lazy"
-            decoding="async"
             className="h-full w-full object-cover transition group-hover:scale-105"
           />
         </div>

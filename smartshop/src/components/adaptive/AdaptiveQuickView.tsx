@@ -9,6 +9,7 @@ import { Price } from "@/components/shared/Price";
 import { AdaptiveUrgencyCue } from "@/components/adaptive/AdaptiveUrgencyCue";
 import { useCart } from "@/store/cart";
 import { cn } from "@/lib/utils";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 export type QuickViewMode =
   | "none"
@@ -65,7 +66,7 @@ function QuickViewBody({
   return (
     <div className="flex h-full flex-col">
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-100 sm:aspect-square">
-        <img
+        <ProductImage
           src={product.images[0]}
           alt=""
           className="h-full w-full object-cover"

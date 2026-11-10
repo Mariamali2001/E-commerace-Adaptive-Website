@@ -26,7 +26,9 @@ export const reviewInputSchema = z.object({
 export const signupSchema = z.object({
   email: z.string().email(),
   name: z.string().min(1),
-  password: z.string().min(6),
+  password: z
+    .string()
+    .min(8, "Password should be at least 8 characters"),
   age: z.coerce.number().int().min(13).max(120),
   gender: z.enum(["Female", "Male"]),
 });
@@ -43,7 +45,9 @@ export const passwordResetRequestSchema = z.object({
 
 export const passwordResetVerifySchema = z.object({
   token: z.string().min(1),
-  newPassword: z.string().min(6),
+  newPassword: z
+    .string()
+    .min(8, "Password should be at least 8 characters"),
 });
 
 export const cartAddSchema = z.object({

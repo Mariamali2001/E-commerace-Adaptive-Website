@@ -2,6 +2,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 type MenuItem = {
   label: string;
@@ -46,7 +47,7 @@ export function MegaMenuTrigger({ label, columns }: MegaMenuProps) {
                   {column.featured ? (
                     <Link href={column.featured.href} className="group block">
                       <div className="relative aspect-[3/4] overflow-hidden rounded-lg mb-2">
-                        <img
+                        <ProductImage
                           src={column.featured.image}
                           alt={column.featured.title}
                           className="h-full w-full object-cover transition group-hover:scale-105"
@@ -71,7 +72,7 @@ export function MegaMenuTrigger({ label, columns }: MegaMenuProps) {
                             >
                               {item.image && (
                                 <div className="h-10 w-10 rounded-full overflow-hidden flex-shrink-0">
-                                  <img
+                                  <ProductImage
                                     src={item.image}
                                     alt={item.label}
                                     className="h-full w-full object-cover transition group-hover:scale-110"
