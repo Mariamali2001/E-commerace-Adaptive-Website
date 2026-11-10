@@ -22,7 +22,8 @@ const CATEGORIES = [
   {
     label: "Electronics",
     href: "/shop?category=electronics",
-    image: "/images/macbook.jpg",
+    image:
+      "https://i.3dmodels.org/uploads/Apple/516_Apple_MacBook_Pro_2021_14_inch_Space_Gray/Apple_MacBook_Pro_2021_14_inch_Space_Gray_1000_0001.jpg",
     imageClass: "object-cover",
     subs: [
       { label: "Laptops", href: "/shop?category=electronics&search=macbook" },
@@ -32,7 +33,8 @@ const CATEGORIES = [
   {
     label: "Fashion",
     href: "/shop?category=fashion",
-    image: "/images/catalog/blazer.jpg",
+    image:
+      "https://mediahub.coastfashion.com/bkk18061_beige_xl?qlt=70&w=549&ssz=true&dpr=2",
     imageClass: "object-cover",
     subs: [
       { label: "Blazers", href: "/shop?category=fashion&search=blazer" },
@@ -42,7 +44,8 @@ const CATEGORIES = [
   {
     label: "Accessories",
     href: "/shop?category=accessories",
-    image: "/images/catalog/bag.jpg",
+    image:
+      "https://xcdn.next.co.uk/common/items/default/default/itemimages/3_4Ratio/product/lge/767397s6.jpg?im=Resize,width=750",
     imageClass: "object-cover",
     subs: [
       { label: "Bags", href: "/shop?category=accessories&search=bag" },
@@ -52,7 +55,8 @@ const CATEGORIES = [
   {
     label: "Beauty",
     href: "/shop?category=beauty",
-    image: "/images/catalog/serum.jpg",
+    image:
+      "https://i0.wp.com/ordinaryeg.com/wp-content/uploads/2023/09/rdn-ascorbyl-glucoside-solution-12pct-30ml-1.webp?fit=800%2C800&ssl=1",
     imageClass: "object-cover",
     subs: [
       { label: "Fragrance", href: "/shop?category=beauty&search=chanel" },
@@ -62,7 +66,8 @@ const CATEGORIES = [
   {
     label: "Home",
     href: "/shop?category=home",
-    image: "/images/catalog/lamp.jpg",
+    image:
+      "https://www.ikea.com/ca/en/images/products/blidvaeder-table-lamp-off-white-ceramic-beige__1059592_pe849717_s5.jpg?f=s",
     imageClass: "object-cover",
     subs: [
       { label: "Lighting", href: "/shop?category=home&search=lamp" },
@@ -72,7 +77,8 @@ const CATEGORIES = [
   {
     label: "Caps",
     href: "/shop?category=caps",
-    image: "/images/catalog/cap.jpg",
+    image:
+      "https://watchesprime.com/wp-content/uploads/2022/08/baseball-nike-cap-black-cotton-hat-size-heritage86.jpg",
     imageClass: "object-cover",
     subs: [
       { label: "Nike cap", href: "/shop?category=caps&search=nike" },

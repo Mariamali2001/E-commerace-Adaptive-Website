@@ -61,10 +61,11 @@ if (!global.__smartshopProductSeed) {
  */
 async function seedProducts() {
   if (seedCache.done && seedCache.version === CATALOG_VERSION) return;
-  if (seedCache.promise) {
+  if (seedCache.promise && seedCache.version === CATALOG_VERSION) {
     await seedCache.promise;
     return;
   }
+  seedCache.promise = null;
 
   seedCache.promise = (async () => {
     await connectDB();
