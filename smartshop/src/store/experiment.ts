@@ -11,6 +11,7 @@ import type { SurveyPersona } from "@/lib/experiment/questions";
 import type { ContextObject } from "@/lib/context/types";
 import type { FinalUIConfiguration } from "@/lib/adaptiveEngine/types";
 import type { GeneratedComponentBundle } from "@/llm/LLMTypes";
+import type { ExperimentConsent } from "@/lib/experiment/consent";
 
 export type ExperimentPhase =
   | "idle"
@@ -43,6 +44,8 @@ type ExperimentState = {
   generatedBundle: GeneratedComponentBundle | null;
   generatedUiStatus: GeneratedUiStatus;
   generatedUiError: string | null;
+  consent: ExperimentConsent | null;
+  setConsent: (consent: ExperimentConsent) => void;
   startBrowse: (durationMs?: number) => void;
   setDevice: (device: "desktop" | "mobile") => void;
   setAnswers: (answers: QuestionnaireAnswers) => void;
@@ -94,6 +97,8 @@ export const useExperimentStore = create<ExperimentState>()(
       uiConfig: null,
       context: null,
       ...emptyGenerated,
+      consent: null,
+      setConsent: (consent) => set({ consent }),
       startBrowse: (durationMs = BROWSE_MS) =>
         set({
           phase: "browse",
@@ -151,6 +156,7 @@ export const useExperimentStore = create<ExperimentState>()(
           traitScores: {},
           selfReportedMood: null,
           answers: {},
+          consent: null,
           detectedMood: null,
           detectedConfidence: null,
           guidelines: null,
@@ -185,6 +191,7 @@ export const useExperimentStore = create<ExperimentState>()(
         traitScores: state.traitScores,
         selfReportedMood: state.selfReportedMood,
         answers: state.answers,
+        consent: state.consent,
         detectedMood: state.detectedMood,
         detectedConfidence: state.detectedConfidence,
         guidelines: state.guidelines,

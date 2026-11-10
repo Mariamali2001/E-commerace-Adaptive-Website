@@ -32,6 +32,10 @@ export type SaveExperimentInput = {
   /** Optional demographics (fills gaps + updates User) */
   age?: number | null;
   gender?: string | null;
+  consentName?: string | null;
+  consentWebcamFacial?: boolean | null;
+  consentPublicationImages?: boolean | null;
+  consentedAt?: string | Date | null;
 };
 
 export async function saveExperimentResult(input: SaveExperimentInput) {
@@ -99,6 +103,18 @@ export async function saveExperimentResult(input: SaveExperimentInput) {
       guidelineMood: input.guidelineMood ?? null,
       uiElements,
       guidelinesPipeline: input.guidelinesPipeline ?? [],
+      consentName: input.consentName ?? null,
+      consentWebcamFacial:
+        typeof input.consentWebcamFacial === "boolean"
+          ? input.consentWebcamFacial
+          : null,
+      consentPublicationImages:
+        typeof input.consentPublicationImages === "boolean"
+          ? input.consentPublicationImages
+          : null,
+      consentedAt: input.consentedAt
+        ? new Date(input.consentedAt)
+        : null,
       completedAt: new Date(),
     },
     { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -214,6 +230,10 @@ type ExperimentRowSource = {
   createdAt?: Date | string | null;
   completedAt?: Date | string | null;
   updatedAt?: Date | string | null;
+  consentName?: string | null;
+  consentWebcamFacial?: boolean | null;
+  consentPublicationImages?: boolean | null;
+  consentedAt?: Date | string | null;
 };
 
 export function experimentResultsToRows(results: ExperimentRowSource[]) {
@@ -288,6 +308,22 @@ export function experimentResultsToRows(results: ExperimentRowSource[]) {
       name: r.name,
       age: r.age ?? "",
       gender: r.gender ?? "",
+      consent_name: r.consentName ?? "",
+      consent_webcam_facial:
+        typeof r.consentWebcamFacial === "boolean"
+          ? r.consentWebcamFacial
+            ? "yes"
+            : "no"
+          : "",
+      consent_publication_images:
+        typeof r.consentPublicationImages === "boolean"
+          ? r.consentPublicationImages
+            ? "yes"
+            : "no"
+          : "",
+      consented_at: r.consentedAt
+        ? new Date(r.consentedAt).toISOString()
+        : "",
       device: r.device ?? "",
       study_chapter: isNewChapterResult(r) ? "new" : "legacy",
       survey_persona: r.surveyPersona ?? "",

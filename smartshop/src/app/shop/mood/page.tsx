@@ -15,8 +15,8 @@ export default function MoodCameraPage() {
           Quick mood check
         </h1>
         <p className="mt-2 text-neutral-600">
-          Allow camera access for a short scan, or pick how you feel using the
-          buttons below. You can skip this step anytime.
+          If you allowed webcam on the consent form, you can scan your mood.
+          Otherwise pick how you feel using the buttons below.
         </p>
 
         <div className="mt-8 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">

@@ -42,6 +42,10 @@ export interface IExperimentResult extends Document {
   /** Snapshot of resolved UI tokens (key → value); filled more after adaptation */
   uiElements?: Record<string, string>;
   guidelinesPipeline?: string[];
+  consentName?: string | null;
+  consentWebcamFacial?: boolean | null;
+  consentPublicationImages?: boolean | null;
+  consentedAt?: Date | null;
   completedAt?: Date;
 }
 
@@ -69,6 +73,10 @@ const ExperimentResultSchema = new Schema<IExperimentResult>(
     guidelineMood: { type: String, default: null },
     uiElements: { type: Schema.Types.Mixed, default: {} },
     guidelinesPipeline: { type: [String], default: [] },
+    consentName: { type: String, default: null },
+    consentWebcamFacial: { type: Boolean, default: null },
+    consentPublicationImages: { type: Boolean, default: null },
+    consentedAt: { type: Date, default: null },
     completedAt: { type: Date, default: Date.now },
   },
   { timestamps: true }

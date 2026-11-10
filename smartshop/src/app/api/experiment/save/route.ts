@@ -55,6 +55,17 @@ export async function POST(request: Request) {
       guidelinesPipeline: body.guidelinesPipeline ?? [],
       age: Number.isFinite(ageNum) ? ageNum : null,
       gender,
+      consentName:
+        typeof body.consentName === "string" ? body.consentName : null,
+      consentWebcamFacial:
+        typeof body.consentWebcamFacial === "boolean"
+          ? body.consentWebcamFacial
+          : null,
+      consentPublicationImages:
+        typeof body.consentPublicationImages === "boolean"
+          ? body.consentPublicationImages
+          : null,
+      consentedAt: body.consentedAt ?? null,
     });
 
     return NextResponse.json({

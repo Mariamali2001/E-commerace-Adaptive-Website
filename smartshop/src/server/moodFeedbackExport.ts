@@ -16,6 +16,7 @@ export type MoodFeedbackExportRow = {
   confidence: string;
   mood_backend: string;
   has_image: string;
+  publication_allowed: string;
   filename: string;
   created_at: string;
 };
@@ -44,7 +45,7 @@ export async function listMoodFeedbackForExport() {
   return MoodFeedbackModel.find({})
     .sort({ createdAt: 1 })
     .select(
-      "userId email predictedRaw predictedGuideline confirmedGuideline wasCorrect confidence moodBackend mimeType imageBase64 createdAt"
+      "userId email predictedRaw predictedGuideline confirmedGuideline wasCorrect confidence moodBackend mimeType imageBase64 publicationAllowed createdAt"
     )
     .lean();
 }
@@ -75,6 +76,12 @@ export function moodFeedbackToCsvRows(
           : "",
       mood_backend: r.moodBackend ?? "",
       has_image: buf ? "yes" : "no",
+      publication_allowed:
+        r.publicationAllowed === true
+          ? "yes"
+          : r.publicationAllowed === false
+            ? "no"
+            : "",
       filename,
       created_at: r.createdAt ? new Date(r.createdAt).toISOString() : "",
     };

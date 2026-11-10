@@ -9,6 +9,8 @@ import {
 } from "@/lib/experiment/questions";
 import { detectDeviceClient } from "@/lib/guidelines/device";
 import { useExperimentStore } from "@/store/experiment";
+import { ExperimentConsentForm } from "@/components/experiment/ExperimentConsentForm";
+import type { ExperimentConsent } from "@/lib/experiment/consent";
 
 const AUTO_ADVANCE_MS = 320;
 
@@ -52,10 +54,13 @@ export function ExperimentQuestionnaire() {
   const setProfileFromQuestionnaire = useExperimentStore(
     (s) => s.setProfileFromQuestionnaire
   );
+  const setConsent = useExperimentStore((s) => s.setConsent);
+  const storedConsent = useExperimentStore((s) => s.consent);
   const savedAnswers = useExperimentStore((s) => s.answers);
 
-  const [consented, setConsented] = useState(false);
-  const [consentChecked, setConsentChecked] = useState(false);
+  const [consented, setConsented] = useState(() =>
+    Boolean(storedConsent?.agreed)
+  );
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>(savedAnswers);
   const [entering, setEntering] = useState(true);
@@ -120,67 +125,13 @@ export function ExperimentQuestionnaire() {
 
   if (!consented) {
     return (
-      <div className="mx-auto max-w-xl">
-        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8">
-          <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-            Before you continue
-          </p>
-          <h1 className="mt-2 text-2xl font-bold text-neutral-900">
-            Consent to participate
-          </h1>
-          <div className="mt-4 space-y-3 text-sm leading-relaxed text-neutral-600">
-            <p>
-              You are invited to take part in a short shopping study. Your
-              answers help us understand shopping preferences and personalize
-              the store experience.
-            </p>
-            <ul className="list-disc space-y-2 pl-5">
-              <li>
-                You will answer a few preference questions, then optionally use
-                your camera for a brief mood check.
-              </li>
-              <li>
-                Responses and session data may be stored for research analysis.
-                Camera frames are processed for mood detection and are not kept
-                as a photo gallery.
-              </li>
-              <li>
-                Participation is voluntary. You can stop at any time and continue
-                shopping without the study flow.
-              </li>
-            </ul>
-          </div>
-
-          <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
-            <input
-              type="checkbox"
-              checked={consentChecked}
-              onChange={(e) => setConsentChecked(e.target.checked)}
-              className="mt-1 h-4 w-4 shrink-0 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
-            />
-            <span className="text-sm text-neutral-800">
-              I understand the information above and agree to participate.
-            </span>
-          </label>
-
-          <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <button
-              type="button"
-              onClick={() => router.push("/shop")}
-              className="rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm font-medium text-neutral-800"
-            >
-              No thanks — just shop
-            </button>
-            <Button
-              type="button"
-              disabled={!consentChecked}
-              onClick={() => setConsented(true)}
-            >
-              I agree — continue
-            </Button>
-          </div>
-        </div>
-      </div>
+      <ExperimentConsentForm
+        onDecline={() => router.push("/shop")}
+        onAgree={(consent: ExperimentConsent) => {
+          setConsent(consent);
+          setConsented(true);
+        }}
+      />
     );
   }
 

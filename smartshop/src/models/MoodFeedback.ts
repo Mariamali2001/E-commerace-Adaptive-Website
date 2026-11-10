@@ -19,6 +19,8 @@ export interface IMoodFeedback extends Document {
   moodBackend?: "efficientnet" | "vit" | null;
   /** JPEG as base64 (no data: prefix) */
   imageBase64: string;
+  /** Thesis/figure publication allowed (from consent form) */
+  publicationAllowed?: boolean | null;
   mimeType?: string;
   createdAt?: Date;
 }
@@ -34,6 +36,7 @@ const MoodFeedbackSchema = new Schema<IMoodFeedback>(
     confidence: { type: Number, default: null },
     moodBackend: { type: String, default: null, index: true },
     imageBase64: { type: String, required: true },
+    publicationAllowed: { type: Boolean, default: null },
     mimeType: { type: String, default: "image/jpeg" },
   },
   { timestamps: { createdAt: true, updatedAt: false } }

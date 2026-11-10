@@ -61,6 +61,10 @@ export async function POST(request: Request) {
           ? body.moodBackend
           : null,
       imageBase64: bare,
+      publicationAllowed:
+        typeof body.publicationAllowed === "boolean"
+          ? body.publicationAllowed
+          : null,
       mimeType: "image/jpeg",
     });
 

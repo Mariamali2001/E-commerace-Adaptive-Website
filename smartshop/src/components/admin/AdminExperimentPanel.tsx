@@ -120,6 +120,8 @@ export function AdminExperimentPanel() {
     "study_chapter",
     "age",
     "gender",
+    "consent_webcam_facial",
+    "consent_publication_images",
     "survey_persona",
     "device",
     "self_reported_mood",

@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { WebcamCapture } from "@/components/mood/WebcamCapture";
 import { MoodConfirmStep } from "@/components/mood/MoodConfirmStep";
 import { EvaluationFormReminder } from "@/components/experiment/EvaluationFormReminder";
+import { isWebcamConsentAllowed } from "@/lib/experiment/consent";
 import { useExperimentStore } from "@/store/experiment";
 import { detectDeviceClient } from "@/lib/guidelines/device";
 import { bridgeMoodToGuideline } from "@/lib/guidelines/moodBridge";
@@ -66,6 +67,8 @@ export function ExperimentMoodFlow() {
   const guidelines = useExperimentStore((s) => s.guidelines);
   const uiConfig = useExperimentStore((s) => s.uiConfig);
   const detectedMood = useExperimentStore((s) => s.detectedMood);
+  const consent = useExperimentStore((s) => s.consent);
+  const webcamAllowed = isWebcamConsentAllowed(consent);
 
   const [resolving, setResolving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -84,18 +87,22 @@ export function ExperimentMoodFlow() {
       moodBackend?: "efficientnet" | "vit" | null;
     }) => {
       if (!payload.imageBase64) return;
+      if (consent?.webcamFacialAllowed === false) return;
       try {
         await fetch("/api/mood/feedback", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify(payload),
+          body: JSON.stringify({
+            ...payload,
+            publicationAllowed: consent?.publicationImagesAllowed ?? null,
+          }),
         });
       } catch {
         /* non-blocking — adaptation still proceeds */
       }
     },
-    []
+    [consent?.publicationImagesAllowed, consent?.webcamFacialAllowed]
   );
 
   const resolve = useCallback(
@@ -265,6 +272,14 @@ export function ExperimentMoodFlow() {
             guidelineMood: configuration.mood,
             uiElements,
             guidelinesPipeline: configuration.pipeline,
+            consentName: consent?.name ?? null,
+            consentWebcamFacial: consent
+              ? consent.webcamFacialAllowed
+              : null,
+            consentPublicationImages: consent
+              ? consent.publicationImagesAllowed
+              : null,
+            consentedAt: consent?.consentedAt ?? null,
           }),
         });
         const savePayload = await saveRes.json();
@@ -296,6 +311,7 @@ export function ExperimentMoodFlow() {
       surveyPersona,
       traitScores,
       traits,
+      consent,
     ]
   );
 
@@ -334,18 +350,27 @@ export function ExperimentMoodFlow() {
 
   return (
     <div className="space-y-6">
-      {inExperiment && (
+      {inExperiment && webcamAllowed && (
         <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
           Step: look at the camera and detect your mood. We will ask you to
           confirm it before personalizing the shop. Use the buttons below only
           if the camera is unavailable.
         </div>
       )}
+      {inExperiment && !webcamAllowed && (
+        <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
+          You chose not to share webcam facial data. Pick how you feel now —
+          the shop will still be personalized from that choice, plus your
+          questionnaire.
+        </div>
+      )}
 
-      <WebcamCapture
-        detectionLocked={Boolean(pending) || resolving}
-        onMoodDetected={onCameraMood}
-      />
+      {webcamAllowed && (
+        <WebcamCapture
+          detectionLocked={Boolean(pending) || resolving}
+          onMoodDetected={onCameraMood}
+        />
+      )}
 
       {inExperiment && pending && (
         <MoodConfirmStep
@@ -385,11 +410,12 @@ export function ExperimentMoodFlow() {
       {inExperiment && !pending && !guidelines && (
         <div className="rounded-2xl border border-neutral-200 bg-white p-4">
           <p className="text-sm font-semibold text-neutral-900">
-            Camera not working?
+            {webcamAllowed ? "Camera not working?" : "How do you feel right now?"}
           </p>
           <p className="mt-1 text-xs text-neutral-600">
-            Choose how you feel right now — this is only a backup if the camera
-            cannot run. Your choice is used directly (no model prediction).
+            {webcamAllowed
+              ? "Choose how you feel right now — this is only a backup if the camera cannot run. Your choice is used directly (no model prediction)."
+              : "Select a mood. This is used for personalization (no camera, no face recording)."}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {GUIDELINE_MOODS.map((mood) => (
