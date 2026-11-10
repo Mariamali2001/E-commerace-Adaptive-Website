@@ -2,6 +2,7 @@ import React from "react";
 import "./globals.css";
 import { Footer } from "@/components/layout/Footer";
 import { ExperimentBrowseBannerHost } from "@/components/experiment/ExperimentBrowseBannerHost";
+import { EvaluationSurveyButtonHost } from "@/components/experiment/EvaluationSurveyButtonHost";
 import { AdaptiveThemeProvider } from "@/components/adaptive/AdaptiveThemeProvider";
 import { AdaptationBanner } from "@/components/adaptive/AdaptationBanner";
 import { AdaptiveUrgencyBanner } from "@/components/adaptive/AdaptiveUrgencyBanner";
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <main className="flex-1">{children}</main>
             <Footer />
             <ExperimentBrowseBannerHost />
+            <EvaluationSurveyButtonHost />
           </AdaptiveThemeProvider>
         </AdaptiveAuthProvider>
       </body>
