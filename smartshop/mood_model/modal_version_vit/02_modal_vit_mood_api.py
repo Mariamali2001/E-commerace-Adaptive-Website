@@ -499,7 +499,7 @@ async def predict(request: Request):
 
         model = ViTMoodModel()
 
-        result = model.predict_image.remote(
+        result =await model.predict_image.remote.aio(
             image_bytes
         )
 
