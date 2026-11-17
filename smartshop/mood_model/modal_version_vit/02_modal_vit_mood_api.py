@@ -462,7 +462,6 @@ from fastapi import Request
 
 @app.function(
     image=image,
-    gpu="L4",
     volumes={
         "/data": volume,
     },
