@@ -502,10 +502,7 @@ async def predict(request: Request):
     try:
 
         model = ViTMoodModel()
-
-        result =await model.predict_image.remote.aio(
-            image_bytes
-        )
+        result = await model.predict_image.remote.aio(image_bytes)
 
         print(
             "Prediction completed successfully."
