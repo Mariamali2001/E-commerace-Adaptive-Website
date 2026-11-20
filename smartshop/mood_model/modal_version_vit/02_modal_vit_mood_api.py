@@ -74,6 +74,8 @@ app = modal.App(APP_NAME)
         "/data": volume,
     },
     timeout=600,
+    min_containers=1,  # keep GPU + model loaded (phone Detect must not cold-start)
+    scaledown_window=1200,
 )
 class ViTMoodModel:
 
@@ -462,11 +464,9 @@ from fastapi import Request
 
 @app.function(
     image=image,
-    gpu="L4",
-    volumes={
-        "/data": volume,
-    },
     timeout=600,
+    min_containers=1,  # keep the public predict URL warm (no GPU on this layer)
+    scaledown_window=1200,
 )
 @modal.fastapi_endpoint(method="POST")
 async def predict(request: Request):
