@@ -464,6 +464,10 @@ from fastapi import Request
 
 @app.function(
     image=image,
+    volumes={
+        "/data": volume,
+    },
+
     timeout=600,
     min_containers=1,  # keep the public predict URL warm (no GPU on this layer)
     scaledown_window=1200,
@@ -499,7 +503,7 @@ async def predict(request: Request):
 
         model = ViTMoodModel()
 
-        result = model.predict_image.remote(
+        result =await model.predict_image.remote.aio(
             image_bytes
         )
 
