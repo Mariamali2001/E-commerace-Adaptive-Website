@@ -1,0 +1,86 @@
+WHAT THE RESULTS CODE DOES
+Folder: smartshop/study_results/
+Command: python3 analyze.py   (run from this folder)
+
+This is analysis of saved CSVs. It does not call the live shop, Modal, or Mongo.
+
+------------------------------------------------------------------------------
+INPUTS (data/)
+------------------------------------------------------------------------------
+Shop: newest smartshop_participants_new_chapter_*.csv
+      (or experiment_export.csv if you add that name)
+Tally: newest *Post*Experiment*Submissions*.csv
+      (114-row export from 20 Nov 2026)
+Optional: id_map.csv  (Participant ID → email for early Tally rows)
+
+------------------------------------------------------------------------------
+STEPS IN analyze.py
+------------------------------------------------------------------------------
+1. Read the admin export (robust CSV reader because ui_elements_json
+   can break quoting). Count N, device, persona, guideline mood.
+
+2. Mood
+   - Map FER labels (happy, angry, …) to guideline names.
+   - Self vs model agreement (only rows with both).
+   - Camera vs manual counts.
+   - Camera “mood_was_correct” Yes rate (user confirmed the bridged mood).
+
+3. Fallbacks
+   - Share of rows that used mood / device / persona / global fill.
+
+4. Combinations
+   - Count people in each persona × device × mood cell.
+   - Mark whether that cell exists in master_adaptive_ui_rules.json.
+   - Coverage = filled master cells / 67.
+
+5. Tally scoring
+   - Drop later-duplicate Respondent/email/Participant ID rows (keep last).
+   - SUS: standard 0–100 (odd items −1, even 5−item, ×2.5).
+     Likert text such as “5 (Strongly Agree)” is parsed to 5.
+   - UEQ-S: 8 items recoded 1–7 → −3…+3; PQ = first 4, HQ = last 4.
+   - AWEQ: mean of 7 items on 1–5.
+
+6. Join
+   - Normalise email (trim, lower).
+   - Fill missing Tally emails from id_map.csv.
+   - Inner join shop ↔ Tally on email.
+   - Then group SUS / UEQ / AWEQ-5 by persona, device, mood confirm, fallback.
+
+7. Guidelines table (methodology)
+   - Flatten the master JSON into one row per filled cell.
+   - Short labels (drop the long parentheticals).
+   - Device-specific tokens (mobile_* vs desktop_*).
+   - Written to guidelines/GUIDELINES_LOOKUP_TABLE.csv and .txt
+
+8. Inferential tests (reports/10_inferential_tests.csv)
+   - SUS vs 68: one-sample t and Wilcoxon.
+   - SUS mobile vs desktop: Mann-Whitney on joined rows.
+   - Camera Yes vs 50%: binomial test.
+   - AWEQ-5 Yes vs No: only if both groups have n≥5; else note underpowered.
+   Needs scipy (see requirements.txt).
+
+9. Write RESULTS_INSIGHTS.txt (this folder) from the same numbers.
+
+------------------------------------------------------------------------------
+OUTPUTS
+------------------------------------------------------------------------------
+reports/00–10_*.csv and reports/figures/*.png
+reports/99_thesis_summary.csv
+guidelines/GUIDELINES_LOOKUP_TABLE.csv
+guidelines/GUIDELINES_LOOKUP_TABLE.txt
+RESULTS_INSIGHTS.txt
+
+------------------------------------------------------------------------------
+WHAT THE CODE DOES NOT DO
+------------------------------------------------------------------------------
+Does not retrain the mood model.
+Does not invent Participant IDs.
+Does not drop unpaired Tally rows from overall SUS/UEQ/AWEQ.
+Does not treat p < 0.05 as proof of the Adaptive Engine.
+
+------------------------------------------------------------------------------
+AFTER TUESDAY
+------------------------------------------------------------------------------
+Put the new admin CSV and Tally CSV in data/, then:
+  python3 analyze.py
+END

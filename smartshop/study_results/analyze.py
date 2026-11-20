@@ -115,6 +115,63 @@ def pick_file(*candidates: str) -> Path | None:
     return None
 
 
+def pick_latest_glob(*patterns: str) -> Path | None:
+    found: list[Path] = []
+    for pat in patterns:
+        found.extend(p for p in DATA.glob(pat) if p.is_file() and p.stat().st_size > 0)
+    if not found:
+        return None
+    return max(found, key=lambda p: p.stat().st_mtime)
+
+
+def pick_experiment_csv() -> Path | None:
+    exact = pick_file("experiment_export.csv")
+    if exact:
+        return exact
+    dated = pick_latest_glob("smartshop_participants_new_chapter_*.csv")
+    if dated:
+        return dated
+    return pick_file("sample_experiment_export.csv")
+
+
+def pick_survey_csv() -> Path | None:
+    # Dated Tally export wins over a stale form_survey.csv
+    tally = pick_latest_glob(
+        "*Post*Experiment*Submissions*.csv",
+        "*Post_Experiment_Submissions*.csv",
+    )
+    if tally:
+        return tally
+    return pick_file("form_survey.csv", "sample_form_survey.csv")
+
+
+def dedupe_survey(survey: pd.DataFrame) -> pd.DataFrame:
+    """Keep the later Tally/Google Form row per person (email, else Participant ID)."""
+    df = survey.copy()
+    time_col = next(
+        (c for c in df.columns if c.strip().lower() in {"submitted at", "submitted_at", "timestamp"}),
+        None,
+    )
+    if time_col:
+        df["_t"] = pd.to_datetime(df[time_col], errors="coerce")
+        df = df.sort_values("_t", na_position="first")
+    before = len(df)
+    if "email" in df.columns:
+        df["_e"] = df["email"].map(norm_email)
+        with_email = df[df["_e"] != ""].drop_duplicates("_e", keep="last")
+        without = df[df["_e"] == ""]
+        if "participant_id" in without.columns:
+            without = without.drop_duplicates("participant_id", keep="last")
+        df = pd.concat([with_email, without], ignore_index=True)
+        df = df.drop(columns=["_e"], errors="ignore")
+    elif "participant_id" in df.columns:
+        df = df.drop_duplicates("participant_id", keep="last")
+    dropped = before - len(df)
+    if dropped:
+        print(f"  survey dedupe: kept later of {dropped} duplicate submission(s) → n={len(df)}")
+    return df.drop(columns=["_t"], errors="ignore")
+
+
 def save_table(df: pd.DataFrame, name: str) -> Path:
     path = REPORTS / name
     df.to_csv(path, index=False)
@@ -391,12 +448,367 @@ def build_combination_table(exp: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def short_choice(val) -> str:
+    if val is None:
+        return ""
+    s = str(val).strip()
+    s = re.sub(r"^\d+\.\s*", "", s)
+    if "(" in s:
+        s = s.split("(")[0].strip()
+    return s.replace('"', "").strip()
+
+
+def short_persona_label(raw: str) -> str:
+    return (norm_persona(raw) or raw.split("(")[0].replace("The ", "").strip())
+
+
+def export_guidelines_tables() -> None:
+    """Readable persona × device × mood lookup for the methodology appendix."""
+    master = ROOT.parent / "public" / "assets" / "master_adaptive_ui_rules.json"
+    if not master.exists():
+        print("  master JSON not found — skipped guidelines table")
+        return
+    data = json.loads(master.read_text(encoding="utf-8"))
+    rules = data.get("rules") or {}
+    rows: list[dict] = []
+    lines = [
+        "MASTER ADAPTIVE UI GUIDELINES (lookup table)",
+        "Source: public/assets/master_adaptive_ui_rules.json",
+        "Each row is one filled cell: persona × device × mood → UI tokens the live shop uses.",
+        "Empty cells are not listed; runtime uses the fallback ladder (mood → device → persona → global defaults).",
+        "",
+    ]
+    for persona_raw, devices in rules.items():
+        if not isinstance(devices, dict):
+            continue
+        persona = short_persona_label(persona_raw)
+        lines.append("=" * 72)
+        lines.append(persona)
+        lines.append("=" * 72)
+        for device_raw, moods in devices.items():
+            if not isinstance(moods, dict):
+                continue
+            prefix = "mobile_" if "smart" in str(device_raw).lower() else "desktop_"
+            for mood_raw, tokens in moods.items():
+                if not isinstance(tokens, dict):
+                    continue
+
+                def tok(*keys: str) -> str:
+                    for k in keys:
+                        if k in tokens:
+                            return short_choice(tokens[k])
+                        pk = prefix + k
+                        if pk in tokens:
+                            return short_choice(tokens[pk])
+                    return ""
+
+                row = {
+                    "persona": persona,
+                    "device": device_raw,
+                    "mood": mood_raw,
+                    "color_theme": tok("color_theme_pref"),
+                    "accent": tok("accent_color_pref"),
+                    "font_style": tok("font_style_pref"),
+                    "font_size": tok("font_size_pref"),
+                    "whitespace": tok("whitespace_pref"),
+                    "hero": tok("hero_banner_size"),
+                    "recommendations": tok("recommendation_type"),
+                    "urgency": tok("urgency_pref"),
+                    "checkout": tok("checkout_style"),
+                    "product_card": tok("product_card"),
+                    "navigation": tok("navigation"),
+                    "info_density": tok("info_density"),
+                    "price_display": tok("price_display"),
+                    "category_display": tok("category_display"),
+                    "search": tok("search_visibility"),
+                    "social_proof": tok("social_proof_display"),
+                    "product_description": tok("product_desc_length"),
+                }
+                rows.append(row)
+                lines.append(f"  [{device_raw} · {mood_raw}]")
+                lines.append(
+                    f"    Theme {row['color_theme']} / {row['accent']} · "
+                    f"Font {row['font_style']} {row['font_size']} · "
+                    f"Space {row['whitespace']}"
+                )
+                lines.append(
+                    f"    Hero {row['hero']} · Recs {row['recommendations']} · "
+                    f"Urgency {row['urgency']} · Checkout {row['checkout']}"
+                )
+                lines.append(
+                    f"    Card {row['product_card']} · Nav {row['navigation']} · "
+                    f"Density {row['info_density']} · Price {row['price_display']}"
+                )
+                lines.append("")
+    gdir = ROOT / "guidelines"
+    gdir.mkdir(exist_ok=True)
+    csv_path = gdir / "GUIDELINES_LOOKUP_TABLE.csv"
+    txt_path = gdir / "GUIDELINES_LOOKUP_TABLE.txt"
+    pd.DataFrame(rows).to_csv(csv_path, index=False)
+    txt_path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+    print(f"  wrote {csv_path.relative_to(ROOT)}  ({len(rows)} filled cells)")
+    print(f"  wrote {txt_path.relative_to(ROOT)}")
+
+
+def _yes_no_series(s: pd.Series) -> pd.Series:
+    return s.astype(str).str.lower().isin(["yes", "true", "1"])
+
+
+def run_inferential_tests(
+    exp: pd.DataFrame,
+    survey: pd.DataFrame | None,
+    merged: pd.DataFrame | None,
+    camera_n: int,
+    camera_correct_rate: float,
+) -> list[dict]:
+    """A few planned tests. Descriptive Results stay primary; p-values are support."""
+    try:
+        from scipy import stats
+    except ImportError:
+        print("  scipy not installed — skip p-values (pip install scipy)")
+        return []
+
+    rows: list[dict] = []
+
+    def add(**kwargs):
+        rows.append(kwargs)
+
+    if survey is not None and "sus_score" in survey.columns:
+        sus = survey["sus_score"].dropna().astype(float)
+        if len(sus) >= 8:
+            t = stats.ttest_1samp(sus, 68.0)
+            d = (float(sus.mean()) - 68.0) / float(sus.std(ddof=1))
+            # Wilcoxon on differences from 68
+            w = stats.wilcoxon(sus - 68.0, alternative="two-sided", zero_method="wilcox")
+            add(
+                test="SUS vs 68 (one-sample t)",
+                n=int(len(sus)),
+                statistic=round(float(t.statistic), 3),
+                p_value=round(float(t.pvalue), 4),
+                effect=f"Cohen d={d:.2f}",
+                note="H0: mean SUS = 68. Significant p means scores differ from the common benchmark.",
+            )
+            add(
+                test="SUS vs 68 (Wilcoxon signed-rank)",
+                n=int(len(sus)),
+                statistic=round(float(w.statistic), 3),
+                p_value=round(float(w.pvalue), 4),
+                effect="",
+                note="Non-parametric check of the same H0 (SUS is often skewed).",
+            )
+
+    if merged is not None and {"device", "sus_score"}.issubset(merged.columns):
+        tmp = merged[["device", "sus_score"]].copy()
+        tmp["sus_score"] = tmp["sus_score"].map(to_number)
+        tmp["device"] = tmp["device"].map(norm_device)
+        a = tmp.loc[tmp["device"] == "desktop", "sus_score"].dropna()
+        b = tmp.loc[tmp["device"] == "mobile", "sus_score"].dropna()
+        if len(a) >= 8 and len(b) >= 8:
+            u = stats.mannwhitneyu(b, a, alternative="two-sided")
+            # rank-biserial: 1 - 2U/(n1 n2)
+            rrb = 1 - (2 * float(u.statistic)) / (len(a) * len(b))
+            add(
+                test="SUS mobile vs desktop (Mann-Whitney U)",
+                n=int(len(a) + len(b)),
+                statistic=round(float(u.statistic), 3),
+                p_value=round(float(u.pvalue), 4),
+                effect=f"rank-biserial={rrb:.2f}; mobile n={len(b)} mean={b.mean():.1f}; desktop n={len(a)} mean={a.mean():.1f}",
+                note="Exploratory. Joined rows only. Not a randomised device assignment.",
+            )
+
+    if camera_n >= 10 and not math.isnan(camera_correct_rate):
+        k = int(round(camera_correct_rate * camera_n))
+        bt = stats.binomtest(k, camera_n, p=0.5, alternative="two-sided")
+        ci = bt.proportion_ci(confidence_level=0.95)
+        add(
+            test="Camera confirm Yes vs 50% (binomial)",
+            n=int(camera_n),
+            statistic=k,
+            p_value=round(float(bt.pvalue), 4),
+            effect=f"Yes={k}/{camera_n}={camera_correct_rate:.1%}; 95% CI [{ci.low:.1%}, {ci.high:.1%}]",
+            note="User confirmation of bridged guideline mood, not pixel-level FER accuracy vs a lab gold set.",
+        )
+
+    if merged is not None and {"mood_was_correct", "aweq_5"}.issubset(merged.columns):
+        tmp = merged.copy()
+        tmp["aweq_5"] = tmp["aweq_5"].map(to_number)
+        yes = tmp.loc[_yes_no_series(tmp["mood_was_correct"]), "aweq_5"].dropna()
+        no = tmp.loc[~_yes_no_series(tmp["mood_was_correct"]) & tmp["mood_was_correct"].notna(), "aweq_5"].dropna()
+        # mood_was_correct empty for manual — keep only yes/no
+        yn = tmp["mood_was_correct"].astype(str).str.lower().isin(["yes", "no", "true", "false", "1", "0"])
+        no = tmp.loc[yn & ~_yes_no_series(tmp["mood_was_correct"]), "aweq_5"].dropna()
+        if len(yes) >= 5 and len(no) >= 5:
+            u = stats.mannwhitneyu(yes, no, alternative="two-sided")
+            add(
+                test="AWEQ-5 camera Yes vs No (Mann-Whitney U)",
+                n=int(len(yes) + len(no)),
+                statistic=round(float(u.statistic), 3),
+                p_value=round(float(u.pvalue), 4),
+                effect=f"Yes n={len(yes)} mean={yes.mean():.2f}; No n={len(no)} mean={no.mean():.2f}",
+                note="Exploratory and likely underpowered until camera N grows. Do not over-interpret.",
+            )
+        else:
+            add(
+                test="AWEQ-5 camera Yes vs No",
+                n=int(len(yes) + len(no)),
+                statistic="",
+                p_value="",
+                effect=f"Yes n={len(yes)}; No n={len(no)} — too small for a stable test",
+                note="Wait for Tuesday camera N (~75) before treating this as inferential.",
+            )
+
+    return rows
+
+
+def write_results_insights(**kw) -> None:
+    exp: pd.DataFrame = kw["exp"]
+    survey = kw["survey"]
+    join_n = kw["join_n"]
+    path = ROOT / "RESULTS_INSIGHTS.txt"
+    n_shop = len(exp)
+    n_form = 0 if survey is None else len(survey)
+    cov = kw["coverage_pct"]
+    cov_s = f"{cov:.1f}%" if not math.isnan(cov) else "n/a"
+    cam = kw["camera_correct_rate"]
+    cam_s = f"{cam:.0%}" if not math.isnan(cam) else "n/a"
+    sus = kw["sus_mean"]
+    aweq = kw["aweq_mean"]
+    moods = kw["overview"].get("guideline_moods") or {}
+    devices = kw["overview"].get("devices") or {}
+    personas = kw["overview"].get("personas") or {}
+    fb = kw["fallback_rates"] or {}
+
+    infer_lines = []
+    for r in kw.get("infer_rows") or []:
+        infer_lines.append(
+            f"  - {r.get('test')}: n={r.get('n')}  p={r.get('p_value')}  {r.get('effect')}  ({r.get('note')})"
+        )
+    if not infer_lines:
+        infer_lines = ["  (scipy missing or tests skipped)"]
+
+    text = f"""
+SMARTSHOP LIVE EXPERIMENT — RESULTS INSIGHTS
+Snapshot from analyze.py (shop + Tally). Re-run analyze.py after Tuesday to refresh.
+
+------------------------------------------------------------------------------
+1. WHAT THESE NUMBERS ARE
+------------------------------------------------------------------------------
+Part B of the thesis (live SmartShop). Not the offline guideline-vote study.
+Shop log = one completed adaptive session per admin row.
+Tally = post-session SUS + UEQ-S + AWEQ + optional comments.
+Join = same email on Tally as SmartShop signup (plus a few id_map rows).
+
+N shop = {n_shop}
+N Tally (after keeping later duplicates) = {n_form}
+N joined = {join_n} (key={kw['join_key']})
+Using sample files = {kw['using_sample']}
+
+Three sample sizes always: all Tally, all shop, paired only.
+Persona / device / mood splits of SUS use the paired n={join_n}, not {n_form}.
+
+------------------------------------------------------------------------------
+2. ARE THE RESULTS “GOOD” ENOUGH TO SHOW?
+------------------------------------------------------------------------------
+Yes as a master’s live-study snapshot. Usability is clearly above typical
+SUS 68. Adaptation coverage is 40/{kw['master_total']} master cells ({cov_s}).
+Camera confirm ({cam_s} on n={kw['camera_n']}) is the mood headline — not
+self-report vs raw FER ({kw['agree_rate']:.0%} on n={kw['n_eval']}).
+
+Caveats: convenience / student sample; Neutral-heavy moods; not everyone
+used the camera; Tally without email cannot join. Extra ~40 people help if
+they add camera + non-Neutral + mobile, not only more Neutral desktop.
+
+If camera reaches ~75 on Tuesday: confirmation CI tightens, and Yes vs No
+on AWEQ-5 may become testable. It will not “prove” the Adaptive Engine.
+
+------------------------------------------------------------------------------
+3. USABILITY (Tally, n={n_form})
+------------------------------------------------------------------------------
+SUS mean = {sus:.1f} / 100. Benchmark line often drawn at 68.
+UEQ-S pragmatic = {kw['ueq_pq']:.2f}, hedonic = {kw['ueq_hq']:.2f}, overall = {kw['ueq_overall']:.2f}
+  (scale −3 to +3; values ≳ 0.8 are typically read as positive).
+AWEQ overall = {aweq:.2f} / 5.
+  Highest: interface appropriate for device.
+  Lowest: interface reflected current emotional state (AWEQ-5).
+That pattern fits a Neutral-heavy, often-manual mood sample.
+
+------------------------------------------------------------------------------
+4. WHO WAS IN THE SHOP (n={n_shop})
+------------------------------------------------------------------------------
+Devices: {devices}
+Personas: {personas}
+Guideline moods: {moods}
+
+------------------------------------------------------------------------------
+5. DID THE ENGINE USE THE GUIDELINES?
+------------------------------------------------------------------------------
+Master cells with ≥1 participant: {kw['master_filled']}/{kw['master_total']} ({cov_s}).
+Mood fallback rate: {fb.get('used_mood_fallback', float('nan')):.1%} of shop rows.
+Device fallback: {fb.get('used_device_fallback', float('nan')):.1%}
+Persona fallback: {fb.get('used_persona_fallback', float('nan')):.1%}
+Global fill: {fb.get('used_global_fill', float('nan')):.1%}
+
+Most people landed on an exact filled cell. Mood fallback is the only
+non-zero ladder step so far.
+
+The human-readable guideline table (for methodology) is:
+  guidelines/GUIDELINES_LOOKUP_TABLE.csv
+  guidelines/GUIDELINES_LOOKUP_TABLE.txt
+
+------------------------------------------------------------------------------
+6. MOOD DETECTION
+------------------------------------------------------------------------------
+Camera detections: {kw['camera_n']}  |  manual: {n_shop - kw['camera_n']}
+User confirmed the bridged guideline mood: {cam_s}
+Self-report vs FER label (angry/happy/… mapped to guideline names): {kw['agree_rate']:.1%} on n={kw['n_eval']}
+
+Use 77%-class confirmation for the live chapter. The 34%-class FER match
+is a different question (label space + mapping + lighting).
+
+------------------------------------------------------------------------------
+7. P-VALUES — WHAT TO USE, WHAT TO AVOID
+------------------------------------------------------------------------------
+Do report a small planned set. Do not p-hack every persona×mood cell
+(many cells have n=1–4).
+
+Planned:
+  (1) SUS vs 68 (one-sample t + Wilcoxon) — primary usability claim.
+  (2) SUS mobile vs desktop on joined rows — exploratory, not randomised.
+  (3) Camera Yes vs 50% binomial — user confirmation, not lab accuracy.
+  (4) AWEQ-5 Yes vs No — wait until camera n is larger (~75).
+
+Current tests:
+{chr(10).join(infer_lines)}
+
+α = 0.05, two-sided. No multiple-comparison correction (only these tests).
+If p < 0.05 write “statistically significant in this sample,” not “proved.”
+
+------------------------------------------------------------------------------
+8. OPEN COMMENTS
+------------------------------------------------------------------------------
+See reports/08_open_responses.csv. Typical likes: adaptation, mood idea,
+layout. Typical improvements: visuals, detection accuracy, consistency.
+
+------------------------------------------------------------------------------
+9. AFTER TUESDAY
+------------------------------------------------------------------------------
+Save new admin CSV as data/smartshop_participants_new_chapter_YYYY-MM-DD.csv
+Save new Tally as *Post*Experiment*Submissions*.csv
+python3 analyze.py
+Refresh this file automatically.
+
+END
+""".strip()
+    path.write_text(text + "\n", encoding="utf-8")
+    print(f"  wrote {path.relative_to(ROOT)}")
+
+
 def main() -> None:
     print("DATA   :", DATA)
     print("REPORTS:", REPORTS)
 
     # --- Experiment ---
-    exp_path = pick_file("experiment_export.csv", "sample_experiment_export.csv")
+    exp_path = pick_experiment_csv()
     assert exp_path is not None, "No experiment CSV in data/"
     print(f"\n[1] Experiment: {exp_path.name}")
     exp = read_experiment_csv(exp_path)
@@ -458,6 +870,18 @@ def main() -> None:
     else:
         agree_rate = float("nan")
         n_eval = 0
+
+    camera_n = 0
+    camera_correct_rate = float("nan")
+    if "mood_source" in exp.columns:
+        src = exp["mood_source"].astype(str).str.lower()
+        camera_n = int((src == "camera").sum())
+        print(f"  Mood source: camera={camera_n}  manual={(src == 'manual').sum()}")
+        if "mood_was_correct" in exp.columns and camera_n:
+            cam = exp[src == "camera"].copy()
+            ok = cam["mood_was_correct"].astype(str).str.lower().isin(["yes", "true", "1"])
+            camera_correct_rate = float(ok.mean())
+            print(f"  Camera confirm Yes rate: {camera_correct_rate:.1%} on n={camera_n}")
 
     # Fallbacks
     fallback_cols = [
@@ -524,7 +948,7 @@ def main() -> None:
 
     # --- Survey ---
     print("\n[3] Form survey")
-    survey_path = pick_file("form_survey.csv", "sample_form_survey.csv")
+    survey_path = pick_survey_csv()
     survey = None
     sus_mean = ueq_pq = ueq_hq = ueq_overall = aweq_mean = float("nan")
     if survey_path is None:
@@ -541,6 +965,7 @@ def main() -> None:
                 if c.startswith("Overall, I would prefer using this adaptive website"):
                     survey = survey.rename(columns={c: "aweq_7"})
                     break
+        survey = dedupe_survey(survey)
         print(f"  N form responses = {len(survey)}")
 
         sus_cols = [f"sus_{i}" for i in range(1, 11) if f"sus_{i}" in survey.columns]
@@ -609,6 +1034,7 @@ def main() -> None:
     # Join experiment logs ↔ form scores (email, then id_map, then participant_id)
     join_n = 0
     join_key = "none"
+    merged = None
     if survey is not None:
         merged, join_key = join_experiment_survey(exp, survey)
         join_n = len(merged)
@@ -649,6 +1075,12 @@ def main() -> None:
             else ""},
             {"section": "Mood", "metric": "Self vs model agreement", "value": round(agree_rate, 3) if not math.isnan(agree_rate) else ""},
             {"section": "Mood", "metric": "N with both moods", "value": n_eval},
+            {"section": "Mood", "metric": "N camera detections", "value": camera_n},
+            {
+                "section": "Mood",
+                "metric": "Camera confirm Yes rate",
+                "value": round(camera_correct_rate, 3) if not math.isnan(camera_correct_rate) else "",
+            },
             {"section": "SUS", "metric": "Mean (0–100)", "value": round(sus_mean, 1) if not math.isnan(sus_mean) else ""},
             {"section": "UEQ-S", "metric": "Pragmatic Quality", "value": round(ueq_pq, 2) if not math.isnan(ueq_pq) else ""},
             {"section": "UEQ-S", "metric": "Hedonic Quality", "value": round(ueq_hq, 2) if not math.isnan(ueq_hq) else ""},
@@ -660,6 +1092,43 @@ def main() -> None:
     save_table(summary, "99_thesis_summary.csv")
     print("\n=== Thesis summary ===")
     print(summary.to_string(index=False))
+
+    print("\n[4] Guidelines lookup table (methodology appendix)")
+    export_guidelines_tables()
+
+    print("\n[5] Inferential tests (use sparingly; descriptive Results stay primary)")
+    infer_rows = run_inferential_tests(
+        exp=exp,
+        survey=survey,
+        merged=merged,
+        camera_n=camera_n,
+        camera_correct_rate=camera_correct_rate,
+    )
+    if infer_rows:
+        save_table(pd.DataFrame(infer_rows), "10_inferential_tests.csv")
+
+    write_results_insights(
+        exp=exp,
+        survey=survey,
+        join_n=join_n,
+        join_key=join_key,
+        overview=overview,
+        master_filled=int((master_yes["n"] > 0).sum()),
+        master_total=len(master_yes),
+        coverage_pct=float(coverage.loc[0, "coverage_pct"]) if len(coverage) else float("nan"),
+        agree_rate=agree_rate,
+        n_eval=n_eval,
+        camera_n=camera_n,
+        camera_correct_rate=camera_correct_rate,
+        fallback_rates=fallback_rates,
+        sus_mean=sus_mean,
+        ueq_pq=ueq_pq,
+        ueq_hq=ueq_hq,
+        ueq_overall=ueq_overall,
+        aweq_mean=aweq_mean,
+        infer_rows=infer_rows,
+        using_sample=using_sample,
+    )
     print("\nDone. Re-run anytime after adding more participants to data/.")
 
 

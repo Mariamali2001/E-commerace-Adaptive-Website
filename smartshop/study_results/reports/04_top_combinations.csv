@@ -1,16 +1,16 @@
 persona,device,device_label,mood,n,in_master_rules,has_participants
-Researcher,desktop,Laptop/Desktop,Neutral,7,yes,yes
-Browser,desktop,Laptop/Desktop,Neutral,4,yes,yes
-Deal Hunter,desktop,Laptop/Desktop,Neutral,3,yes,yes
-Researcher,desktop,Laptop/Desktop,Happy,3,yes,yes
-Impulsive Buyer,desktop,Laptop/Desktop,Neutral,2,yes,yes
-Browser,mobile,Smartphone,Neutral,2,yes,yes
-Deal Hunter,desktop,Laptop/Desktop,Happy,2,yes,yes
-Deal Hunter,mobile,Smartphone,Happy,2,yes,yes
-Researcher,mobile,Smartphone,Neutral,1,yes,yes
-Impulsive Buyer,mobile,Smartphone,Happy,1,yes,yes
-Browser,mobile,Smartphone,Relaxed,1,yes,yes
-Impulsive Buyer,mobile,Smartphone,Relaxed,1,yes,yes
-Researcher,desktop,Laptop/Desktop,Excited,1,yes,yes
-Minimalist,mobile,Smartphone,Bored,0,yes,no
-Minimalist,desktop,Laptop/Desktop,Stressed,0,yes,no
+Researcher,desktop,Laptop/Desktop,Neutral,13,yes,yes
+Deal Hunter,desktop,Laptop/Desktop,Neutral,12,yes,yes
+Browser,desktop,Laptop/Desktop,Neutral,10,yes,yes
+Researcher,mobile,Smartphone,Neutral,6,yes,yes
+Loyal Customer,desktop,Laptop/Desktop,Neutral,5,yes,yes
+Browser,mobile,Smartphone,Neutral,5,yes,yes
+Researcher,desktop,Laptop/Desktop,Happy,5,yes,yes
+Impulsive Buyer,desktop,Laptop/Desktop,Happy,4,yes,yes
+Impulsive Buyer,desktop,Laptop/Desktop,Neutral,4,yes,yes
+Deal Hunter,mobile,Smartphone,Happy,4,yes,yes
+Deal Hunter,desktop,Laptop/Desktop,Happy,3,yes,yes
+Deal Hunter,mobile,Smartphone,Neutral,2,yes,yes
+Minimalist,desktop,Laptop/Desktop,Neutral,2,yes,yes
+Loyal Customer,mobile,Smartphone,Neutral,2,yes,yes
+Impulsive Buyer,mobile,Smartphone,Neutral,2,yes,yes

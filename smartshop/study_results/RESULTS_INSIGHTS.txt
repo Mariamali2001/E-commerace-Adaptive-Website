@@ -1,0 +1,115 @@
+SMARTSHOP LIVE EXPERIMENT — RESULTS INSIGHTS
+Snapshot from analyze.py (shop + Tally). Re-run analyze.py after Tuesday to refresh.
+
+------------------------------------------------------------------------------
+1. WHAT THESE NUMBERS ARE
+------------------------------------------------------------------------------
+Part B of the thesis (live SmartShop). Not the offline guideline-vote study.
+Shop log = one completed adaptive session per admin row.
+Tally = post-session SUS + UEQ-S + AWEQ + optional comments.
+Join = same email on Tally as SmartShop signup (plus a few id_map rows).
+
+N shop = 110
+N Tally (after keeping later duplicates) = 111
+N joined = 76 (key=email)
+Using sample files = False
+
+Three sample sizes always: all Tally, all shop, paired only.
+Persona / device / mood splits of SUS use the paired n=76, not 111.
+
+------------------------------------------------------------------------------
+2. ARE THE RESULTS “GOOD” ENOUGH TO SHOW?
+------------------------------------------------------------------------------
+Yes as a master’s live-study snapshot. Usability is clearly above typical
+SUS 68. Adaptation coverage is 40/67 master cells (59.7%).
+Camera confirm (77% on n=35) is the mood headline — not
+self-report vs raw FER (34% on n=35).
+
+Caveats: convenience / student sample; Neutral-heavy moods; not everyone
+used the camera; Tally without email cannot join. Extra ~40 people help if
+they add camera + non-Neutral + mobile, not only more Neutral desktop.
+
+If camera reaches ~75 on Tuesday: confirmation CI tightens, and Yes vs No
+on AWEQ-5 may become testable. It will not “prove” the Adaptive Engine.
+
+------------------------------------------------------------------------------
+3. USABILITY (Tally, n=111)
+------------------------------------------------------------------------------
+SUS mean = 82.2 / 100. Benchmark line often drawn at 68.
+UEQ-S pragmatic = 2.19, hedonic = 1.57, overall = 1.88
+  (scale −3 to +3; values ≳ 0.8 are typically read as positive).
+AWEQ overall = 4.12 / 5.
+  Highest: interface appropriate for device.
+  Lowest: interface reflected current emotional state (AWEQ-5).
+That pattern fits a Neutral-heavy, often-manual mood sample.
+
+------------------------------------------------------------------------------
+4. WHO WAS IN THE SHOP (n=110)
+------------------------------------------------------------------------------
+Devices: {'desktop': 71, 'mobile': 39}
+Personas: {'Researcher': 30, 'Deal Hunter': 26, 'Browser': 22, 'Impulsive Buyer': 14, 'Loyal Customer': 10, 'Minimalist': 8}
+Guideline moods: {'Neutral': 65, 'Happy': 20, 'Relaxed': 12, 'Bored': 4, 'Excited': 4, 'Stressed': 4, 'Sad': 1}
+
+------------------------------------------------------------------------------
+5. DID THE ENGINE USE THE GUIDELINES?
+------------------------------------------------------------------------------
+Master cells with ≥1 participant: 40/67 (59.7%).
+Mood fallback rate: 10.9% of shop rows.
+Device fallback: 0.0%
+Persona fallback: 0.0%
+Global fill: 0.0%
+
+Most people landed on an exact filled cell. Mood fallback is the only
+non-zero ladder step so far.
+
+The human-readable guideline table (for methodology) is:
+  guidelines/GUIDELINES_LOOKUP_TABLE.csv
+  guidelines/GUIDELINES_LOOKUP_TABLE.txt
+
+------------------------------------------------------------------------------
+6. MOOD DETECTION
+------------------------------------------------------------------------------
+Camera detections: 35  |  manual: 75
+User confirmed the bridged guideline mood: 77%
+Self-report vs FER label (angry/happy/… mapped to guideline names): 34.3% on n=35
+
+Use 77%-class confirmation for the live chapter. The 34%-class FER match
+is a different question (label space + mapping + lighting).
+
+------------------------------------------------------------------------------
+7. P-VALUES — WHAT TO USE, WHAT TO AVOID
+------------------------------------------------------------------------------
+Do report a small planned set. Do not p-hack every persona×mood cell
+(many cells have n=1–4).
+
+Planned:
+  (1) SUS vs 68 (one-sample t + Wilcoxon) — primary usability claim.
+  (2) SUS mobile vs desktop on joined rows — exploratory, not randomised.
+  (3) Camera Yes vs 50% binomial — user confirmation, not lab accuracy.
+  (4) AWEQ-5 Yes vs No — wait until camera n is larger (~75).
+
+Current tests:
+  - SUS vs 68 (one-sample t): n=111  p=0.0  Cohen d=0.82  (H0: mean SUS = 68. Significant p means scores differ from the common benchmark.)
+  - SUS vs 68 (Wilcoxon signed-rank): n=111  p=0.0    (Non-parametric check of the same H0 (SUS is often skewed).)
+  - SUS mobile vs desktop (Mann-Whitney U): n=76  p=0.0109  rank-biserial=-0.36; mobile n=26 mean=88.8; desktop n=50 mean=78.7  (Exploratory. Joined rows only. Not a randomised device assignment.)
+  - Camera confirm Yes vs 50% (binomial): n=35  p=0.0019  Yes=27/35=77.1%; 95% CI [59.9%, 89.6%]  (User confirmation of bridged guideline mood, not pixel-level FER accuracy vs a lab gold set.)
+  - AWEQ-5 camera Yes vs No: n=19  p=  Yes n=15; No n=4 — too small for a stable test  (Wait for Tuesday camera N (~75) before treating this as inferential.)
+
+α = 0.05, two-sided. No multiple-comparison correction (only these tests).
+If p < 0.05 write “statistically significant in this sample,” not “proved.”
+
+------------------------------------------------------------------------------
+8. OPEN COMMENTS
+------------------------------------------------------------------------------
+See reports/08_open_responses.csv. Typical likes: adaptation, mood idea,
+layout. Typical improvements: visuals, detection accuracy, consistency.
+
+------------------------------------------------------------------------------
+9. AFTER TUESDAY
+------------------------------------------------------------------------------
+Save new admin CSV as data/smartshop_participants_new_chapter_YYYY-MM-DD.csv
+Save new Tally as *Post*Experiment*Submissions*.csv
+python3 analyze.py
+Refresh this file automatically.
+
+END

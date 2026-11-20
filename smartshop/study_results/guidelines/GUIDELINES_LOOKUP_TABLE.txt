@@ -1,0 +1,357 @@
+MASTER ADAPTIVE UI GUIDELINES (lookup table)
+Source: public/assets/master_adaptive_ui_rules.json
+Each row is one filled cell: persona × device × mood → UI tokens the live shop uses.
+Empty cells are not listed; runtime uses the fallback ladder (mood → device → persona → global defaults).
+
+========================================================================
+Impulsive Buyer
+========================================================================
+  [Smartphone · Neutral]
+    Theme Minimalist Black & White / Blue · Font Classic Serif Medium · Space Balanced
+    Hero Medium Split · Recs Deals · Urgency Countdown Timers · Checkout Progress Bar
+    Card Info Rich · Nav Bottom Nav · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Happy]
+    Theme Cool Blues / Blue · Font Classic Serif Medium · Space Compact
+    Hero Medium Split · Recs Deals · Urgency Countdown Timers · Checkout Progress Bar
+    Card Minimal Clean · Nav Full-screen category menu · Density Minimal · Price Bold Large
+
+  [Smartphone · Stressed]
+    Theme Minimalist Black & White / Red · Font Classic Serif Medium · Space Compact
+    Hero Medium Split · Recs Deals · Urgency Stock Numbers · Checkout One Page
+    Card Info Rich · Nav Full-screen category menu · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Bored]
+    Theme Cool Blues / Green · Font Classic Serif Large · Space Balanced
+    Hero Medium Split · Recs Trending · Urgency Stock Numbers · Checkout One Page
+    Card Card with Shadow · Nav Bottom Nav · Density Detailed · Price Strike-through Original
+
+  [Smartphone · Excited]
+    Theme Warm Earthy / Blue · Font Rounded Friendly Medium · Space Balanced
+    Hero Medium Split · Recs Deals · Urgency Countdown Timers · Checkout Progress Bar
+    Card Minimal Clean · Nav Bottom Nav · Density Moderate · Price Bold Large
+
+  [Smartphone · Sad]
+    Theme Cool Blues / Blue · Font Rounded Friendly Medium · Space Balanced
+    Hero Medium Split · Recs Deals · Urgency Countdown Timers · Checkout Multi step
+    Card Minimal Clean · Nav Hamburger Menu · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Relaxed]
+    Theme Warm Earthy / Blue · Font Rounded Friendly Large · Space Balanced
+    Hero Medium Split · Recs Deals · Urgency Both · Checkout Progress Bar
+    Card Info Rich · Nav Full-screen category menu · Density Moderate · Price Strike-through Original
+
+  [Laptop/Desktop · Neutral]
+    Theme Vibrant Bold / Blue · Font Classic Serif Large · Space Balanced
+    Hero Medium Split · Recs Deals · Urgency Both · Checkout One Page
+    Card Badge Heavy · Nav Combination of top bar and dropdowns · Density Moderate · Price Strike-through Original
+
+  [Laptop/Desktop · Happy]
+    Theme Minimalist Black & White / Blue · Font Classic Serif Medium · Space Balanced
+    Hero Medium Split · Recs Trending · Urgency Stock Numbers · Checkout Progress Bar
+    Card Badge Heavy · Nav Mega Menu · Density Moderate · Price Bold Large
+
+  [Laptop/Desktop · Stressed]
+    Theme Minimalist Black & White / Green · Font Bold Impact Small · Space Balanced
+    Hero Medium Split · Recs New Arrivals · Urgency Stock Numbers · Checkout One Page
+    Card Minimal Clean · Nav Top Bar · Density Minimal · Price With Comparison
+
+  [Laptop/Desktop · Excited]
+    Theme Vibrant Bold / Red · Font Modern Sans-serif Medium · Space Compact
+    Hero Large Full screen · Recs New Arrivals · Urgency Stock Numbers · Checkout One Page
+    Card Image Heavy · Nav Mega Menu · Density Moderate · Price Bold Large
+
+========================================================================
+Loyal Customer
+========================================================================
+  [Smartphone · Neutral]
+    Theme Cool Blues / Blue · Font Rounded Friendly Large · Space Balanced
+    Hero Small Strip · Recs Deals · Urgency Both · Checkout Progress Bar
+    Card Minimal Clean · Nav Bottom Nav · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Happy]
+    Theme Minimalist Black & White / Green · Font Rounded Friendly Extra Large · Space Balanced
+    Hero Medium Split · Recs Category based · Urgency Countdown Timers · Checkout Progress Bar
+    Card Minimal Clean · Nav Bottom Nav · Density Detailed · Price Strike-through Original
+
+  [Smartphone · Stressed]
+    Theme Pastel Soft / Blue · Font Modern Sans-serif Medium · Space Balanced
+    Hero Small Strip · Recs Category based · Urgency Countdown Timers · Checkout One Page
+    Card Info Rich · Nav Bottom Nav · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Excited]
+    Theme Vibrant Bold / Green · Font Classic Serif Large · Space Balanced
+    Hero Large Full screen · Recs Deals · Urgency Countdown Timers · Checkout Progress Bar
+    Card Info Rich · Nav Swipe-based navigation · Density Detailed · Price Simple Display
+
+  [Smartphone · Sad]
+    Theme Cool Blues / Blue · Font Classic Serif Extra Large · Space Spacious
+    Hero Medium Split · Recs Deals · Urgency Stock Numbers · Checkout One Page
+    Card Minimal Clean · Nav Bottom Nav · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Relaxed]
+    Theme Warm Earthy / Blue · Font Rounded Friendly Large · Space Balanced
+    Hero Large Full screen · Recs New Arrivals · Urgency Both · Checkout One Page
+    Card Info Rich · Nav Hamburger Menu · Density Moderate · Price Bold Large
+
+  [Laptop/Desktop · Neutral]
+    Theme Warm Earthy / Purple · Font Rounded Friendly Medium · Space Balanced
+    Hero Medium Split · Recs New Arrivals · Urgency Both · Checkout Express Checkout
+    Card Minimal Clean · Nav Mega Menu · Density Moderate · Price With Comparison
+
+  [Laptop/Desktop · Happy]
+    Theme Warm Earthy / Green · Font Classic Serif Large · Space Compact
+    Hero Small Strip · Recs Category based · Urgency Both · Checkout Progress Bar
+    Card Info Rich · Nav Mega Menu · Density Moderate · Price Bold Large
+
+  [Laptop/Desktop · Stressed]
+    Theme Warm Earthy / Blue · Font Rounded Friendly Large · Space Balanced
+    Hero Small Strip · Recs Deals · Urgency Both · Checkout Progress Bar
+    Card Minimal Clean · Nav Combination of top bar and dropdowns · Density Moderate · Price Bold Large
+
+  [Laptop/Desktop · Sad]
+    Theme Cool Blues / Green · Font Rounded Friendly Medium · Space Balanced
+    Hero Small Strip · Recs New Arrivals · Urgency Stock Numbers · Checkout One Page
+    Card Card with Shadow · Nav Top Bar · Density Minimal · Price With Savings Highlighted
+
+  [Laptop/Desktop · Relaxed]
+    Theme Dark Mode / Blue · Font Modern Sans-serif Large · Space Balanced
+    Hero None · Recs Category based · Urgency Both · Checkout Multi step
+    Card Info Rich · Nav Combination of top bar and dropdowns · Density Detailed · Price Subtle Small
+
+========================================================================
+Browser
+========================================================================
+  [Smartphone · Neutral]
+    Theme Vibrant Bold / Blue · Font Bold Impact Large · Space Balanced
+    Hero Medium Split · Recs Deals · Urgency Both · Checkout Progress Bar
+    Card Minimal Clean · Nav Bottom Nav · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Happy]
+    Theme Minimalist Black & White / Blue · Font Modern Sans-serif Small · Space Balanced
+    Hero Medium Split · Recs Trending · Urgency Stock Numbers · Checkout One Page
+    Card Badge Heavy · Nav Bottom Nav · Density Moderate · Price Bold Large
+
+  [Smartphone · Stressed]
+    Theme Warm Earthy / Blue · Font Classic Serif Large · Space Balanced
+    Hero Medium Split · Recs Deals · Urgency None · Checkout One Page
+    Card Info Rich · Nav Full-screen category menu · Density Detailed · Price Strike-through Original
+
+  [Smartphone · Bored]
+    Theme Vibrant Bold / Blue · Font Classic Serif Extra Large · Space Balanced
+    Hero Medium Split · Recs Deals · Urgency Both · Checkout One Page
+    Card Info Rich · Nav Bottom Nav · Density Minimal · Price Bold Large
+
+  [Smartphone · Excited]
+    Theme Warm Earthy / Blue · Font Bold Impact Large · Space Balanced
+    Hero Medium Split · Recs New Arrivals · Urgency Both · Checkout Multi step
+    Card Image Heavy · Nav Full-screen category menu · Density Minimal · Price Bold Large
+
+  [Smartphone · Sad]
+    Theme Minimalist Black & White / Red · Font Rounded Friendly Large · Space Balanced
+    Hero Medium Split · Recs Deals · Urgency None · Checkout Express Checkout
+    Card Info Rich · Nav Bottom Nav · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Relaxed]
+    Theme Vibrant Bold / Blue · Font Modern Sans-serif Large · Space Balanced
+    Hero Medium Split · Recs Deals · Urgency Only on Request · Checkout One Page
+    Card Info Rich · Nav Full-screen category menu · Density Moderate · Price Strike-through Original
+
+  [Laptop/Desktop · Neutral]
+    Theme Vibrant Bold / Red · Font Rounded Friendly Large · Space Balanced
+    Hero Large Full screen · Recs Deals · Urgency Both · Checkout One Page
+    Card Card with Shadow · Nav Top Bar · Density Moderate · Price With Savings Highlighted
+
+  [Laptop/Desktop · Happy]
+    Theme Pastel Soft / Pink · Font Bold Impact Medium · Space Balanced
+    Hero Small Strip · Recs New Arrivals · Urgency None · Checkout Multi step
+    Card Badge Heavy · Nav Top Bar · Density Detailed · Price Subtle Small
+
+  [Laptop/Desktop · Relaxed]
+    Theme Vibrant Bold / Blue · Font Rounded Friendly Large · Space Balanced
+    Hero Small Strip · Recs Deals · Urgency Both · Checkout Express Checkout
+    Card Badge Heavy · Nav Sidebar · Density Minimal · Price Strike-through Original
+
+========================================================================
+Minimalist
+========================================================================
+  [Smartphone · Neutral]
+    Theme Cool Blues / Blue · Font Rounded Friendly Large · Space Balanced
+    Hero Medium Split · Recs New Arrivals · Urgency Both · Checkout One Page
+    Card Minimal Clean · Nav Hamburger Menu · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Happy]
+    Theme Minimalist Black & White / Blue · Font Rounded Friendly Large · Space Compact
+    Hero Medium Split · Recs Category based · Urgency None · Checkout Progress Bar
+    Card Image Heavy · Nav Full-screen category menu · Density Moderate · Price Bold Large
+
+  [Smartphone · Stressed]
+    Theme Minimalist Black & White / Red · Font Classic Serif Extra Large · Space Balanced
+    Hero Small Strip · Recs Deals · Urgency Stock Numbers · Checkout Progress Bar
+    Card Info Rich · Nav Hamburger Menu · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Bored]
+    Theme Minimalist Black & White / Green · Font Classic Serif Large · Space Balanced
+    Hero None · Recs Deals · Urgency Stock Numbers · Checkout Progress Bar
+    Card Info Rich · Nav Bottom Nav · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Relaxed]
+    Theme Minimalist Black & White / Blue · Font Classic Serif Medium · Space Compact
+    Hero Medium Split · Recs Deals · Urgency Stock Numbers · Checkout One Page
+    Card Info Rich · Nav Bottom Nav · Density Detailed · Price Simple Display
+
+  [Smartphone · Frustrated]
+    Theme Cool Blues / Blue · Font Rounded Friendly Large · Space Spacious
+    Hero Small Strip · Recs New Arrivals · Urgency Both · Checkout One Page
+    Card Info Rich · Nav Bottom Nav · Density Detailed · Price Strike-through Original
+
+  [Laptop/Desktop · Neutral]
+    Theme Warm Earthy / Blue · Font Rounded Friendly Medium · Space Balanced
+    Hero Small Strip · Recs Deals · Urgency Countdown Timers · Checkout Progress Bar
+    Card Minimal Clean · Nav Mega Menu · Density Moderate · Price With Comparison
+
+  [Laptop/Desktop · Happy]
+    Theme Vibrant Bold / Red · Font Classic Serif Large · Space Balanced
+    Hero Medium Split · Recs Category based · Urgency Only on Request · Checkout Progress Bar
+    Card Minimal Clean · Nav Combination of top bar and dropdowns · Density Moderate · Price With Savings Highlighted
+
+  [Laptop/Desktop · Stressed]
+    Theme Minimalist Black & White / Blue · Font Bold Impact Small · Space Balanced
+    Hero Small Strip · Recs Deals · Urgency Both · Checkout One Page
+    Card Minimal Clean · Nav Mega Menu · Density Moderate · Price Bold Large
+
+  [Laptop/Desktop · Bored]
+    Theme Dark Mode / Blue · Font Classic Serif Large · Space Balanced
+    Hero Medium Split · Recs Category based · Urgency Both · Checkout Progress Bar
+    Card Info Rich · Nav Top Bar · Density Moderate · Price With Savings Highlighted
+
+  [Laptop/Desktop · Relaxed]
+    Theme Cool Blues / Blue · Font Rounded Friendly Large · Space Balanced
+    Hero Medium Split · Recs New Arrivals · Urgency Countdown Timers · Checkout One Page
+    Card Badge Heavy · Nav Top Bar · Density Moderate · Price Strike-through Original
+
+========================================================================
+Researcher
+========================================================================
+  [Smartphone · Neutral]
+    Theme Minimalist Black & White / Blue · Font Classic Serif Large · Space Balanced
+    Hero Medium Split · Recs Deals · Urgency Stock Numbers · Checkout Progress Bar
+    Card Info Rich · Nav Bottom Nav · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Stressed]
+    Theme Minimalist Black & White / Green · Font Rounded Friendly Large · Space Balanced
+    Hero Small Strip · Recs Deals · Urgency Both · Checkout One Page
+    Card Info Rich · Nav Bottom Nav · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Bored]
+    Theme Vibrant Bold / Blue · Font Classic Serif Extra Large · Space Balanced
+    Hero Medium Split · Recs Category based · Urgency Countdown Timers · Checkout Progress Bar
+    Card Info Rich · Nav Full-screen category menu · Density Moderate · Price Simple Display
+
+  [Smartphone · Excited]
+    Theme Minimalist Black & White / Red · Font Classic Serif Large · Space Balanced
+    Hero Small Strip · Recs New Arrivals · Urgency Both · Checkout Express Checkout
+    Card Minimal Clean · Nav Full-screen category menu · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Relaxed]
+    Theme Warm Earthy / Blue · Font Modern Sans-serif Large · Space Balanced
+    Hero Medium Split · Recs Deals · Urgency Both · Checkout One Page
+    Card Info Rich · Nav Bottom Nav · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Frustrated]
+    Theme Vibrant Bold / Blue · Font Modern Sans-serif Large · Space Balanced
+    Hero Medium Split · Recs Category based · Urgency Both · Checkout Multi step
+    Card Info Rich · Nav Hamburger Menu · Density Moderate · Price Simple Display
+
+  [Laptop/Desktop · Neutral]
+    Theme Vibrant Bold / Blue · Font Classic Serif Extra Large · Space Balanced
+    Hero Medium Split · Recs Category based · Urgency Stock Numbers · Checkout Progress Bar
+    Card Info Rich · Nav Top Bar · Density Moderate · Price With Comparison
+
+  [Laptop/Desktop · Happy]
+    Theme Minimalist Black & White / Yellow · Font Rounded Friendly Large · Space Balanced
+    Hero Medium Split · Recs Trending · Urgency Countdown Timers · Checkout One Page
+    Card Badge Heavy · Nav Mega Menu · Density Moderate · Price With Comparison
+
+  [Laptop/Desktop · Stressed]
+    Theme Cool Blues / Blue · Font Classic Serif Medium · Space Compact
+    Hero Medium Split · Recs Category based · Urgency None · Checkout Progress Bar
+    Card Minimal Clean · Nav Top Bar · Density Moderate · Price Bold Large
+
+  [Laptop/Desktop · Bored]
+    Theme Vibrant Bold / Blue · Font Modern Sans-serif Large · Space Compact
+    Hero Small Strip · Recs Deals · Urgency Both · Checkout One Page
+    Card Image Heavy · Nav Top Bar · Density Moderate · Price With Savings Highlighted
+
+  [Laptop/Desktop · Excited]
+    Theme Warm Earthy / Red · Font Classic Serif Large · Space Balanced
+    Hero Medium Split · Recs Trending · Urgency Countdown Timers · Checkout One Page
+    Card Badge Heavy · Nav Combination of top bar and dropdowns · Density Moderate · Price Bold Large
+
+  [Laptop/Desktop · Sad]
+    Theme Dark Mode / Green · Font Classic Serif Extra Large · Space Balanced
+    Hero Medium Split · Recs Category based · Urgency None · Checkout Progress Bar
+    Card Info Rich · Nav Mega Menu · Density Detailed · Price Bold Large
+
+  [Laptop/Desktop · Relaxed]
+    Theme Minimalist Black & White / Blue · Font Rounded Friendly Large · Space Balanced
+    Hero Small Strip · Recs Deals · Urgency Both · Checkout Progress Bar
+    Card Badge Heavy · Nav Combination of top bar and dropdowns · Density Moderate · Price Strike-through Original
+
+  [Laptop/Desktop · Frustrated]
+    Theme Cool Blues / Blue · Font Rounded Friendly Large · Space Balanced
+    Hero Small Strip · Recs Deals · Urgency Stock Numbers · Checkout One Page
+    Card Info Rich · Nav Mega Menu · Density Moderate · Price With Savings Highlighted
+
+========================================================================
+Deal Hunter
+========================================================================
+  [Smartphone · Neutral]
+    Theme Cool Blues / Blue · Font Rounded Friendly Large · Space Balanced
+    Hero Small Strip · Recs Deals · Urgency None · Checkout Progress Bar
+    Card Info Rich · Nav Bottom Nav · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Happy]
+    Theme Minimalist Black & White / Blue · Font Classic Serif Medium · Space Balanced
+    Hero Medium Split · Recs Deals · Urgency Countdown Timers · Checkout Multi step
+    Card Info Rich · Nav Bottom Nav · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Stressed]
+    Theme Warm Earthy / Green · Font Modern Sans-serif Large · Space Compact
+    Hero Medium Split · Recs Deals · Urgency Stock Numbers · Checkout One Page
+    Card Minimal Clean · Nav Bottom Nav · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Bored]
+    Theme Cool Blues / Blue · Font Rounded Friendly Large · Space Balanced
+    Hero Small Strip · Recs Deals · Urgency Both · Checkout Progress Bar
+    Card Info Rich · Nav Bottom Nav · Density Moderate · Price Simple Display
+
+  [Smartphone · Excited]
+    Theme Warm Earthy / Orange · Font Classic Serif Medium · Space Balanced
+    Hero Large Full screen · Recs Deals · Urgency Both · Checkout Progress Bar
+    Card Minimal Clean · Nav Bottom Nav · Density Moderate · Price Strike-through Original
+
+  [Smartphone · Relaxed]
+    Theme Minimalist Black & White / Red · Font Classic Serif Large · Space Balanced
+    Hero Medium Split · Recs Trending · Urgency Both · Checkout One Page
+    Card Minimal Clean · Nav Full-screen category menu · Density Moderate · Price Strike-through Original
+
+  [Laptop/Desktop · Neutral]
+    Theme Vibrant Bold / Blue · Font Rounded Friendly Large · Space Compact
+    Hero Medium Split · Recs Deals · Urgency Both · Checkout One Page
+    Card Info Rich · Nav Top Bar · Density Minimal · Price With Savings Highlighted
+
+  [Laptop/Desktop · Happy]
+    Theme Warm Earthy / Blue · Font Rounded Friendly Medium · Space Balanced
+    Hero Medium Split · Recs Deals · Urgency Both · Checkout One Page
+    Card Badge Heavy · Nav Top Bar · Density Detailed · Price With Comparison
+
+  [Laptop/Desktop · Stressed]
+    Theme Cool Blues / Purple · Font Rounded Friendly Large · Space Balanced
+    Hero Small Strip · Recs Deals · Urgency Only on Request · Checkout Progress Bar
+    Card Info Rich · Nav Sidebar · Density Moderate · Price With Comparison
+
+  [Laptop/Desktop · Bored]
+    Theme Warm Earthy / Red · Font Classic Serif Extra Large · Space Balanced
+    Hero None · Recs Deals · Urgency Both · Checkout One Page
+    Card Badge Heavy · Nav Top Bar · Density Moderate · Price With Comparison

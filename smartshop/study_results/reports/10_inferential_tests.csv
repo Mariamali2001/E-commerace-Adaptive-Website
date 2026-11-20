@@ -1,0 +1,6 @@
+test,n,statistic,p_value,effect,note
+SUS vs 68 (one-sample t),111,8.652,0.0,Cohen d=0.82,H0: mean SUS = 68. Significant p means scores differ from the common benchmark.
+SUS vs 68 (Wilcoxon signed-rank),111,846.0,0.0,,Non-parametric check of the same H0 (SUS is often skewed).
+SUS mobile vs desktop (Mann-Whitney U),76,881.5,0.0109,rank-biserial=-0.36; mobile n=26 mean=88.8; desktop n=50 mean=78.7,Exploratory. Joined rows only. Not a randomised device assignment.
+Camera confirm Yes vs 50% (binomial),35,27,0.0019,"Yes=27/35=77.1%; 95% CI [59.9%, 89.6%]","User confirmation of bridged guideline mood, not pixel-level FER accuracy vs a lab gold set."
+AWEQ-5 camera Yes vs No,19,,,Yes n=15; No n=4 — too small for a stable test,Wait for Tuesday camera N (~75) before treating this as inferential.
