@@ -74,7 +74,10 @@ app = modal.App(APP_NAME)
         "/data": volume,
     },
     timeout=600,
-    min_containers=1,  # keep GPU + model loaded (phone Detect must not cold-start)
+    # Scale to zero when idle so the $30 Modal credit is not burned 24/7.
+    # Warm for 20 min after a Detect (scaledown_window). For Tuesday class:
+    # set min_containers=1, deploy, wait until 1 GPU is running, then students.
+    min_containers=0,
     scaledown_window=1200,
 )
 class ViTMoodModel:
@@ -469,7 +472,7 @@ from fastapi import Request
     },
 
     timeout=600,
-    min_containers=1,  # keep the public predict URL warm (no GPU on this layer)
+    min_containers=0,
     scaledown_window=1200,
 )
 @modal.fastapi_endpoint(method="POST")
