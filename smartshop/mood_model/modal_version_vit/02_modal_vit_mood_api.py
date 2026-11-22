@@ -74,10 +74,8 @@ app = modal.App(APP_NAME)
         "/data": volume,
     },
     timeout=600,
-    # Scale to zero when idle so the $30 Modal credit is not burned 24/7.
-    # Warm for 20 min after a Detect (scaledown_window). For Tuesday class:
-    # set min_containers=1, deploy, wait until 1 GPU is running, then students.
-    min_containers=0,
+    # Warm GPU for the current student session. Set back to 0 after they finish.
+    min_containers=1,
     scaledown_window=1200,
 )
 class ViTMoodModel:
