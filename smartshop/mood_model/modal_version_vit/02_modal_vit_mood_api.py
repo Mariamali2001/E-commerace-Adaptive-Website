@@ -74,8 +74,8 @@ app = modal.App(APP_NAME)
         "/data": volume,
     },
     timeout=600,
-    # Warm GPU for the current student session. Set back to 0 after they finish.
-    min_containers=1,
+    # Scale to zero when idle. Set to 1 only during a live student session.
+    min_containers=0,
     scaledown_window=1200,
 )
 class ViTMoodModel:
