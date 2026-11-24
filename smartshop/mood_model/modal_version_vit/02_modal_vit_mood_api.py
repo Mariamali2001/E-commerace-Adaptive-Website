@@ -69,13 +69,14 @@ app = modal.App(APP_NAME)
 
 @app.cls(
     image=image,
-    gpu="L4",
+    # Same ViT, CPU + RAM (no L4). Idle is cents/hour, not ~$0.80.
+    cpu=2,
+    memory=8192,
     volumes={
         "/data": volume,
     },
     timeout=600,
     # Scale to zero when idle. Set min_containers=1 only during a live session.
-    # max_containers=1: 24 students clicking Detect must not start extra L4s.
     min_containers=0,
     max_containers=1,
     scaledown_window=1200,
