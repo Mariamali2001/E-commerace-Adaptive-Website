@@ -74,8 +74,10 @@ app = modal.App(APP_NAME)
         "/data": volume,
     },
     timeout=600,
-    # Scale to zero when idle. Set to 1 only during a live student session.
-    min_containers=0,
+    # Warm GPU for this student session. Set back to 0 when they finish.
+    # max_containers=1: 24 students clicking Detect must not start extra L4s.
+    min_containers=1,
+    max_containers=1,
     scaledown_window=1200,
 )
 class ViTMoodModel:
