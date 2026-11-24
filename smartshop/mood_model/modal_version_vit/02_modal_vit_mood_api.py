@@ -74,9 +74,9 @@ app = modal.App(APP_NAME)
         "/data": volume,
     },
     timeout=600,
-    # Warm GPU for this student session. Set back to 0 when they finish.
+    # Scale to zero when idle. Set min_containers=1 only during a live session.
     # max_containers=1: 24 students clicking Detect must not start extra L4s.
-    min_containers=1,
+    min_containers=0,
     max_containers=1,
     scaledown_window=1200,
 )
